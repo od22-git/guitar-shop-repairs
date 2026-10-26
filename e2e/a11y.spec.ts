@@ -1,7 +1,20 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-const pages = ["/en", "/ar", "/en/no-such-page", "/ar/no-such-page"];
+const pages = [
+  "/en",
+  "/ar",
+  "/en/no-such-page",
+  "/ar/no-such-page",
+  "/en/shop",
+  "/ar/shop/electric-guitars?brand=Fender",
+  "/en/shop?brand=Fender&condition=fair",
+  "/en/product/epiphone-sg-standard-ebony",
+  "/ar/product/fender-player-telecaster-tidepool",
+  "/ar/product/marshall-ms-2-micro-amp",
+  "/en/faq",
+  "/ar/faq",
+];
 
 for (const path of pages) {
   test(`axe finds no serious or critical issues on ${path}`, async ({ page }) => {

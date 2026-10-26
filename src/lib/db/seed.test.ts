@@ -1,9 +1,11 @@
 import { readdirSync, readFileSync } from "node:fs";
 
 import { asc, eq } from "drizzle-orm";
+import sharp from "sharp";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { stockPhotoWidths } from "@/config/stock-photos";
+import { OG_IMAGE_SIZE } from "@/lib/product-images";
 import { productSpecsSchema } from "@/lib/product-specs";
 import { createPgliteDatabase, type TestDatabase } from "@/test/db";
 import { webpSize } from "@/test/webp";
@@ -129,8 +131,17 @@ describe("sample photos", () => {
           height: (width * SAMPLE_PHOTO_SIZE.height) / SAMPLE_PHOTO_SIZE.width,
         });
       }
+      expected.push(`${name}-og.jpg`);
     }
     expect(readdirSync(dir).sort()).toEqual(expected.sort());
+  });
+
+  it("each have a 1200×630 JPEG link preview (scripts/sample-og-images.mts)", async () => {
+    for (const name of names) {
+      const file = `${name}-og.jpg`;
+      const { format, width, height } = await sharp(readFileSync(new URL(file, dir))).metadata();
+      expect({ format, width, height }, file).toEqual({ format: "jpeg", ...OG_IMAGE_SIZE });
+    }
   });
 
   it("are each credited in docs/IMAGE_CREDITS.md", () => {

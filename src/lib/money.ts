@@ -78,3 +78,11 @@ export function parseAedToFils(input: string): number | null {
   const fils = Number(whole) * FILS_PER_AED + Number(fraction.padEnd(2, "0"));
   return Number.isSafeInteger(fils) && fils <= MAX_FILS ? fils : null;
 }
+
+/** Fils as a plain decimal amount in dirhams, "3450.00", for structured data (JSON-LD). */
+export function filsToDecimalString(fils: number): string {
+  if (!Number.isSafeInteger(fils) || fils < 0) {
+    throw new RangeError(`Money must be a whole, non-negative number of fils, got ${fils}`);
+  }
+  return `${Math.trunc(fils / FILS_PER_AED)}.${String(fils % FILS_PER_AED).padStart(2, "0")}`;
+}

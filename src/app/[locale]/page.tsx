@@ -1,22 +1,36 @@
+import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { PhotoCredits } from "@/components/photo-credits";
 import { StockPhoto } from "@/components/stock-photo";
 import { WhatsAppIcon } from "@/components/whatsapp-icon";
 import { brand } from "@/config/brand";
+import { Link } from "@/i18n/navigation";
+import { pageAlternates } from "@/lib/seo";
 import { shopWhatsAppUrl } from "@/lib/whatsapp/shop-link";
 
-// Until the catalogue (M3) and repairs pages (M6) exist, the home page shows what the shop
-// sells and repairs, and every action goes to WhatsApp. The final copy comes in M8.
+// The home page shows what the shop sells and repairs. Until the repairs pages (M6) exist,
+// repair questions go to WhatsApp. The final copy comes in M8.
 
-const categories = ["guitars", "pedals", "amps", "parts"] as const;
+// Each home category, with its shop category (slugs from src/lib/db/seed.ts).
+const categories = {
+  guitars: "electric-guitars",
+  pedals: "pedals",
+  amps: "amps",
+  parts: "parts-accessories",
+} as const;
+const categoryKeys = Object.keys(categories) as (keyof typeof categories)[];
 const services = ["setup", "frets", "electronics", "hardware"] as const;
-const photosOnPage = ["hero", ...categories, "bench", "strings"] as const;
+const photosOnPage = ["hero", ...categoryKeys, "bench", "strings"] as const;
 
 const buttonClass =
   "inline-flex min-h-12 items-center gap-2.5 rounded-sm bg-fiesta px-5 font-semibold text-white hover:bg-fiesta-deep";
 const sectionHeadingClass =
   "text-3xl leading-tight font-extrabold text-balance sm:text-4xl rtl:leading-[1.3]";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return { alternates: pageAlternates(await getLocale(), "/") };
+}
 
 export default async function HomePage() {
   const locale = await getLocale();
@@ -79,23 +93,27 @@ export default async function HomePage() {
           <p className="mt-3 max-w-[55ch] text-lg text-ink-subtle">{t("shopIntro")}</p>
           {/* Every other photo hangs lower, like guitars on a shop wall. */}
           <ul className="mt-10 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4 md:gap-x-6">
-            {categories.map((key, i) => (
+            {categoryKeys.map((key, i) => (
               <li key={key} className={i % 2 ? "mt-8 md:mt-14" : undefined}>
-                <div className="relative aspect-[3/4] overflow-hidden rounded-sm">
-                  <StockPhoto
-                    photo={key}
-                    alt={tPhoto(key)}
-                    sizes="(min-width: 1152px) 270px, (min-width: 768px) 23vw, 46vw"
-                  />
-                </div>
-                <h3 className="mt-4 text-lg leading-snug font-bold text-gold">
-                  {t(`categories.${key}.name`)}
-                </h3>
-                <p className="mt-1 text-ink-subtle">{t(`categories.${key}.detail`)}</p>
+                <Link href={`/shop/${categories[key]}`} className="group block">
+                  <div className="relative aspect-[3/4] overflow-hidden rounded-sm">
+                    <StockPhoto
+                      photo={key}
+                      alt={tPhoto(key)}
+                      sizes="(min-width: 1152px) 270px, (min-width: 768px) 23vw, 46vw"
+                    />
+                  </div>
+                  <h3 className="mt-4 text-lg leading-snug font-bold text-gold underline-offset-4 group-hover:underline">
+                    {t(`categories.${key}.name`)}
+                  </h3>
+                  <p className="mt-1 text-ink-subtle">{t(`categories.${key}.detail`)}</p>
+                </Link>
               </li>
             ))}
           </ul>
-          <p className="mt-12 max-w-[55ch]">{t("shopSoon")}</p>
+          <Link href="/shop" className={`mt-12 ${buttonClass}`}>
+            {t("shopCta")}
+          </Link>
         </div>
       </section>
 

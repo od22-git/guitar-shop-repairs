@@ -9,10 +9,17 @@
     "cta": "Message us on WhatsApp",
     "short": "WhatsApp",
     "greeting": "Hello {brand}, I have a question.",
-    "repairGreeting": "Hello {brand}, I’d like to ask about a repair."
+    "repairGreeting": "Hello {brand}, I’d like to ask about a repair.",
+    "order": "Hello {brand}, I’d like to order {title} (SKU {sku}).\n{url}",
+    "hold": "Hello {brand}, I see {title} (SKU {sku}) is on hold. Please let me know if it comes free.\n{url}",
+    "similar": "Hello {brand}, I see {title} (SKU {sku}) has sold. Do you have anything similar?\n{url}",
+    "stock": "Hello {brand}, what’s coming into the shop soon?"
   },
   "Footer": {
     "serviceArea": "Home-based workshop in {location}. Drop-off by appointment; courier pickup and delivery across the UAE.",
+    "linksHeading": "Shop",
+    "shop": "Browse the shop",
+    "faq": "Questions and condition guide",
     "contactHeading": "Contact",
     "whatsapp": "WhatsApp"
   },
@@ -38,7 +45,7 @@
         "detail": "Pickups, knobs, strings and cases"
       }
     },
-    "shopSoon": "The online catalogue opens soon. Until then, ask us on WhatsApp what’s in stock.",
+    "shopCta": "Browse the shop",
     "repairsHeading": "Repairs at the bench",
     "repairsIntro": "Tell us what’s wrong and we’ll quote first. Work starts only when you approve the price.",
     "services": {
@@ -68,5 +75,160 @@
     "title": "Page not found",
     "body": "This page doesn’t exist, or it has moved.",
     "home": "Go to the home page"
+  },
+  "Nav": {
+    "label": "Main",
+    "shop": "Shop"
+  },
+  "Shop": {
+    "title": "Shop",
+    "description": "Used electric guitars, pedals, amps and parts from a home workshop in {location}. Every item is checked and photographed with its flaws; order on WhatsApp.",
+    "intro": "Every item is checked, set up and photographed with its flaws before it’s listed. Order anything on WhatsApp.",
+    "categoryDescription": "{category} for sale in {location}: checked, set up and photographed with every flaw. Order on WhatsApp.",
+    "categoriesLabel": "Categories",
+    "all": "Everything",
+    "results": "{count, plural, one {{n} item} other {{n} items}}",
+    "loading": "Loading items…",
+    "empty": "Nothing matches these filters.",
+    "emptyCategory": "Nothing in this category right now.",
+    "clearFilters": "Clear filters",
+    "askStock": "Ask what’s coming in"
+  },
+  "Filters": {
+    "heading": "Filter",
+    "toggle": "Filters",
+    "toggleActive": "Filters ({n})",
+    "brand": "Brand",
+    "condition": "Condition",
+    "pickupLayout": "Pickups",
+    "bodyStyle": "Body style",
+    "price": "Price",
+    "minPrice": "From",
+    "maxPrice": "Up to",
+    "anyPrice": "Any",
+    "availableOnly": "Available now only",
+    "sort": "Sort by",
+    "sortOrders": {
+      "newest": "Newest",
+      "price-asc": "Price, low to high",
+      "price-desc": "Price, high to low"
+    },
+    "apply": "Show results"
+  },
+  "Product": {
+    "breadcrumb": "Breadcrumb",
+    "status": {
+      "available": "Available",
+      "reserved": "On hold",
+      "sold": "Sold",
+      "soldOut": "Sold out"
+    },
+    "price": "Price",
+    "was": "Was {price}",
+    "order": "Order on WhatsApp",
+    "orderNote": "WhatsApp opens with a message about this item. We’ll confirm it’s still here and arrange delivery or collection.",
+    "askHold": "Ask to be told if it comes free",
+    "holdNote": "Someone has paid a deposit to hold this. Holds sometimes fall through, so ask and we’ll let you know.",
+    "askSimilar": "Ask about similar",
+    "soldNote": "This one has found a new home. Tell us what you’re after and we’ll look out for something similar.",
+    "soldOutNote": "Sold out for now. Ask us when more are coming in.",
+    "delivery": "Courier delivery across the UAE, or collection by appointment in {location}.",
+    "condition": "Condition",
+    "conditionGuide": "How we grade condition",
+    "availability": "Availability",
+    "details": "Details",
+    "description": "About it",
+    "techNotes": "From the bench",
+    "englishOnly": "This listing is in English only for now.",
+    "specs": {
+      "brand": "Brand",
+      "model": "Model",
+      "year": "Year",
+      "sku": "SKU",
+      "bodyStyle": "Body style",
+      "body": "Body",
+      "finish": "Finish",
+      "neck": "Neck",
+      "fretboard": "Fretboard",
+      "frets": "Frets",
+      "scale": "Scale length",
+      "pickupLayout": "Pickups",
+      "pickups": "Pickup models",
+      "weightKg": "Weight",
+      "case": "Case",
+      "mods": "Changes from stock"
+    },
+    "gallery": {
+      "label": "Photos",
+      "previous": "Previous photo",
+      "next": "Next photo",
+      "position": "Photo {current} of {total}",
+      "show": "Show photo {n}"
+    }
+  },
+  "Condition": {
+    "new": "New",
+    "mint": "Mint",
+    "excellent": "Excellent",
+    "very_good": "Very good",
+    "good": "Good",
+    "fair": "Fair"
+  },
+  "BodyStyle": {
+    "s_style": "Strat style",
+    "t_style": "Tele style",
+    "single_cut": "Single-cut (Les Paul style)",
+    "double_cut": "Double-cut (SG style)",
+    "offset": "Offset",
+    "superstrat": "Superstrat",
+    "semi_hollow": "Semi-hollow",
+    "hollow": "Hollow body",
+    "other": "Other"
+  },
+  "PickupLayout": {
+    "S": "{code}: one single-coil",
+    "SS": "{code}: two single-coils",
+    "SSS": "{code}: three single-coils",
+    "HS": "{code}: humbucker and single-coil",
+    "HSS": "{code}: humbucker and two single-coils",
+    "HSH": "{code}: two humbuckers and a single-coil",
+    "H": "{code}: one humbucker",
+    "HH": "{code}: two humbuckers",
+    "HHH": "{code}: three humbuckers",
+    "P": "{code}: one P-90",
+    "PP": "{code}: two P-90s"
+  },
+  "Faq": {
+    "title": "Questions and answers",
+    "description": "How we grade the condition of used guitars and gear, and how ordering, holds, delivery and payment work.",
+    "conditionHeading": "How we grade condition",
+    "conditionIntro": "Every used item gets one of these grades. Whatever the grade, the listing shows each flaw in the photos and says what it is, and you can ask on WhatsApp for more photos of anything.",
+    "grades": {
+      "new": "Never used, in its original packaging. For new gear such as strings and cables.",
+      "mint": "As new. No marks you can find, even up close.",
+      "excellent": "Lightly used. Faint marks you only see up close, and frets with little wear.",
+      "very_good": "Normal play wear: small dings, scratches or worn finish you can see at arm’s length. Nothing that affects how it plays.",
+      "good": "Clearly used: heavier wear such as buckle rash, chips or worn frets, or a past repair. Plays well.",
+      "fair": "Well worn, or with a non-original part. It works, and it’s priced for how it looks."
+    },
+    "questionsHeading": "Ordering",
+    "questions": {
+      "order": {
+        "q": "How do I order?",
+        "a": "Tap Order on WhatsApp on the item’s page. WhatsApp opens with a message naming the item; we reply to confirm it’s still here and arrange delivery or collection."
+      },
+      "hold": {
+        "q": "Can you hold an item for me?",
+        "a": "Yes, with a deposit. We mark it On hold on the site until you collect it or it’s delivered."
+      },
+      "delivery": {
+        "q": "Do you deliver?",
+        "a": "Yes, by courier anywhere in the UAE. You can also collect by appointment in {location}."
+      },
+      "payment": {
+        "q": "How do I pay?",
+        "a": "In cash when you collect, cash on delivery through the courier, or by bank transfer."
+      }
+    }
   }
 }
