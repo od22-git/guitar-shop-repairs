@@ -1,6 +1,6 @@
 # Guitar shop + repairs site
 
-Bilingual (EN/AR, RTL) site for a home-based electric guitar shop in Ras Al Khaimah, UAE: catalog, WhatsApp ordering, repair tickets with customer tracking links, and an admin area.
+Bilingual (EN/AR, RTL) site for **Midtown Gears**, an online-first music gear, custom tone and guitar services brand in the UAE run by three partners: NANOCORE bundles with custom tone presets, parts, used guitars as a side line, service bookings, repair tickets with customer tracking links, and an admin area. The business was re-planned in Oct 2026 (see "Re-plan" at the top of the plan); the early milestones were built for a used-guitar shop.
 
 **The full plan, decisions and milestones are in [`docs/PLAN.md`](docs/PLAN.md). Read it before starting any work.**
 
@@ -8,6 +8,7 @@ Bilingual (EN/AR, RTL) site for a home-based electric guitar shop in Ras Al Khai
 
 - Work one milestone per session (e.g. "Do milestone M3 from docs/PLAN.md"). Stay within that milestone's scope; if it runs long, stop at a clean point and split it instead of pushing through.
 - Every milestone ends with lint, typecheck, unit tests, build and e2e passing, plus the milestone's "Done when" criteria.
+- Anything that needs the owners' input (a default, a placeholder, an account) gets a line in [`docs/OWNER-TODO.md`](docs/OWNER-TODO.md) with its default and the milestone that needs it.
 - **Open a PR for each milestone and merge it yourself once CI is green, without asking.** Tell the owner afterwards what was merged.
 - Tick off completed milestones in `docs/PLAN.md` as part of the milestone's PR.
 
@@ -52,6 +53,9 @@ CI (`.github/workflows/ci.yml`) runs all of these, with a Postgres 16 service fo
 - Admin-editable shop settings (WhatsApp number, VAT, TRN) are read with `getSettings()` from `@/lib/settings`; their schema and defaults are in `src/lib/settings/schema.ts`. Changes revalidate `SETTINGS_TAG`.
 - Use CSS logical properties only (`ms-/me-/ps-/pe-`, `start/end`), never left/right. ESLint rejects physical Tailwind classes (`ml-`, `pr-`, `left-`, `text-right`, `rounded-l`, …) in `src/`.
 - Security headers and the CSP are in `src/lib/security-headers.ts`: a new third-party script, iframe or API host goes there, or the browser blocks it. Never render user-written HTML (the CSP allows inline scripts; see `docs/security-audit.md`).
-- Call `requireAdmin()` in every admin server action and route. Public pages read only the shapes in `lib/public-dto.ts`.
+- Call `requireAdmin()` in every admin server action and route. There are up to three admin accounts with the same access; from M11 every admin change records the acting admin. Public pages read only the shapes in `lib/public-dto.ts`.
 - Every admin change to products, stock or settings revalidates the affected pages.
 - Never use images from other websites. Use only the owner's photos, or free-licence stock logged in `docs/IMAGE_CREDITS.md`.
+- Free-licence stand-in photos on a real product (until the owners' own photos exist) are credited like any stock and the product is flagged as using placeholder photos (from M10), so the launch check can refuse it. Never present a different device as the product.
+- Public and customer-facing tone and pack names are descriptive or "inspired by", never band names (trademarks). Customers may name bands in their own tone requests; those stay private.
+- Payments: online through the `PaymentProvider` adapter only (Stripe from M13, Tabby from M14); the admin records cash taken in person. Bank transfer and COD are no longer offered.
