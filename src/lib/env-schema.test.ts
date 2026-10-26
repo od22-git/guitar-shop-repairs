@@ -5,6 +5,18 @@ import { EnvError, parseEnv } from "./env-schema";
 const valid = {
   DATABASE_URL: "postgresql://user:pass@db.example.com:5432/shop",
   SITE_URL: "https://shop.example.com",
+  BETTER_AUTH_SECRET: "a".repeat(32),
+  STORAGE_DRIVER: "fs",
+};
+
+const r2 = {
+  STORAGE_DRIVER: "r2",
+  R2_ACCOUNT_ID: "account",
+  R2_ACCESS_KEY_ID: "key",
+  R2_SECRET_ACCESS_KEY: "secret",
+  R2_PUBLIC_BUCKET: "photos",
+  R2_PRIVATE_BUCKET: "private",
+  R2_PUBLIC_URL: "https://photos.example.com",
 };
 
 function errorOf(source: Record<string, string | undefined>): EnvError {
@@ -34,6 +46,8 @@ describe("parseEnv", () => {
     expect(message).toContain("Invalid environment variables:");
     expect(message).toContain("DATABASE_URL: is missing (required)");
     expect(message).toContain("SITE_URL: is missing (required)");
+    expect(message).toContain("BETTER_AUTH_SECRET: is missing (required)");
+    expect(message).toContain("STORAGE_DRIVER: is missing (required)");
     expect(message).toContain(".env.example");
   });
 
@@ -71,5 +85,27 @@ describe("parseEnv", () => {
     const secret = "postgresql://user:s3cret-password@db.example.com";
     const { message } = errorOf({ DATABASE_URL: secret, SITE_URL: "nope" });
     expect(message).not.toContain("s3cret-password");
+  });
+
+  it("rejects a short BETTER_AUTH_SECRET", () => {
+    expect(errorOf({ ...valid, BETTER_AUTH_SECRET: "short" }).message).toContain(
+      "BETTER_AUTH_SECRET: must be at least 32 characters",
+    );
+  });
+
+  it("accepts R2 storage with all its settings", () => {
+    expect(parseEnv({ ...valid, ...r2 }).STORAGE_DRIVER).toBe("r2");
+  });
+
+  it("requires every R2 setting when STORAGE_DRIVER is r2", () => {
+    const { message } = errorOf({ ...valid, ...r2, R2_SECRET_ACCESS_KEY: "", R2_PUBLIC_URL: "" });
+    expect(message).toContain("R2_SECRET_ACCESS_KEY: is missing (required)");
+    expect(message).toContain("R2_PUBLIC_URL: is missing (required)");
+  });
+
+  it("rejects an unknown STORAGE_DRIVER", () => {
+    expect(errorOf({ ...valid, STORAGE_DRIVER: "s3" }).message).toContain(
+      'STORAGE_DRIVER: must be "fs" or "r2"',
+    );
   });
 });

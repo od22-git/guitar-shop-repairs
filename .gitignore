@@ -16,6 +16,10 @@
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+/e2e/.auth/
+
+# photos stored with STORAGE_DRIVER=fs
+/.data/
 
 # next.js
 /.next/

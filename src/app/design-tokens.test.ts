@@ -27,6 +27,8 @@ const pairs: [foreground: string, background: string, minimum: number, use: stri
   ["ink-muted", "paper", TEXT, "secondary text on light cards"],
   ["fiesta-deep", "mist", TEXT, "small red text on mist"],
   ["fiesta-deep", "paper", TEXT, "small red text on light cards"],
+  ["ink", "white", TEXT, "admin form inputs"],
+  ["ink-muted", "white", LARGE_OR_UI, "admin input borders"],
 ];
 
 const css = readFileSync(new URL("./globals.css", import.meta.url), "utf8");

@@ -16,6 +16,9 @@ concurrency:
 env:
   DATABASE_URL: postgresql://postgres:postgres@localhost:5432/guitar_shop
   SITE_URL: http://localhost:3000
+  # A throwaway value for CI only; production uses its own secret.
+  BETTER_AUTH_SECRET: ci-only-secret-not-used-anywhere-else-0000
+  STORAGE_DRIVER: fs
 
 jobs:
   checks:
