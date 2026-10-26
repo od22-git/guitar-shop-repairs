@@ -6,8 +6,10 @@ import { usePathname } from "next/navigation";
 const items = [
   { href: "/admin", label: "Overview" },
   { href: "/admin/products", label: "Products" },
+  { href: "/admin/orders", label: "Orders" },
   { href: "/admin/repairs", label: "Repairs" },
   { href: "/admin/inbox", label: "Inbox" },
+  { href: "/admin/settings", label: "Settings" },
 ];
 
 /**
@@ -18,7 +20,7 @@ export function AdminNav({ unsent, inbox }: { unsent: number; inbox: number }) {
   const pathname = usePathname();
   return (
     <nav aria-label="Admin">
-      <ul className="flex gap-4">
+      <ul className="flex flex-wrap gap-x-4">
         {items.map(({ href, label }) => {
           const current = href === "/admin" ? pathname === href : pathname.startsWith(href);
           return (

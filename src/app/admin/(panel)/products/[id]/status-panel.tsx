@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import Link from "next/link";
+
 import type { ProductStatus } from "@/lib/db/schema";
 
 import { ActionForm } from "../../../_components/action-form";
@@ -116,6 +118,18 @@ export function StatusPanel({ product, publishProblems }: Props) {
             </ActionForm>
           )}
         </>
+      )}
+
+      {(status === "available" || status === "reserved") && (
+        <p>
+          <Link
+            href={`/admin/orders/new?product=${id}`}
+            className="font-semibold underline underline-offset-4"
+          >
+            {status === "reserved" ? "Make the order for the customer holding it" : "Make an order"}
+          </Link>{" "}
+          <span className="text-ink-muted">to record payments and print a receipt.</span>
+        </p>
       )}
 
       {status === "available" && (

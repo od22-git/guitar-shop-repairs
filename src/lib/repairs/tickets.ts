@@ -16,6 +16,7 @@ import {
   type RepairTicket,
 } from "../db/schema";
 
+import { upsertCustomer } from "../customers";
 import { markConverted } from "../inbox";
 
 import { RepairError } from "./errors";
@@ -83,23 +84,7 @@ export async function createTicket(
 ): Promise<{ id: number; number: string }> {
   return db.transaction(async (tx) => {
     const now = new Date();
-    const [customer] = await tx
-      .insert(customers)
-      .values({
-        name: input.name,
-        phoneE164: input.phone,
-        preferredLocale: input.preferredLocale,
-        whatsappConsentAt: input.whatsappConsent ? now : null,
-      })
-      .onConflictDoUpdate({
-        target: customers.phoneE164,
-        set: {
-          name: input.name,
-          preferredLocale: input.preferredLocale,
-          whatsappConsentAt: sql`coalesce(${customers.whatsappConsentAt}, excluded.whatsapp_consent_at)`,
-        },
-      })
-      .returning({ id: customers.id });
+    const customerId = await upsertCustomer(tx, input);
 
     const [ticket] = await tx
       .insert(repairTickets)
@@ -107,7 +92,7 @@ export async function createTicket(
         // R-0001 … R-9999, then R-10000 and on.
         number: sql`(select 'R-' || lpad(n::text, greatest(4, length(n::text)), '0') from nextval('repair_ticket_number_seq') as n)`,
         publicToken: newPublicToken(),
-        customerId: customer.id,
+        customerId,
         intakeMethod: input.intakeMethod,
         termsAcceptedAt: input.termsAccepted ? now : null,
         ...detailColumns(input),

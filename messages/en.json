@@ -430,5 +430,36 @@
   },
   "InboxWhatsApp": {
     "repairReply": "Hello {name}, thanks for booking a repair with {brand}."
+  },
+  "Receipt": {
+    "receipt": "Receipt",
+    "taxInvoice": "Tax invoice",
+    "order": "Order <ltr>{number}</ltr>",
+    "date": "Date: {date}",
+    "trn": "TRN: <ltr>{trn}</ltr>",
+    "customer": "Customer",
+    "item": "Item",
+    "quantity": "Qty",
+    "amount": "Amount",
+    "delivery": "Delivery",
+    "total": "Total",
+    "vatIncluded": "Includes VAT at {rate}%",
+    "notVatRegistered": "Not VAT-registered. Prices are final.",
+    "payments": "Payments",
+    "deposit": "Deposit",
+    "payment": "Payment",
+    "refund": "Refund",
+    "cash": "cash",
+    "cod": "cash on delivery",
+    "bank_transfer": "bank transfer",
+    "card_online": "card",
+    "paid": "Paid",
+    "due": "Balance due",
+    "paidInFull": "Paid in full",
+    "cancelled": "This order was cancelled.",
+    "refunded": "This order was refunded.",
+    "thanks": "Thank you for shopping with us.",
+    "print": "Print",
+    "paymentLine": "{kind}, {method} · {date}"
   }
 }

@@ -19,8 +19,8 @@ import {
 import type { ProductSpecs } from "../product-specs";
 
 // Tables for the catalog and shop settings (M2), admin sign-in (M4), repairs (M5) and the
-// customer side of repairs (M6: tracking-link checks, the inbox, rate limits). Orders
-// and payments come in later milestones. Money columns are integer fils (1 AED = 100 fils); times are
+// customer side of repairs (M6: tracking-link checks, the inbox, rate limits), and orders
+// and payments (M7). Money columns are integer fils (1 AED = 100 fils); times are
 // timestamptz, stored in UTC and shown in Asia/Dubai.
 
 export const productKind = pgEnum("product_kind", ["guitar", "gear"]);
@@ -463,6 +463,150 @@ export const rateLimits = pgTable("rate_limits", {
   count: integer("count").notNull(),
 });
 
+// Orders and payments (M7). An order is made in the admin for a sale agreed on WhatsApp
+// or in person; online checkout (M10) adds `source: online`. Its items take stock when
+// it's made (src/lib/inventory.ts) and give it back if it's cancelled. Prices include VAT
+// once the shop is registered: the order keeps the rate and TRN it was made with.
+
+/**
+ * pending: an online checkout waiting for payment (M10); manual orders start confirmed.
+ * confirmed: agreed, stock taken. fulfilled: handed over or delivered. cancelled: stock
+ * returned. refunded: money returned after fulfilment, stock optionally returned.
+ */
+export const orderStatus = pgEnum("order_status", [
+  "pending",
+  "confirmed",
+  "fulfilled",
+  "cancelled",
+  "refunded",
+]);
+
+export const orderSource = pgEnum("order_source", ["manual", "online"]);
+
+/** courier: delivered to an address. appointment: collected by appointment. */
+export const deliveryMethod = pgEnum("delivery_method", ["courier", "appointment"]);
+
+/** Order numbers, O-0001 onwards. */
+export const orderNumbers = pgSequence("order_number_seq", { startWith: 1 });
+
+export const orders = pgTable(
+  "orders",
+  {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    number: text("number").notNull().unique(),
+    customerId: integer("customer_id")
+      .notNull()
+      .references(() => customers.id, { onDelete: "restrict" }),
+    source: orderSource("source").notNull().default("manual"),
+    status: orderStatus("status").notNull(),
+    subtotalFils: integer("subtotal_fils").notNull(),
+    deliveryFeeFils: integer("delivery_fee_fils").notNull().default(0),
+    // The VAT inside the total (prices include it), 0 while the shop isn't registered.
+    vatFils: integer("vat_fils").notNull().default(0),
+    vatRateBps: integer("vat_rate_bps").notNull().default(0),
+    // The shop's TRN when the order was made with VAT, for the tax invoice.
+    trn: text("trn"),
+    totalFils: integer("total_fils").notNull(),
+    deliveryMethod: deliveryMethod("delivery_method").notNull(),
+    emirate: emirate("emirate"),
+    area: text("area"),
+    addressLine: text("address_line"),
+    landmark: text("landmark"),
+    // Admin only.
+    note: text("note"),
+    // Online checkout (M10).
+    providerSessionId: text("provider_session_id"),
+    reservedUntil: timestamp("reserved_until", { withTimezone: true }),
+    // Whether the items went back into stock (on cancelling, or a refund with restock).
+    stockReturned: boolean("stock_returned").notNull().default(false),
+    fulfilledAt: timestamp("fulfilled_at", { withTimezone: true }),
+    cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [
+    index("orders_status_idx").on(t.status, t.id),
+    index("orders_customer_idx").on(t.customerId),
+    check(
+      "orders_money_non_negative",
+      sql`${t.subtotalFils} >= 0 AND ${t.deliveryFeeFils} >= 0 AND ${t.vatFils} >= 0 AND ${t.vatRateBps} >= 0`,
+    ),
+    check(
+      "orders_total",
+      sql`${t.totalFils} = ${t.subtotalFils} + ${t.deliveryFeeFils} AND ${t.vatFils} <= ${t.totalFils}`,
+    ),
+    check("orders_vat_has_trn", sql`${t.vatRateBps} = 0 OR ${t.trn} IS NOT NULL`),
+    check(
+      "orders_courier_emirate",
+      sql`${t.deliveryMethod} <> 'courier' OR ${t.emirate} IS NOT NULL`,
+    ),
+  ],
+);
+
+export const orderItems = pgTable(
+  "order_items",
+  {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    orderId: integer("order_id")
+      .notNull()
+      .references(() => orders.id, { onDelete: "cascade" }),
+    productId: integer("product_id")
+      .notNull()
+      .references(() => products.id, { onDelete: "restrict" }),
+    // As sold, so the receipt doesn't change when the product is edited later.
+    titleSnapshot: text("title_snapshot").notNull(),
+    skuSnapshot: text("sku_snapshot").notNull(),
+    unitPriceFils: integer("unit_price_fils").notNull(),
+    quantity: integer("quantity").notNull(),
+    sort: integer("sort").notNull().default(0),
+  },
+  (t) => [
+    index("order_items_order_idx").on(t.orderId, t.sort),
+    index("order_items_product_idx").on(t.productId),
+    check("order_items_quantity_positive", sql`${t.quantity} >= 1`),
+    check("order_items_price_non_negative", sql`${t.unitPriceFils} >= 0`),
+  ],
+);
+
+export const paymentMethod = pgEnum("payment_method", [
+  "cash",
+  "cod",
+  "bank_transfer",
+  "card_online",
+]);
+
+/** deposit and payment count towards what's paid; refund takes it back. */
+export const paymentKind = pgEnum("payment_kind", ["deposit", "payment", "refund"]);
+
+/**
+ * Money received or returned, for an order or a repair ticket. Recorded by hand until
+ * online payments (M10). What's still due is calculated from these, never stored.
+ */
+export const payments = pgTable(
+  "payments",
+  {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    orderId: integer("order_id").references(() => orders.id, { onDelete: "restrict" }),
+    ticketId: integer("ticket_id").references(() => repairTickets.id, { onDelete: "restrict" }),
+    kind: paymentKind("kind").notNull(),
+    method: paymentMethod("method").notNull(),
+    // Always positive; `kind` says which way it went.
+    amountFils: integer("amount_fils").notNull(),
+    receivedAt: timestamp("received_at", { withTimezone: true }).notNull(),
+    // The bank or card reference.
+    providerRef: text("provider_ref"),
+    note: text("note"),
+    createdAt: createdAt(),
+  },
+  (t) => [
+    index("payments_order_idx").on(t.orderId),
+    index("payments_ticket_idx").on(t.ticketId),
+    index("payments_received_idx").on(t.receivedAt),
+    check("payments_one_target", sql`num_nonnulls(${t.orderId}, ${t.ticketId}) = 1`),
+    check("payments_amount_positive", sql`${t.amountFils} > 0`),
+  ],
+);
+
 // Admin sign-in (Better Auth, src/lib/auth). Better Auth reads and writes these through
 // its Drizzle adapter by their property names, so the names follow its models. There is
 // one admin, created with `pnpm admin:create`; sign-up is disabled.
@@ -580,3 +724,10 @@ export type RepairIntakeMethod = (typeof repairIntakeMethod.enumValues)[number];
 export type InboxSubmission = typeof inboxSubmissions.$inferSelect;
 export type InboxKind = (typeof inboxKind.enumValues)[number];
 export type InboxStatus = (typeof inboxStatus.enumValues)[number];
+export type Order = typeof orders.$inferSelect;
+export type OrderItem = typeof orderItems.$inferSelect;
+export type OrderStatus = (typeof orderStatus.enumValues)[number];
+export type DeliveryMethod = (typeof deliveryMethod.enumValues)[number];
+export type Payment = typeof payments.$inferSelect;
+export type PaymentMethod = (typeof paymentMethod.enumValues)[number];
+export type PaymentKind = (typeof paymentKind.enumValues)[number];
