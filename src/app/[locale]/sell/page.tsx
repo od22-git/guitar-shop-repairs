@@ -13,7 +13,6 @@ import { SellForm, type SellLabels } from "./sell-form";
 
 // Sell us your guitar: how buying works, and the form (details, photos, serial and a
 // proof-of-ownership tick), which lands in the admin inbox with its photos kept private.
-// The final copy comes in M8.
 
 const steps = ["send", "offer", "check", "paid"] as const;
 const formLabels = [

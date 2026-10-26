@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 
+import { policies } from "@/config/policies";
 import { getPathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { getCatalog } from "@/lib/catalog";
@@ -25,6 +26,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { href: "/repairs" },
     { href: "/sell" },
     { href: "/faq" },
+    { href: "/about" },
+    { href: "/contact" },
+    ...policies.map((policy) => ({ href: `/policies/${policy}` })),
   ];
 
   return pages.flatMap(({ href, lastModified, image }) => {

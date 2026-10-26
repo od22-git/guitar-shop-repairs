@@ -99,7 +99,12 @@ test("a courier customer approves the quote on the tracking link and follows it 
   expect((await visitor.request.get(tampered)).status()).toBe(404);
   expect((await visitor.request.get(src.replace(/-640\.webp/, "-1920.webp"))).status()).toBe(404);
 
-  // Courier customers accept the repair terms when they approve.
+  // Courier customers accept the repair terms when they approve; the full terms open
+  // in a new tab, so the quote stays where it is.
+  const fullTerms = quote.getByRole("link", { name: /full repair terms/ });
+  await expect(fullTerms).toHaveAttribute("href", "/en/policies/repair-terms");
+  await expect(fullTerms).toHaveAttribute("target", "_blank");
+  await expect(quote.getByText("within 90 days")).toBeVisible();
   await quote.getByRole("button", { name: "Approve the quote" }).click();
   await expect(quote.getByText("Please tick to accept the repair terms.")).toBeVisible();
   await quote.getByLabel("I accept the repair terms below.").check();
