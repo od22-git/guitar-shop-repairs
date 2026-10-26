@@ -1,6 +1,8 @@
 import { getTranslations } from "next-intl/server";
 
 import { brand } from "@/config/brand";
+import { getSettings } from "@/lib/settings";
+
 import { waMeUrl } from "./wa-me";
 
 import type { Locale } from "@/i18n/routing";
@@ -13,6 +15,9 @@ export async function shopWhatsAppUrl(
   locale: Locale,
   message: ShopGreeting = "greeting",
 ): Promise<string> {
-  const t = await getTranslations({ locale, namespace: "WhatsApp" });
-  return waMeUrl(brand.whatsappE164, t(message, { brand: brand.name[locale] }));
+  const [t, settings] = await Promise.all([
+    getTranslations({ locale, namespace: "WhatsApp" }),
+    getSettings(),
+  ]);
+  return waMeUrl(settings.whatsapp_number, t(message, { brand: brand.name[locale] }));
 }

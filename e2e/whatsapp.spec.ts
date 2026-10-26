@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 import { brand } from "../src/config/brand";
+import { defaultSettings } from "../src/lib/settings/schema";
 
 const locales = ["en", "ar"] as const;
 const greeting = {
@@ -23,7 +24,7 @@ for (const locale of locales) {
     test("opens a chat with the shop and a greeting in the page's language", async ({ page }) => {
       await page.goto(`/${locale}`);
       const button = page.getByTestId("whatsapp-button");
-      const number = brand.whatsappE164.slice(1);
+      const number = defaultSettings.whatsapp_number.slice(1);
       await expect(button).toHaveAttribute(
         "href",
         `https://wa.me/${number}?text=${encodeURIComponent(greeting[locale])}`,

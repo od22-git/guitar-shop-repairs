@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 
 import { brand } from "../src/config/brand";
 import { stockPhotos } from "../src/config/stock-photos";
+import { defaultSettings } from "../src/lib/settings/schema";
 
 for (const locale of ["en", "ar"] as const) {
   test.describe(`home page photos (${locale})`, () => {
@@ -47,6 +48,6 @@ test("the repairs button opens WhatsApp with a repair question", async ({ page }
   const text = `Hello ${brand.name.en}, I’d like to ask about a repair.`;
   await expect(page.getByRole("link", { name: "Ask about a repair" })).toHaveAttribute(
     "href",
-    `https://wa.me/${brand.whatsappE164.slice(1)}?text=${encodeURIComponent(text)}`,
+    `https://wa.me/${defaultSettings.whatsapp_number.slice(1)}?text=${encodeURIComponent(text)}`,
   );
 });

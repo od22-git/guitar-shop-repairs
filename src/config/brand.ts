@@ -7,9 +7,8 @@ export const brand = {
     ar: "جيتارات كهربائية مستعملة ومعدات وتصليح",
   },
   location: { en: "Ras Al Khaimah, UAE", ar: "رأس الخيمة، الإمارات" },
-  // PLACEHOLDER, not the shop's number. The owner's dedicated WhatsApp Business number
-  // replaces it; from M2 it lives in the admin-editable settings table instead.
-  whatsappE164: "+971500000000",
 } as const;
+
+// The WhatsApp number is an admin-editable setting: see src/lib/settings.
 
 export type Brand = typeof brand;

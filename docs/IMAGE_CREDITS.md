@@ -1,6 +1,6 @@
 # Image credits
 
-Every image the site shows that isn't the owner's own photo is listed here: source URL, author, licence. The launch check (M9) fails while any image in `public/` lacks an entry; until then `src/config/stock-photos.test.ts` checks that every stock photo is listed.
+Every image the site shows that isn't the owner's own photo is listed here: source URL, author, licence. The launch check (M9) fails while any image in `public/` lacks an entry; until then `src/config/stock-photos.test.ts` and `src/lib/db/seed.test.ts` check that every stock and sample photo is listed.
 
 Allowed sources: the owner's photos, or free-licence stock from Unsplash or Pexels picked for the palette and approved by the owner from a contact sheet. Never images from other shops, Google Images or social media. See "Images" in [`PLAN.md`](PLAN.md).
 
@@ -21,6 +21,25 @@ Files are in `public/images/stock/` as `<key>-<width>.webp`, at widths 640, 1280
 | `strings` | Home, "Drop-off by appointment" band | https://unsplash.com/photos/1Pzhr6XPl6k | [Derek Story](https://unsplash.com/@derekstory) | 2:1 |
 
 To replace one with your own photo, save it at the same three widths and aspect ratio under the same key, and move its row to an "Owner's photos" section.
+
+## Sample product photos (development only)
+
+Photos for the sample products that `pnpm db:seed` adds (M2), so the catalog can be built and tested before the owner's own product photos exist. They are not the owner's guitars, so they never appear in the live shop: the products are marked `is_sample`, and the launch check (M9) fails while any remain. Delete the products and this folder before launch. All are under the [Unsplash License](https://unsplash.com/license); Unsplash+ photos were excluded, and none is AI-generated or a 3D render.
+
+Files are in `public/images/samples/` as `<name>-<width>.webp`, at widths 640, 1280 and 1920, cropped to 4:5 by Unsplash's image CDN (`?w=<width>&h=<height>&fit=crop&fm=webp&q=50`). Each download was registered with Unsplash's download endpoint. Names, photographers and the products using each photo are in `src/lib/db/seed.ts` (checked by `src/lib/db/seed.test.ts`).
+
+| Name | Sample product | Source | Author |
+|---|---|---|---|
+| `strat-sunburst` | Fender Stratocaster, sunburst | https://unsplash.com/photos/nNhMKr0ejIw | [Maksym Pozniak-Haraburda](https://unsplash.com/@maksymp) |
+| `les-paul-sunburst` | Gibson Les Paul Standard, tobacco burst | https://unsplash.com/photos/zyBd6u5O5gk | [Chris Hardy](https://unsplash.com/@chrishardyphotography) |
+| `les-paul-cherry` | Epiphone Les Paul Standard, cherry flame | https://unsplash.com/photos/OzSAqN4MjNE | [Guilherme Paiva](https://unsplash.com/@guilherme_filipak1607) |
+| `tele-tidepool` | Fender Player Telecaster, Tidepool | https://unsplash.com/photos/ZIGI-0Br8Bg | [Krzysztof Hepner](https://unsplash.com/@nsx_2000) |
+| `sg-ebony-1` | Epiphone SG Standard, ebony | https://unsplash.com/photos/ZAEEO9OcZ7o | [Amirhossein Hasani](https://unsplash.com/@ah1) |
+| `sg-ebony-2` | Epiphone SG Standard, ebony | https://unsplash.com/photos/ct20-KBHHk4 | [Amirhossein Hasani](https://unsplash.com/@ah1) |
+| `distortion-pedal` | MXR Custom Badass '78 Distortion | https://unsplash.com/photos/dxGObwcMJ0A | [Oscar Ivan Esquivel Arteaga](https://unsplash.com/@oscaresquivel) |
+| `micro-amp` | Marshall MS-2 micro amp | https://unsplash.com/photos/9-79QZ3eBZM | [Morris Pinedo Michelsen](https://unsplash.com/@mpinedomichelsen) |
+| `picks` | Strings and picks bundle | https://unsplash.com/photos/ZMMLYu-T_v4 | [Rombo](https://unsplash.com/@rombo_guitar_picks) |
+| `cable` | Instrument cable, 3 m | https://unsplash.com/photos/GmfLeibJlS0 | [Brett Jordan](https://unsplash.com/@brett_jordan) |
 
 ## Not photos (no credit needed)
 
