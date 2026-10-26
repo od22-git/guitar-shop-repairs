@@ -8,8 +8,21 @@ import { z } from "zod";
 const required = <T extends z.ZodType>(schema: T) =>
   z.preprocess((value) => (value === "" ? undefined : value), schema);
 
+const optional = <T extends z.ZodType>(schema: T) =>
+  z.preprocess((value) => (value === "" ? undefined : value), schema.optional());
+
 const isLocalHost = (url: URL) =>
   url.hostname === "localhost" || url.hostname === "127.0.0.1" || url.hostname === "[::1]";
+
+/** Required when STORAGE_DRIVER is "r2". */
+export const r2Variables = [
+  "R2_ACCOUNT_ID",
+  "R2_ACCESS_KEY_ID",
+  "R2_SECRET_ACCESS_KEY",
+  "R2_PUBLIC_BUCKET",
+  "R2_PRIVATE_BUCKET",
+  "R2_PUBLIC_URL",
+] as const;
 
 export const envSchema = z
   .object({
@@ -20,8 +33,28 @@ export const envSchema = z
     SITE_URL: required(
       z.url({ protocol: /^https?$/, error: "must be an http:// or https:// URL" }),
     ),
+    // Signs admin session cookies. Generate with `openssl rand -base64 32`.
+    BETTER_AUTH_SECRET: required(
+      z.string().min(32, { error: "must be at least 32 characters (openssl rand -base64 32)" }),
+    ),
+    // Where photos are stored: "fs" (a local folder, for development and tests) or "r2"
+    // (Cloudflare R2, needed on Vercel, whose filesystem is read-only).
+    STORAGE_DRIVER: required(z.enum(["fs", "r2"], { error: 'must be "fs" or "r2"' })),
+    STORAGE_DIR: optional(z.string()),
+    R2_ACCOUNT_ID: optional(z.string()),
+    R2_ACCESS_KEY_ID: optional(z.string()),
+    R2_SECRET_ACCESS_KEY: optional(z.string()),
+    R2_PUBLIC_BUCKET: optional(z.string()),
+    R2_PRIVATE_BUCKET: optional(z.string()),
+    // The public bucket's URL (custom domain or r2.dev), without a trailing slash.
+    R2_PUBLIC_URL: optional(z.url({ protocol: /^https$/, error: "must be an https:// URL" })),
   })
   .superRefine((env, ctx) => {
+    if (env.STORAGE_DRIVER === "r2") {
+      for (const name of r2Variables) {
+        if (!env[name]) ctx.addIssue({ code: "custom", path: [name], message: "is required" });
+      }
+    }
     if (
       env.NODE_ENV === "production" &&
       !isLocalHost(new URL(env.SITE_URL)) &&

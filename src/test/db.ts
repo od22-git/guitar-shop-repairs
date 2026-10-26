@@ -29,7 +29,7 @@ export type TestDatabase = {
 
 async function truncateAll(db: Database) {
   await db.execute(
-    sql`truncate table product_images, products, categories, settings, delivery_zones restart identity cascade`,
+    sql`truncate table product_images, products, categories, settings, delivery_zones, auth_users, auth_sessions, auth_accounts, auth_verifications, auth_two_factors, auth_rate_limits restart identity cascade`,
   );
 }
 

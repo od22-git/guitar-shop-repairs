@@ -12,6 +12,8 @@ Screenshots (en/ar, desktop and mobile): [`design/m1b/`](design/m1b/).
 
 **M3: the catalog.** Product photos are the shop window, so the shop grid and product pages are quiet: photos at 4:5, title, condition, nothing else on the card. The one bold element is the **swing tag**, a `paper` price tag like the ones hung on guitars in a shop: notched at the inline start with a string hole, hung at a slight angle over the photo's corner. It carries the price, a struck-through old price after a price drop, and the state ("On hold" in `fiesta-deep`; "Sold" or "Sold out" instead of a price). Sold items stay in the grid, last, with their photo greyed, as proof that things sell. The tag flips for Arabic (notch and hole on the right); photos never do. Filters sit in a sidebar on wide screens and fold behind a "Filters" button on phones. Screenshots: [`design/m3/`](design/m3/).
 
+**M4: the admin.** A workbench tool for a phone, not a second shop: the light surfaces (`mist` page, `paper` panels, `ink` text) that the public site keeps for forms, a `rosewood` top bar with the current section in `gold`, and `fiesta` only on the main action of a screen (Create draft, Save changes, Publish). One column, 44px controls, 16px inputs so phones don't zoom, prices in tabular figures, statuses written out in words. The product page puts what changes most first: status and stock, then photos, then the details form with a sticky Save bar. No new colour pairs. Screenshots: [`design/m4/`](design/m4/).
+
 *M1 (superseded):* a 1960s factory colour-chart card, a finish strip on the footer and a three-chip brand mark on a light `mist` page. Screenshots in [`design/m1/`](design/m1/).
 
 ## Colour tokens
@@ -53,10 +55,12 @@ Every text/background pair in use. `src/app/design-tokens.test.ts` reads the hex
 | `mist` on `rosewood` | 10.34:1 | 3:1 | WhatsApp button ring (and on ink, 12.35:1) |
 | `ink` on `mist` | 12.35:1 | 4.5:1 | skip link |
 | `ink` on `paper` | 13.84:1 | 4.5:1 | swing tag price; light surfaces |
-| `ink-muted` on `mist` | 6.01:1 | 4.5:1 | secondary text on light surfaces (later) |
+| `ink-muted` on `mist` | 6.01:1 | 4.5:1 | secondary text on light surfaces (admin) |
 | `ink-muted` on `paper` | 6.74:1 | 4.5:1 | swing tag: struck-through old price |
-| `fiesta-deep` on `mist` | 5.54:1 | 4.5:1 | small red text on light surfaces (later) |
+| `fiesta-deep` on `mist` | 5.54:1 | 4.5:1 | small red text on light surfaces (admin errors) |
 | `fiesta-deep` on `paper` | 6.20:1 | 4.5:1 | swing tag: On hold, Sold, Sold out |
+| `ink` on `white` | 14.52:1 | 4.5:1 | admin form inputs |
+| `ink-muted` on `white` | 7.07:1 | 3:1 | admin input borders |
 
 Not allowed (fails AA): `gold` text on `mist` (1.99:1) or `paper` (2.23:1); `fiesta` small text on anything; `fiesta` buttons on `rosewood` (edge 2.53:1). The green WhatsApp button has only 2.26:1 against `ink`, so it carries a 2px `mist` ring.
 
