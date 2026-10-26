@@ -1,8 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { brand } from "../src/config/brand";
 import { stockPhotos } from "../src/config/stock-photos";
-import { defaultSettings } from "../src/lib/settings/schema";
 
 for (const locale of ["en", "ar"] as const) {
   test.describe(`home page photos (${locale})`, () => {
@@ -43,11 +41,9 @@ for (const locale of ["en", "ar"] as const) {
   });
 }
 
-test("the repairs button opens WhatsApp with a repair question", async ({ page }) => {
+test("the repairs button leads to the repairs page", async ({ page }) => {
   await page.goto("/en");
-  const text = `Hello ${brand.name.en}, I’d like to ask about a repair.`;
-  await expect(page.getByRole("link", { name: "Ask about a repair" })).toHaveAttribute(
-    "href",
-    `https://wa.me/${defaultSettings.whatsapp_number.slice(1)}?text=${encodeURIComponent(text)}`,
-  );
+  await page.getByRole("link", { name: "Book a repair" }).click();
+  await expect(page).toHaveURL("/en/repairs");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Guitar repairs");
 });

@@ -12,7 +12,7 @@ import {
   primaryButton,
   secondaryButton,
 } from "../../../_components/form";
-import { createQuoteAction, decideQuoteAction } from "../actions";
+import { createQuoteAction, decideQuoteAction, setDiagnosisFeeAction } from "../actions";
 
 type Props = {
   ticketId: number;
@@ -28,6 +28,8 @@ type Props = {
     items: { label: string; amount: string; value: string }[];
   } | null;
   diagnosisFee: string | null;
+  /** The fee as a form value, like "50.00", or "". */
+  diagnosisFeeValue: string;
   older: { version: number; total: string; items: string[] }[];
 };
 
@@ -38,7 +40,14 @@ const methods = (
   </>
 );
 
-export function QuotePanel({ ticketId, canQuote, current, diagnosisFee, older }: Props) {
+export function QuotePanel({
+  ticketId,
+  canQuote,
+  current,
+  diagnosisFee,
+  diagnosisFeeValue,
+  older,
+}: Props) {
   const [writing, setWriting] = useState(false);
 
   return (
@@ -80,6 +89,34 @@ export function QuotePanel({ ticketId, canQuote, current, diagnosisFee, older }:
         </div>
       ) : (
         <p className="text-ink-muted">No quote yet.</p>
+      )}
+
+      {current?.status === "declined" && (
+        <ActionForm
+          action={setDiagnosisFeeAction.bind(null, ticketId)}
+          className="flex flex-wrap items-end gap-3 border-t border-mist pt-4"
+        >
+          {(pending, state) => (
+            <>
+              <Field
+                label="Diagnosis fee (AED)"
+                name="diagnosisFee"
+                error={state.errors?.diagnosisFee}
+                hint="Charged under the repair terms. Leave blank for none."
+              >
+                <input
+                  {...describedBy("diagnosisFee", state.errors?.diagnosisFee, true)}
+                  defaultValue={diagnosisFeeValue}
+                  inputMode="decimal"
+                  className={`${inputClass} w-36 tabular-nums`}
+                />
+              </Field>
+              <button type="submit" disabled={pending} className={secondaryButton}>
+                Save fee
+              </button>
+            </>
+          )}
+        </ActionForm>
       )}
 
       {current?.status === "pending" && (

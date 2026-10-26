@@ -24,6 +24,13 @@ export const r2Variables = [
   "R2_PUBLIC_URL",
 ] as const;
 
+/**
+ * Cloudflare's Turnstile test keys (always pass, always fail, or "spent"): fine locally
+ * and in CI, refused in production, where they would let every bot through.
+ * https://developers.cloudflare.com/turnstile/troubleshooting/testing/
+ */
+const turnstileTestKey = /^[123]x0{10,}A{2}$/;
+
 export const envSchema = z
   .object({
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
@@ -48,6 +55,10 @@ export const envSchema = z
     R2_PRIVATE_BUCKET: optional(z.string()),
     // The public bucket's URL (custom domain or r2.dev), without a trailing slash.
     R2_PUBLIC_URL: optional(z.url({ protocol: /^https$/, error: "must be an https:// URL" })),
+    // Cloudflare Turnstile, the spam check on public forms: the site key is public (it's
+    // in the page), the secret key confirms tokens on the server.
+    TURNSTILE_SITE_KEY: required(z.string()),
+    TURNSTILE_SECRET_KEY: required(z.string()),
   })
   .superRefine((env, ctx) => {
     if (env.STORAGE_DRIVER === "r2") {
@@ -65,6 +76,17 @@ export const envSchema = z
         path: ["SITE_URL"],
         message: "must use https:// in production",
       });
+    }
+    if (env.NODE_ENV === "production" && !isLocalHost(new URL(env.SITE_URL))) {
+      for (const name of ["TURNSTILE_SITE_KEY", "TURNSTILE_SECRET_KEY"] as const) {
+        if (turnstileTestKey.test(env[name])) {
+          ctx.addIssue({
+            code: "custom",
+            path: [name],
+            message: "is a Cloudflare test key; use the site's real key in production",
+          });
+        }
+      }
     }
   });
 

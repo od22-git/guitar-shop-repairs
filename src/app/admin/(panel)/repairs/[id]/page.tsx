@@ -6,7 +6,7 @@ import { requireAdmin } from "@/lib/auth";
 import { endOfDubaiDay, formatDate, formatDateTime } from "@/lib/datetime";
 import { db } from "@/lib/db/client";
 import { env } from "@/lib/env";
-import { formatMoney } from "@/lib/money";
+import { filsToDecimalString, formatMoney } from "@/lib/money";
 import { formatPhone } from "@/lib/phone";
 import { RepairError } from "@/lib/repairs/errors";
 import { eventMessage, instrumentName, trackingUrl } from "@/lib/repairs/notify";
@@ -157,6 +157,9 @@ export default async function TicketPage({
         }
         diagnosisFee={
           ticket.diagnosisFeeFils === null ? null : formatMoney(ticket.diagnosisFeeFils, "en")
+        }
+        diagnosisFeeValue={
+          ticket.diagnosisFeeFils === null ? "" : filsToDecimalString(ticket.diagnosisFeeFils)
         }
         older={quotes
           .filter((quote) => quote.status === "superseded")

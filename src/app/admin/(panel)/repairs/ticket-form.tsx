@@ -10,11 +10,13 @@ type Props = {
   values: Record<string, string>;
   /** A new ticket also asks for the customer and the intake. */
   creating: boolean;
+  /** The inbox booking this ticket is converted from. */
+  fromInboxId?: number;
 };
 
 const checkboxClass = "size-6 shrink-0 accent-fiesta";
 
-export function TicketForm({ action, values, creating }: Props) {
+export function TicketForm({ action, values, creating, fromInboxId }: Props) {
   return (
     <ActionForm action={action} className="flex flex-col gap-6">
       {(pending, state) => {
@@ -87,6 +89,7 @@ export function TicketForm({ action, values, creating }: Props) {
 
         return (
           <>
+            {fromInboxId && <input type="hidden" name="fromInboxId" value={fromInboxId} />}
             {creating && (
               <section
                 aria-labelledby="customer-heading"

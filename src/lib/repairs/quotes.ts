@@ -78,11 +78,78 @@ export type QuoteDecision = {
   version: number;
   decision: "approved" | "declined";
   method: RepairDecisionMethod;
-  /** A hash of the approving IP, for link approvals (M6). */
+  /** A hash of the approving IP, for link approvals. */
   ipHash?: string;
   /** Charged on a decline, under the repair terms. */
   diagnosisFeeFils?: number;
 };
+
+/**
+ * The customer's decision on the tracking page (after the phone check). The quote must
+ * be the ticket's own; approving also accepts the repair terms if they weren't accepted
+ * at intake (courier customers).
+ */
+export async function decideQuoteFromLink(
+  db: Database,
+  ticketId: number,
+  input: {
+    quoteId: number;
+    version: number;
+    decision: "approved" | "declined";
+    acceptTerms: boolean;
+    ipHash: string;
+  },
+): Promise<void> {
+  await db.transaction(async (tx) => {
+    const [ticket] = await tx
+      .select({ termsAcceptedAt: repairTickets.termsAcceptedAt })
+      .from(repairTickets)
+      .where(eq(repairTickets.id, ticketId))
+      .for("update");
+    const [quote] = await tx
+      .select({ ticketId: repairQuotes.ticketId })
+      .from(repairQuotes)
+      .where(eq(repairQuotes.id, input.quoteId));
+    if (!ticket || quote?.ticketId !== ticketId) throw new RepairError("not_found");
+    const needsTerms = input.decision === "approved" && ticket.termsAcceptedAt === null;
+    if (needsTerms && !input.acceptTerms) throw new RepairError("needs_terms");
+
+    await decideQuote(tx, input.quoteId, {
+      version: input.version,
+      decision: input.decision,
+      method: "link",
+      ipHash: input.ipHash,
+    });
+    if (needsTerms) {
+      await tx
+        .update(repairTickets)
+        .set({ termsAcceptedAt: new Date() })
+        .where(eq(repairTickets.id, ticketId));
+    }
+  });
+}
+
+/**
+ * Sets or clears the diagnosis fee on a ticket whose quote was declined, e.g. after the
+ * customer declined on the tracking page.
+ */
+export async function setDiagnosisFee(
+  db: Database,
+  ticketId: number,
+  feeFils: number | null,
+): Promise<void> {
+  await db.transaction(async (tx) => {
+    const [quote] = await tx
+      .select({ status: repairQuotes.status })
+      .from(repairQuotes)
+      .where(and(eq(repairQuotes.ticketId, ticketId), ne(repairQuotes.status, "superseded")));
+    if (quote?.status !== "declined") throw new RepairError("not_declined");
+    await tx
+      .update(repairTickets)
+      .set({ diagnosisFeeFils: feeFils })
+      .where(eq(repairTickets.id, ticketId));
+  });
+}
 
 /** Records the customer's decision, once, on the version they saw. Returns the ticket id. */
 export async function decideQuote(

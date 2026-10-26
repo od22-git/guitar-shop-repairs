@@ -18,8 +18,9 @@ import {
 
 import type { ProductSpecs } from "../product-specs";
 
-// Tables for the catalog and shop settings (M2), admin sign-in (M4) and repairs (M5).
-// Orders and payments come in later milestones. Money columns are integer fils (1 AED = 100 fils); times are
+// Tables for the catalog and shop settings (M2), admin sign-in (M4), repairs (M5) and the
+// customer side of repairs (M6: tracking-link checks, the inbox, rate limits). Orders
+// and payments come in later milestones. Money columns are integer fils (1 AED = 100 fils); times are
 // timestamptz, stored in UTC and shown in Asia/Dubai.
 
 export const productKind = pgEnum("product_kind", ["guitar", "gear"]);
@@ -254,6 +255,11 @@ export const repairTickets = pgTable(
     closeReason: repairCloseReason("close_reason"),
     // Charged when the customer declines the quote (see the repair terms).
     diagnosisFeeFils: integer("diagnosis_fee_fils"),
+    // Wrong phone digits typed on the tracking page since the last lock or success; five
+    // lock the page for 15 minutes (src/lib/repairs/access.ts). Per ticket, not per IP,
+    // because UAE mobile networks share IP addresses.
+    accessFailures: integer("access_failures").notNull().default(0),
+    accessLockedUntil: timestamp("access_locked_until", { withTimezone: true }),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },
@@ -404,6 +410,59 @@ export const repairPhotos = pgTable(
   ],
 );
 
+/**
+ * What the public forms send: a repair booking (M6), a guitar offered on /sell (M7), or a
+ * general message. They wait in the admin inbox.
+ */
+export const inboxKind = pgEnum("inbox_kind", ["repair_request", "sell", "contact"]);
+
+/** new: not handled yet. replied: answered on WhatsApp. converted: became a ticket. */
+export const inboxStatus = pgEnum("inbox_status", ["new", "replied", "converted", "archived"]);
+
+export const inboxSubmissions = pgTable(
+  "inbox_submissions",
+  {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    kind: inboxKind("kind").notNull(),
+    name: text("name").notNull(),
+    // E.164, from normalizePhone().
+    phoneE164: text("phone_e164").notNull(),
+    // The language the form was filled in, for the reply.
+    locale: locale("locale").notNull(),
+    // The rest of the form, by kind; see src/lib/inbox.
+    payload: jsonb("payload").notNull(),
+    // Private bucket.
+    photoKeys: text("photo_keys")
+      .array()
+      .notNull()
+      .default(sql`'{}'::text[]`),
+    status: inboxStatus("status").notNull().default("new"),
+    convertedTicketId: integer("converted_ticket_id").references(() => repairTickets.id, {
+      onDelete: "restrict",
+    }),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [
+    index("inbox_submissions_status_idx").on(t.status, t.id),
+    check(
+      "inbox_submissions_converted",
+      sql`${t.status} <> 'converted' OR ${t.convertedTicketId} IS NOT NULL`,
+    ),
+  ],
+);
+
+/**
+ * Fixed-window counters for the public forms (src/lib/rate-limit.ts), kept in the
+ * database so they hold across serverless instances. A key's row is reset when its
+ * window has passed.
+ */
+export const rateLimits = pgTable("rate_limits", {
+  key: text("key").primaryKey(),
+  windowStart: timestamp("window_start", { withTimezone: true }).notNull(),
+  count: integer("count").notNull(),
+});
+
 // Admin sign-in (Better Auth, src/lib/auth). Better Auth reads and writes these through
 // its Drizzle adapter by their property names, so the names follow its models. There is
 // one admin, created with `pnpm admin:create`; sign-up is disabled.
@@ -518,3 +577,6 @@ export type RepairDecisionMethod = (typeof repairDecisionMethod.enumValues)[numb
 export type RepairEventKind = (typeof repairEventKind.enumValues)[number];
 export type RepairPhotoStage = (typeof repairPhotoStage.enumValues)[number];
 export type RepairIntakeMethod = (typeof repairIntakeMethod.enumValues)[number];
+export type InboxSubmission = typeof inboxSubmissions.$inferSelect;
+export type InboxKind = (typeof inboxKind.enumValues)[number];
+export type InboxStatus = (typeof inboxStatus.enumValues)[number];

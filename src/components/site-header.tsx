@@ -28,7 +28,13 @@ export async function SiteHeader() {
           <span className="text-sm leading-tight text-ink-subtle">{brand.location[locale]}</span>
         </Link>
         <div className="flex items-center gap-1 sm:gap-3">
-          <SiteNav label={tNav("label")} links={[{ href: "/shop", label: tNav("shop") }]} />
+          <SiteNav
+            label={tNav("label")}
+            links={[
+              { href: "/shop", label: tNav("shop") },
+              { href: "/repairs", label: tNav("repairs") },
+            ]}
+          />
           <LocaleSwitch label={t("other")} />
         </div>
       </div>

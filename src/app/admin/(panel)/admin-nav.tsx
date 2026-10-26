@@ -7,10 +7,14 @@ const items = [
   { href: "/admin", label: "Overview" },
   { href: "/admin/products", label: "Products" },
   { href: "/admin/repairs", label: "Repairs" },
+  { href: "/admin/inbox", label: "Inbox" },
 ];
 
-/** `unsent`: WhatsApp updates waiting to be sent, shown as a badge on Repairs. */
-export function AdminNav({ unsent }: { unsent: number }) {
+/**
+ * Badges: `unsent` WhatsApp updates waiting to be sent, on Repairs; `inbox` new items
+ * from the public forms, on Inbox.
+ */
+export function AdminNav({ unsent, inbox }: { unsent: number; inbox: number }) {
   const pathname = usePathname();
   return (
     <nav aria-label="Admin">
@@ -26,10 +30,10 @@ export function AdminNav({ unsent }: { unsent: number }) {
               >
                 {label}
                 {href === "/admin/repairs" && unsent > 0 && (
-                  <span className="ms-1.5 inline-block min-w-6 rounded-full bg-fiesta px-1.5 text-center text-sm font-bold text-white no-underline">
-                    {unsent}
-                    <span className="sr-only"> unsent {unsent === 1 ? "update" : "updates"}</span>
-                  </span>
+                  <Badge n={unsent} label={unsent === 1 ? "unsent update" : "unsent updates"} />
+                )}
+                {href === "/admin/inbox" && inbox > 0 && (
+                  <Badge n={inbox} label={inbox === 1 ? "new item" : "new items"} />
                 )}
               </Link>
             </li>
@@ -37,5 +41,14 @@ export function AdminNav({ unsent }: { unsent: number }) {
         })}
       </ul>
     </nav>
+  );
+}
+
+function Badge({ n, label }: { n: number; label: string }) {
+  return (
+    <span className="ms-1.5 inline-block min-w-6 rounded-full bg-fiesta px-1.5 text-center text-sm font-bold text-white no-underline">
+      {n}
+      <span className="sr-only"> {label}</span>
+    </span>
   );
 }
