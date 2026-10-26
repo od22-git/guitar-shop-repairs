@@ -49,14 +49,14 @@ async function session(cookie: string) {
 }
 
 /** Signs in and sets up 2FA, as on the admin's first visit. Returns the TOTP secret. */
-async function enrol(): Promise<{ secret: string; cookie: string }> {
+async function enrol(): Promise<{ secret: string; cookie: string; backupCodes: string[] }> {
   const signIn = await call("/sign-in/email", { email, password });
   const enable = await call("/two-factor/enable", { password }, signIn.cookies);
   expect(enable.response.status).toBe(200);
   const secret = totpSecret(enable.json.totpURI);
   const verify = await call("/two-factor/verify-totp", { code: totpCode(secret) }, signIn.cookies);
   expect(verify.response.status).toBe(200);
-  return { secret, cookie: verify.cookies || signIn.cookies };
+  return { secret, cookie: verify.cookies || signIn.cookies, backupCodes: enable.json.backupCodes };
 }
 
 describe("admin sign-in", () => {
@@ -97,6 +97,29 @@ describe("admin sign-in", () => {
     const right = await call("/two-factor/verify-totp", { code: totpCode(secret) }, signIn.cookies);
     expect(right.response.status).toBe(200);
     expect((await session(right.cookies))?.user).toMatchObject({ email, twoFactorEnabled: true });
+  });
+
+  it("signs in once with each backup code, for a lost phone", async () => {
+    await createAdmin(auth, { email, name: "Owner", password });
+    const { backupCodes } = await enrol();
+    expect(backupCodes.length).toBeGreaterThan(0);
+
+    const first = await call("/sign-in/email", { email, password });
+    const used = await call(
+      "/two-factor/verify-backup-code",
+      { code: backupCodes[0] },
+      first.cookies,
+    );
+    expect(used.response.status).toBe(200);
+    expect((await session(used.cookies))?.user).toMatchObject({ email });
+
+    const again = await call("/sign-in/email", { email, password });
+    const reused = await call(
+      "/two-factor/verify-backup-code",
+      { code: backupCodes[0] },
+      again.cookies,
+    );
+    expect(reused.response.ok).toBe(false);
   });
 });
 

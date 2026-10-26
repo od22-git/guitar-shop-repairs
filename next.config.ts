@@ -2,10 +2,17 @@ import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
 import { parseEnv } from "./src/lib/env-schema";
+import { securityHeaders } from "./src/lib/security-headers";
 
 // Fail `next dev`, `next build` and `next start` early, with a readable list of
 // missing or invalid variables, instead of erroring later on first use.
 const env = parseEnv(process.env);
+
+// Every response: CSP, HSTS (on https), no framing, no sniffing (src/lib/security-headers.ts).
+const allHeaders = securityHeaders({
+  development: env.NODE_ENV === "development",
+  siteUrl: env.SITE_URL,
+});
 
 // Admin pages, auth and customers' repair tickets (/<locale>/r/<token>): never cached,
 // never indexed, and no referrer to leak their URLs.
@@ -28,7 +35,10 @@ const nextConfig: NextConfig = {
     imageSizes: [],
   },
   async headers() {
+    // When two entries set the same header, the later one wins, so the private
+    // pages' stricter Referrer-Policy replaces the site-wide one.
     return [
+      { source: "/:path*", headers: allHeaders },
       { source: "/admin", headers: privateHeaders },
       { source: "/admin/:path*", headers: privateHeaders },
       { source: "/api/:path*", headers: privateHeaders },

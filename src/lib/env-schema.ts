@@ -31,6 +31,12 @@ export const r2Variables = [
  */
 const turnstileTestKey = /^[123]x0{10,}A{2}$/;
 
+/**
+ * BETTER_AUTH_SECRET values written in this repository (CI's), so public: anyone could
+ * sign admin sessions and ticket links with them. Refused in production.
+ */
+export const publishedSecrets = ["ci-only-secret-not-used-anywhere-else-0000"];
+
 export const envSchema = z
   .object({
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
@@ -78,6 +84,14 @@ export const envSchema = z
       });
     }
     if (env.NODE_ENV === "production" && !isLocalHost(new URL(env.SITE_URL))) {
+      if (publishedSecrets.includes(env.BETTER_AUTH_SECRET)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["BETTER_AUTH_SECRET"],
+          message:
+            "is the CI value from this repository; generate a new one (openssl rand -base64 32)",
+        });
+      }
       for (const name of ["TURNSTILE_SITE_KEY", "TURNSTILE_SECRET_KEY"] as const) {
         if (turnstileTestKey.test(env[name])) {
           ctx.addIssue({

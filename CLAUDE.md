@@ -51,6 +51,7 @@ CI (`.github/workflows/ci.yml`) runs all of these, with a Postgres 16 service fo
 - In plain strings that mix scripts (WhatsApp messages, option labels), isolate Latin titles and codes with `isolate`/`isolateLtr` from `src/lib/bidi.ts`, the string equivalent of `<Bdi>`/`<Ltr>`.
 - Admin-editable shop settings (WhatsApp number, VAT, TRN) are read with `getSettings()` from `@/lib/settings`; their schema and defaults are in `src/lib/settings/schema.ts`. Changes revalidate `SETTINGS_TAG`.
 - Use CSS logical properties only (`ms-/me-/ps-/pe-`, `start/end`), never left/right. ESLint rejects physical Tailwind classes (`ml-`, `pr-`, `left-`, `text-right`, `rounded-l`, …) in `src/`.
+- Security headers and the CSP are in `src/lib/security-headers.ts`: a new third-party script, iframe or API host goes there, or the browser blocks it. Never render user-written HTML (the CSP allows inline scripts; see `docs/security-audit.md`).
 - Call `requireAdmin()` in every admin server action and route. Public pages read only the shapes in `lib/public-dto.ts`.
 - Every admin change to products, stock or settings revalidates the affected pages.
 - Never use images from other websites. Use only the owner's photos, or free-licence stock logged in `docs/IMAGE_CREDITS.md`.
