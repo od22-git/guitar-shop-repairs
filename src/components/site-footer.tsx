@@ -1,27 +1,16 @@
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { brand } from "@/config/brand";
-import { finishes } from "@/config/finishes";
 import { shopWhatsAppUrl } from "@/lib/whatsapp/shop-link";
-
-const stripSkips = new Set(["sonicBlue", "lakePlacidBlue"]);
 
 export async function SiteFooter() {
   const locale = await getLocale();
   const [t, whatsappUrl] = await Promise.all([getTranslations("Footer"), shopWhatsAppUrl(locale)]);
 
   return (
-    <footer className="surface-dark bg-ink text-mist">
-      {/* The finishes that show against both the page and the footer. */}
-      <div aria-hidden="true" className="flex h-2">
-        {finishes
-          .filter((f) => !stripSkips.has(f.key))
-          .map((finish) => (
-            <span key={finish.key} className={`flex-1 ${finish.swatch}`} />
-          ))}
-      </div>
+    <footer className="bg-rosewood">
       {/* The bottom padding keeps the floating WhatsApp button clear of the last line. */}
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 pt-10 pb-28 sm:grid-cols-[2fr_1fr] sm:px-6">
+      <div className="mx-auto grid max-w-6xl gap-8 px-4 pt-12 pb-28 sm:grid-cols-[2fr_1fr] sm:px-6">
         <div>
           <p className="text-lg font-extrabold" translate="no">
             {brand.name[locale]}

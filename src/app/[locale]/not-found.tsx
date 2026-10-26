@@ -10,10 +10,10 @@ export default async function NotFound() {
       <h1 className="text-4xl font-extrabold tracking-tight text-balance rtl:tracking-normal">
         {t("title")}
       </h1>
-      <p className="mt-4 text-lg text-ink-muted">{t("body")}</p>
+      <p className="mt-4 text-lg text-ink-subtle">{t("body")}</p>
       <Link
         href="/"
-        className="mt-8 inline-flex min-h-11 items-center font-semibold underline decoration-fiesta decoration-2 underline-offset-4 hover:text-fiesta-deep"
+        className="mt-8 inline-flex min-h-11 items-center font-semibold underline decoration-gold decoration-2 underline-offset-4 hover:text-gold"
       >
         {t("home")}
       </Link>

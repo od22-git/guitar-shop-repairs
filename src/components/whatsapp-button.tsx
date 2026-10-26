@@ -20,7 +20,7 @@ export async function WhatsAppButton() {
       rel="noopener noreferrer"
       aria-label={t("cta")}
       data-testid="whatsapp-button"
-      className="fixed end-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 inline-flex min-h-14 min-w-14 items-center justify-center gap-2 rounded-full bg-sherwood px-4 font-semibold text-white shadow-[0_8px_24px_-8px_var(--color-ink)] hover:brightness-110 sm:px-5"
+      className="fixed end-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 inline-flex min-h-14 min-w-14 items-center justify-center gap-2 rounded-full bg-sherwood px-4 font-semibold text-white ring-2 ring-mist hover:brightness-110 sm:px-5"
     >
       <WhatsAppIcon className="size-6 shrink-0" />
       {/* Icon only on phones; the aria-label names it either way. */}

@@ -8,23 +8,25 @@ const TEXT = 4.5;
 const LARGE_OR_UI = 3;
 
 const pairs: [foreground: string, background: string, minimum: number, use: string][] = [
-  ["ink", "mist", TEXT, "body text"],
-  ["ink", "paper", TEXT, "text on cards"],
-  ["ink-muted", "mist", TEXT, "secondary text"],
-  ["ink-muted", "paper", TEXT, "secondary text on cards"],
-  ["rosewood", "mist", TEXT, "text"],
-  ["fiesta-deep", "mist", TEXT, "small red text, button hover"],
-  ["fiesta-deep", "paper", TEXT, "small red text on cards"],
-  ["fiesta", "mist", LARGE_OR_UI, "large red text, red graphics"],
+  // Dark surfaces: the page (ink) and warm sections and the footer (rosewood).
+  ["mist", "ink", TEXT, "body text"],
+  ["ink-subtle", "ink", TEXT, "secondary text"],
+  ["gold", "ink", TEXT, "headings, link underlines, focus ring"],
+  ["mist", "rosewood", TEXT, "text on rosewood"],
+  ["ink-subtle", "rosewood", TEXT, "secondary text on rosewood"],
+  ["gold", "rosewood", TEXT, "headings and focus ring on rosewood"],
   ["white", "fiesta", TEXT, "primary button"],
   ["white", "fiesta-deep", TEXT, "primary button, hover"],
+  ["fiesta", "ink", LARGE_OR_UI, "primary button edge on the page"],
   ["white", "sherwood", TEXT, "WhatsApp button"],
-  ["sherwood", "mist", LARGE_OR_UI, "WhatsApp button edge"],
-  ["mist", "ink", TEXT, "footer text"],
-  ["ink-subtle", "ink", TEXT, "footer secondary text"],
-  ["gold", "ink", TEXT, "footer headings, focus ring on dark"],
-  ["gold", "rosewood", TEXT, "text on rosewood"],
-  ["ink", "fiesta", LARGE_OR_UI, "focus ring next to a red button"],
+  ["mist", "rosewood", LARGE_OR_UI, "WhatsApp button ring over rosewood"],
+  ["ink", "mist", TEXT, "skip link"],
+  // Light surfaces, kept for forms and cards in later milestones.
+  ["ink", "paper", TEXT, "text on light cards"],
+  ["ink-muted", "mist", TEXT, "secondary text on mist"],
+  ["ink-muted", "paper", TEXT, "secondary text on light cards"],
+  ["fiesta-deep", "mist", TEXT, "small red text on mist"],
+  ["fiesta-deep", "paper", TEXT, "small red text on light cards"],
 ];
 
 const css = readFileSync(new URL("./globals.css", import.meta.url), "utf8");

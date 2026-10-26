@@ -35,7 +35,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#e6eef1",
+  themeColor: "#13294b",
 };
 
 export default async function LocaleLayout({ children }: LayoutProps<"/[locale]">) {
@@ -51,7 +51,7 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
       <body className="flex min-h-full flex-col">
         <a
           href="#main"
-          className="sr-only rounded-sm bg-ink px-4 py-3 font-semibold text-mist focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-50"
+          className="sr-only rounded-sm bg-mist px-4 py-3 font-semibold text-ink focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-50"
         >
           {t("skipToContent")}
         </a>

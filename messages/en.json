@@ -8,7 +8,8 @@
   "WhatsApp": {
     "cta": "Message us on WhatsApp",
     "short": "WhatsApp",
-    "greeting": "Hello {brand}, I have a question."
+    "greeting": "Hello {brand}, I have a question.",
+    "repairGreeting": "Hello {brand}, I’d like to ask about a repair."
   },
   "Footer": {
     "serviceArea": "Home-based workshop in {location}. Drop-off by appointment; courier pickup and delivery across the UAE.",
@@ -16,21 +17,56 @@
     "whatsapp": "WhatsApp"
   },
   "Home": {
-    "intro": "Hand-picked used electric guitars and gear, and repairs from a basic setup to a full refret. The online shop opens soon. Until then, message us on WhatsApp.",
-    "chartTitle": "Custom colour chart",
-    "chartNote": "Our colours come from the factory finishes guitar makers offered in the 1960s."
+    "intro": "Hand-picked used electric guitars and gear, and repairs from a basic setup to a full refret, from a home workshop in {location}.",
+    "shopHeading": "In the shop",
+    "shopIntro": "Every guitar is checked, set up and photographed before it’s listed, flaws included.",
+    "categories": {
+      "guitars": {
+        "name": "Electric guitars",
+        "detail": "Used, set up and ready to play"
+      },
+      "pedals": {
+        "name": "Pedals",
+        "detail": "Drive, delay, modulation and tuners"
+      },
+      "amps": {
+        "name": "Amps",
+        "detail": "Valve and solid-state, tested before sale"
+      },
+      "parts": {
+        "name": "Parts and accessories",
+        "detail": "Pickups, knobs, strings and cases"
+      }
+    },
+    "shopSoon": "The online catalogue opens soon. Until then, ask us on WhatsApp what’s in stock.",
+    "repairsHeading": "Repairs at the bench",
+    "repairsIntro": "Tell us what’s wrong and we’ll quote first. Work starts only when you approve the price.",
+    "services": {
+      "setup": "Setups and string changes",
+      "frets": "Fret levelling, crowning and refrets",
+      "electronics": "Pickups, wiring and noisy pots",
+      "hardware": "Nuts, bridges and tuners"
+    },
+    "repairsCta": "Ask about a repair",
+    "visitHeading": "Drop-off by appointment",
+    "visitBody": "We work from a home workshop in {location}, so there’s no walk-in shop. Message us to arrange a drop-off or collection, or we’ll send a courier anywhere in the UAE."
   },
-  "Finishes": {
-    "sonicBlue": "Sonic Blue",
-    "lakePlacidBlue": "Lake Placid Blue",
-    "fiestaRed": "Fiesta Red",
-    "shorelineGold": "Shoreline Gold",
-    "sherwoodGreen": "Sherwood Green",
-    "rosewood": "Rosewood"
+  "Photos": {
+    "hero": "A cream electric guitar with three pickups and a vibrato arm, lit against a black background",
+    "guitars": "Close-up of an electric guitar’s pickups, strings and vibrato arm",
+    "pedals": "A pedalboard of guitar effects pedals",
+    "amps": "Gain, treble, middle, bass and master knobs on a guitar amp",
+    "parts": "Tone knobs and the pickguard of a black electric guitar",
+    "bench": "A repairer at a workbench crowded with tools",
+    "strings": "Guitar strings over the frets in warm light, out of focus"
+  },
+  "PhotoCredits": {
+    "line": "Photos by <names></names> on <unsplash>Unsplash</unsplash>.",
+    "separator": ", "
   },
   "NotFound": {
     "title": "Page not found",
-    "body": "This page doesn't exist, or it has moved.",
+    "body": "This page doesn’t exist, or it has moved.",
     "home": "Go to the home page"
   }
 }
