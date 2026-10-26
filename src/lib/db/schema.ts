@@ -3,20 +3,23 @@ import {
   bigint,
   boolean,
   check,
+  date,
   index,
   integer,
   jsonb,
   pgEnum,
+  pgSequence,
   pgTable,
   smallint,
   text,
   timestamp,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 import type { ProductSpecs } from "../product-specs";
 
-// Tables for the catalog and shop settings (M2). Repairs, customers and orders come in
-// later milestones. Money columns are integer fils (1 AED = 100 fils); times are
+// Tables for the catalog and shop settings (M2), admin sign-in (M4) and repairs (M5).
+// Orders and payments come in later milestones. Money columns are integer fils (1 AED = 100 fils); times are
 // timestamptz, stored in UTC and shown in Asia/Dubai.
 
 export const productKind = pgEnum("product_kind", ["guitar", "gear"]);
@@ -185,6 +188,222 @@ export const deliveryZones = pgTable(
   ],
 );
 
+// Customers and repairs (M5). Customers are contact records, not accounts: there is no
+// customer sign-in. A ticket's number (R-0001) is for conversations only; its tracking
+// page is reached by `public_token` (M6), which can be rotated.
+
+export const locale = pgEnum("locale", ["en", "ar"]);
+
+export const customers = pgTable("customers", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  name: text("name").notNull(),
+  // E.164, from normalizePhone(): a returning customer is matched on it.
+  phoneE164: text("phone_e164").notNull().unique(),
+  // The language WhatsApp messages and the tracking page use.
+  preferredLocale: locale("preferred_locale").notNull().default("en"),
+  whatsappConsentAt: timestamp("whatsapp_consent_at", { withTimezone: true }),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+});
+
+/** See src/lib/repairs/state-machine.ts for the transitions between them. */
+export const repairStatus = pgEnum("repair_status", [
+  "received",
+  "diagnosed",
+  "in_repair",
+  "ready",
+  "closed",
+]);
+
+export const repairCloseReason = pgEnum("repair_close_reason", [
+  "collected",
+  "delivered",
+  "abandoned",
+  "cancelled",
+]);
+
+export const repairIntakeMethod = pgEnum("repair_intake_method", ["drop_off", "courier"]);
+
+/** Ticket numbers, R-0001 onwards; see formatTicketNumber(). */
+export const repairTicketNumbers = pgSequence("repair_ticket_number_seq", { startWith: 1 });
+
+export const repairTickets = pgTable(
+  "repair_tickets",
+  {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    number: text("number").notNull().unique(),
+    // 128 random bits, base64url. Never derived from the number; rotating it kills the
+    // old link.
+    publicToken: text("public_token").notNull().unique(),
+    customerId: integer("customer_id")
+      .notNull()
+      .references(() => customers.id, { onDelete: "restrict" }),
+    instrumentBrand: text("instrument_brand"),
+    instrumentModel: text("instrument_model"),
+    serial: text("serial"),
+    colour: text("colour"),
+    issue: text("issue").notNull(),
+    intakeNotes: text("intake_notes"),
+    accessories: text("accessories"),
+    intakeMethod: repairIntakeMethod("intake_method").notNull(),
+    // When the customer accepted the repair terms (at drop-off, or on approval in M6).
+    termsAcceptedAt: timestamp("terms_accepted_at", { withTimezone: true }),
+    // The calendar day in Dubai the instrument should be ready.
+    etaDate: date("eta_date"),
+    status: repairStatus("status").notNull().default("received"),
+    closeReason: repairCloseReason("close_reason"),
+    // Charged when the customer declines the quote (see the repair terms).
+    diagnosisFeeFils: integer("diagnosis_fee_fils"),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [
+    index("repair_tickets_status_idx").on(t.status),
+    index("repair_tickets_customer_idx").on(t.customerId),
+    check(
+      "repair_tickets_close_reason",
+      sql`(${t.status} = 'closed') = (${t.closeReason} IS NOT NULL)`,
+    ),
+    check("repair_tickets_fee_non_negative", sql`coalesce(${t.diagnosisFeeFils}, 0) >= 0`),
+  ],
+);
+
+export const repairQuoteStatus = pgEnum("repair_quote_status", [
+  "pending",
+  "approved",
+  "declined",
+  "superseded",
+]);
+
+export const repairDecisionMethod = pgEnum("repair_decision_method", [
+  "link",
+  "whatsapp",
+  "in_person",
+]);
+
+export const repairQuotes = pgTable(
+  "repair_quotes",
+  {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    ticketId: integer("ticket_id")
+      .notNull()
+      .references(() => repairTickets.id, { onDelete: "cascade" }),
+    // 1, 2, …: a new version supersedes the one before and needs approving again.
+    version: integer("version").notNull(),
+    status: repairQuoteStatus("status").notNull().default("pending"),
+    totalFils: integer("total_fils").notNull(),
+    // Shown to the customer with the quote.
+    notes: text("notes"),
+    decidedAt: timestamp("decided_at", { withTimezone: true }),
+    decisionMethod: repairDecisionMethod("decision_method"),
+    // A hash of the IP that approved through the link (M6), never the IP itself.
+    decisionIpHash: text("decision_ip_hash"),
+    createdAt: createdAt(),
+  },
+  (t) => [
+    uniqueIndex("repair_quotes_version_unique").on(t.ticketId, t.version),
+    // Only the latest version is live; older ones are superseded.
+    uniqueIndex("repair_quotes_one_current")
+      .on(t.ticketId)
+      .where(sql`${t.status} <> 'superseded'`),
+    check("repair_quotes_total_non_negative", sql`${t.totalFils} >= 0`),
+    check(
+      "repair_quotes_decision",
+      // Pending quotes are undecided; approved and declined ones say when and how. A
+      // superseded version keeps whatever it had.
+      sql`(${t.decidedAt} IS NULL) = (${t.decisionMethod} IS NULL) AND (${t.status} <> 'pending' OR ${t.decidedAt} IS NULL) AND (${t.status} NOT IN ('approved', 'declined') OR ${t.decidedAt} IS NOT NULL)`,
+    ),
+  ],
+);
+
+export const repairQuoteItems = pgTable(
+  "repair_quote_items",
+  {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    quoteId: integer("quote_id")
+      .notNull()
+      .references(() => repairQuotes.id, { onDelete: "cascade" }),
+    label: text("label").notNull(),
+    amountFils: integer("amount_fils").notNull(),
+    sort: integer("sort").notNull().default(0),
+  },
+  (t) => [
+    index("repair_quote_items_quote_idx").on(t.quoteId, t.sort),
+    check("repair_quote_items_amount_non_negative", sql`${t.amountFils} >= 0`),
+  ],
+);
+
+/**
+ * status: a status change. update: a note with no change (Post update). correction: an
+ * Undo, back to the earlier status; history is never deleted. quote: a new quote version
+ * sent while work was under way. Each one is a WhatsApp message until `notified_at`.
+ */
+export const repairEventKind = pgEnum("repair_event_kind", [
+  "status",
+  "update",
+  "correction",
+  "quote",
+]);
+
+export const repairEvents = pgTable(
+  "repair_events",
+  {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    ticketId: integer("ticket_id")
+      .notNull()
+      .references(() => repairTickets.id, { onDelete: "cascade" }),
+    kind: repairEventKind("kind").notNull(),
+    // Null on the first event, when the ticket is opened.
+    fromStatus: repairStatus("from_status"),
+    toStatus: repairStatus("to_status"),
+    // Why it was closed, on the change to closed.
+    closeReason: repairCloseReason("close_reason"),
+    // The quote the message is about: a new version, or the live one at a status change.
+    quoteId: integer("quote_id").references(() => repairQuotes.id, { onDelete: "set null" }),
+    // A new ETA given with this event.
+    etaDate: date("eta_date"),
+    publicNote: text("public_note"),
+    // Admin only, never on the tracking page.
+    internalNote: text("internal_note"),
+    createdAt: createdAt(),
+    // When the WhatsApp message was sent (or marked as not needed).
+    notifiedAt: timestamp("notified_at", { withTimezone: true }),
+  },
+  (t) => [
+    index("repair_events_ticket_idx").on(t.ticketId, t.id),
+    index("repair_events_unsent_idx")
+      .on(t.ticketId)
+      .where(sql`${t.notifiedAt} IS NULL`),
+    check(
+      "repair_events_status_change",
+      sql`${t.kind} NOT IN ('status', 'correction') OR ${t.toStatus} IS NOT NULL`,
+    ),
+  ],
+);
+
+export const repairPhotoStage = pgEnum("repair_photo_stage", ["intake", "progress", "done"]);
+
+/** In the private bucket; shown to the customer (M6) only if `customer_visible`. */
+export const repairPhotos = pgTable(
+  "repair_photos",
+  {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    ticketId: integer("ticket_id")
+      .notNull()
+      .references(() => repairTickets.id, { onDelete: "cascade" }),
+    key: text("key").notNull().unique(),
+    width: integer("width").notNull(),
+    height: integer("height").notNull(),
+    stage: repairPhotoStage("stage").notNull(),
+    customerVisible: boolean("customer_visible").notNull().default(false),
+    createdAt: createdAt(),
+  },
+  (t) => [
+    index("repair_photos_ticket_idx").on(t.ticketId, t.id),
+    check("repair_photos_size_positive", sql`${t.width} > 0 AND ${t.height} > 0`),
+  ],
+);
+
 // Admin sign-in (Better Auth, src/lib/auth). Better Auth reads and writes these through
 // its Drizzle adapter by their property names, so the names follow its models. There is
 // one admin, created with `pnpm admin:create`; sign-up is disabled.
@@ -286,3 +505,16 @@ export type DeliveryZone = typeof deliveryZones.$inferSelect;
 export type ProductStatus = (typeof productStatus.enumValues)[number];
 export type ProductCondition = (typeof productCondition.enumValues)[number];
 export type Emirate = (typeof emirate.enumValues)[number];
+export type Customer = typeof customers.$inferSelect;
+export type RepairTicket = typeof repairTickets.$inferSelect;
+export type RepairQuote = typeof repairQuotes.$inferSelect;
+export type RepairQuoteItem = typeof repairQuoteItems.$inferSelect;
+export type RepairEvent = typeof repairEvents.$inferSelect;
+export type RepairPhoto = typeof repairPhotos.$inferSelect;
+export type RepairStatus = (typeof repairStatus.enumValues)[number];
+export type RepairCloseReason = (typeof repairCloseReason.enumValues)[number];
+export type RepairQuoteStatus = (typeof repairQuoteStatus.enumValues)[number];
+export type RepairDecisionMethod = (typeof repairDecisionMethod.enumValues)[number];
+export type RepairEventKind = (typeof repairEventKind.enumValues)[number];
+export type RepairPhotoStage = (typeof repairPhotoStage.enumValues)[number];
+export type RepairIntakeMethod = (typeof repairIntakeMethod.enumValues)[number];

@@ -5,12 +5,16 @@ import { ProductError } from "@/lib/admin/products";
 import { getAdmin } from "@/lib/auth";
 import { CATALOG_TAG } from "@/lib/catalog";
 import { db } from "@/lib/db/client";
+import { repairPhotoStage, type RepairPhotoStage } from "@/lib/db/schema";
 import { env } from "@/lib/env";
 import { ImageError, MAX_UPLOAD_BYTES } from "@/lib/images";
+import { RepairError } from "@/lib/repairs/errors";
+import { addRepairPhoto } from "@/lib/repairs/photos";
 import { storage } from "@/lib/storage";
 
-// Product photo uploads from the admin (photo-upload.tsx). The photo is re-encoded,
-// without its EXIF/GPS data, before anything is stored (src/lib/images.ts).
+// Photo uploads from the admin (photo-upload.tsx): product photos (`productId`, public
+// bucket) and repair photos (`ticketId` and `stage`, private bucket). The photo is
+// re-encoded, without its EXIF/GPS data, before anything is stored (src/lib/images.ts).
 
 const error = (status: number, code: string) => Response.json({ error: code }, { status });
 
@@ -25,26 +29,37 @@ export async function POST(request: Request) {
   }
 
   const form = await request.formData().catch(() => null);
-  const productId = Number(form?.get("productId"));
   const file = form?.get("file");
-  if (!Number.isSafeInteger(productId) || productId < 1 || !(file instanceof File)) {
-    return error(400, "bad_request");
-  }
+  if (!form || !(file instanceof File)) return error(400, "bad_request");
+  const id = (name: string) => {
+    const value = Number(form.get(name));
+    return Number.isSafeInteger(value) && value >= 1 ? value : null;
+  };
+  const productId = id("productId");
+  const ticketId = id("ticketId");
+  const stage = form.get("stage");
+  const isStage = (value: unknown): value is RepairPhotoStage =>
+    typeof value === "string" && (repairPhotoStage.enumValues as readonly string[]).includes(value);
 
   try {
-    const photo = await addProductPhoto(
-      db,
-      storage,
-      productId,
-      Buffer.from(await file.arrayBuffer()),
-    );
-    // Listed products show the new photo at once; drafts aren't cached anyway.
-    revalidateTag(CATALOG_TAG, { expire: 0 });
-    return Response.json({ id: photo.id }, { status: 201 });
+    const upload = Buffer.from(await file.arrayBuffer());
+    if (productId) {
+      const photo = await addProductPhoto(db, storage, productId, upload);
+      // Listed products show the new photo at once; drafts aren't cached anyway.
+      revalidateTag(CATALOG_TAG, { expire: 0 });
+      return Response.json({ id: photo.id }, { status: 201 });
+    }
+    if (ticketId && isStage(stage)) {
+      const photo = await addRepairPhoto(db, storage, ticketId, stage, upload);
+      return Response.json({ id: photo.id }, { status: 201 });
+    }
+    return error(400, "bad_request");
   } catch (cause) {
     if (cause instanceof ImageError)
       return error(cause.problem === "too_large" ? 413 : 422, cause.problem);
-    if (cause instanceof ProductError) return error(404, cause.problem);
+    if (cause instanceof ProductError || cause instanceof RepairError) {
+      return error(404, cause.problem);
+    }
     throw cause;
   }
 }

@@ -6,7 +6,7 @@ import { ActionForm } from "../../../_components/action-form";
 import { inputClass, secondaryButton } from "../../../_components/form";
 import { deletePhotoAction, movePhotoAction, updatePhotoAltAction } from "../actions";
 
-import { PhotoUpload } from "./photo-upload";
+import { PhotoUpload } from "../../../_components/photo-upload";
 
 type Photo = {
   id: number;
@@ -123,7 +123,7 @@ export function PhotosPanel({ productId, photos }: { productId: number; photos: 
         </ol>
       )}
 
-      <PhotoUpload productId={productId} />
+      <PhotoUpload fields={{ productId: String(productId) }} />
     </section>
   );
 }

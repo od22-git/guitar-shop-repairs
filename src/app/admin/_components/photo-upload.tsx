@@ -4,9 +4,9 @@ import { useRef, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
-import { secondaryButton } from "../../../_components/form";
+import { secondaryButton } from "./form";
 
-// The browser half of the photo pipeline: each photo is scaled down to at most 2400 px
+// The browser half of the photo pipeline, for product and repair photos: each photo is scaled down to at most 2400 px
 // and saved as a JPEG of about 1 MB before upload, so big phone photos upload quickly.
 // Redrawing it also drops its EXIF/GPS data, which the server removes again anyway
 // (src/lib/images.ts). iPhones turn HEIC into JPEG when a page asks for JPEG.
@@ -41,7 +41,8 @@ const problems: Record<string, string> = {
   too_large: "is too large",
 };
 
-export function PhotoUpload({ productId }: { productId: number }) {
+/** Uploads to /api/upload with `fields` (productId, or ticketId and stage). */
+export function PhotoUpload({ fields }: { fields: Record<string, string> }) {
   const router = useRouter();
   const input = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState("");
@@ -54,7 +55,7 @@ export function PhotoUpload({ productId }: { productId: number }) {
     for (const file of Array.from(files)) {
       setStatus(`Uploading ${done + 1} of ${files.length}…`);
       const body = new FormData();
-      body.set("productId", String(productId));
+      for (const [name, value] of Object.entries(fields)) body.set(name, value);
       body.set("file", await shrink(file), file.name);
       const response = await fetch("/api/upload", { method: "POST", body }).catch(() => null);
       if (response?.ok) {
