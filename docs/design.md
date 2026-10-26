@@ -10,6 +10,8 @@ Photos are never mirrored for Arabic: the layout flips (the hero photo sits on t
 
 Screenshots (en/ar, desktop and mobile): [`design/m1b/`](design/m1b/).
 
+**M3: the catalog.** Product photos are the shop window, so the shop grid and product pages are quiet: photos at 4:5, title, condition, nothing else on the card. The one bold element is the **swing tag**, a `paper` price tag like the ones hung on guitars in a shop: notched at the inline start with a string hole, hung at a slight angle over the photo's corner. It carries the price, a struck-through old price after a price drop, and the state ("On hold" in `fiesta-deep`; "Sold" or "Sold out" instead of a price). Sold items stay in the grid, last, with their photo greyed, as proof that things sell. The tag flips for Arabic (notch and hole on the right); photos never do. Filters sit in a sidebar on wide screens and fold behind a "Filters" button on phones. Screenshots: [`design/m3/`](design/m3/).
+
 *M1 (superseded):* a 1960s factory colour-chart card, a finish strip on the footer and a three-chip brand mark on a light `mist` page. Screenshots in [`design/m1/`](design/m1/).
 
 ## Colour tokens
@@ -19,7 +21,7 @@ Tailwind's default palette is switched off (`--color-*: initial`), so only these
 | Token | Hex | Finish | Use |
 |---|---|---|---|
 | `mist` | `#E6EEF1` | Sonic Blue (mist) | Text on dark surfaces; light surfaces (forms, later) |
-| `paper` | `#F7FAFB` | — | Raised light surfaces (later) |
+| `paper` | `#F7FAFB` | — | The swing price tag; raised light surfaces |
 | `ink` | `#13294B` | Lake Placid Blue (deep) | The page; text on light surfaces |
 | `ink-muted` | `#46597A` | — | Secondary text on mist/paper |
 | `ink-subtle` | `#B7C6D3` | — | Secondary text on ink and rosewood |
@@ -50,11 +52,11 @@ Every text/background pair in use. `src/app/design-tokens.test.ts` reads the hex
 | `white` on `sherwood` | 6.42:1 | 4.5:1 | WhatsApp button |
 | `mist` on `rosewood` | 10.34:1 | 3:1 | WhatsApp button ring (and on ink, 12.35:1) |
 | `ink` on `mist` | 12.35:1 | 4.5:1 | skip link |
-| `ink` on `paper` | 13.84:1 | 4.5:1 | light surfaces (later) |
+| `ink` on `paper` | 13.84:1 | 4.5:1 | swing tag price; light surfaces |
 | `ink-muted` on `mist` | 6.01:1 | 4.5:1 | secondary text on light surfaces (later) |
-| `ink-muted` on `paper` | 6.74:1 | 4.5:1 | secondary text on light cards (later) |
+| `ink-muted` on `paper` | 6.74:1 | 4.5:1 | swing tag: struck-through old price |
 | `fiesta-deep` on `mist` | 5.54:1 | 4.5:1 | small red text on light surfaces (later) |
-| `fiesta-deep` on `paper` | 6.20:1 | 4.5:1 | small red text on light cards (later) |
+| `fiesta-deep` on `paper` | 6.20:1 | 4.5:1 | swing tag: On hold, Sold, Sold out |
 
 Not allowed (fails AA): `gold` text on `mist` (1.99:1) or `paper` (2.23:1); `fiesta` small text on anything; `fiesta` buttons on `rosewood` (edge 2.53:1). The green WhatsApp button has only 2.26:1 against `ink`, so it carries a 2px `mist` ring.
 
@@ -79,6 +81,12 @@ The focus ring is a 3px `gold` outline with a 3px offset, switching to `ink` ins
 | Footer | `src/components/site-footer.tsx` | Rosewood surface, service area, WhatsApp link. Bottom padding keeps the WhatsApp button clear |
 | Language switch | `src/components/locale-switch.tsx` | Same path in the other locale; link text in the target language with `lang`/`hreflang`; updates the `NEXT_LOCALE` cookie |
 | WhatsApp button | `src/components/whatsapp-button.tsx` | Fixed at the inline end (right in English, left in Arabic). Icon-only on phones. `scroll-padding-block-end` keeps focused elements clear of it (tested) |
+| `FillPhoto` | `src/components/fill-photo.tsx` | `next/image` filling a sized parent, used by `StockPhoto` and the product photos |
+| `PriceTag` | `src/components/price-tag.tsx` | The swing tag: price, old price (struck, with "Was …" for screen readers), hold/sold state |
+| `ProductCard` | `src/components/product-card.tsx` | One link per product; photo `alt=""` because the title names it; title comes first in the DOM so the link reads title, condition, price |
+| `CatalogControls` | `src/components/catalog-controls.tsx` | Filter and sort form around the server-rendered results. Changes replace the URL and the server re-renders; a plain GET form without JavaScript. Results count is a live region |
+| `ProductGallery` | `src/components/product-gallery.tsx` | Scroll-snap strip: swipe, arrow keys once focused, buttons and thumbnails. Follows the page direction, so the next photo comes from the left in Arabic; only the chevrons are mirrored |
+| `SiteNav` | `src/components/site-nav.tsx` | Header links with `aria-current` |
 | `StockPhoto` | `src/components/stock-photo.tsx` | `next/image` filling a sized parent (no layout shift), lazy unless `eager`. Files are pre-sized at 640/1280/1920px; the custom loader (`src/lib/image-loader.ts`) picks one, so there's no runtime image optimisation |
 | `PhotoCredits` | `src/components/photo-credits.tsx` | "Photos by … on Unsplash" for the photos on a page, from `src/config/stock-photos.ts` |
 | `<Bdi>` / `<Ltr>` | `src/components/bdi.tsx` | Isolate prices and names (`Bdi`); force LTR for phone numbers, serials, SKUs, ticket numbers (`Ltr`) |
@@ -98,10 +106,12 @@ Use these formatters rather than next-intl's `{value, number}` message arguments
 
 **`web-design-guidelines`** review of M1b's UI (`src/app/[locale]/**`, `src/components/**`, `globals.css`, `messages/en.json`), October 2026. Fixed in M1b: straight apostrophes in English copy changed to ’; `text-balance` on every heading. Passes: alt text on every photo, `fetchpriority="high"` on the hero and lazy loading below the fold, `color-scheme: dark` and `theme-color` matching the page, hover states on every link and button, `translate="no"` on brand and photographer names, the fixed button never covering focus (tested).
 
+**`web-design-guidelines`** review of M3's UI (shop, product and FAQ pages, the new components, `messages/*.json`), October 2026. Fixed in M3: loading text ends with "…"; a no-break space before "kg"; the price selects shrink to the sidebar instead of overflowing. Passes: labelled icon buttons (gallery arrows, thumbnails); every filter in a `<label>`, groups in `<fieldset>`; filters and sort reflected in the URL; real links for all navigation; native selects styled for the dark theme; `translate="no"` on brand names; reduced motion respected by the gallery; `overscroll-x-contain` on the photo strip; prices in `tabular-nums`. axe runs on the shop, a filtered and an empty result, three product pages and the FAQ in both languages.
+
 Deliberate exceptions:
 
 - Photos use `next/image` with `fill`, so the `<img>` has no `width`/`height` attributes; each sits in a parent with a fixed aspect ratio, so nothing shifts as they load.
-- `<main tabIndex={-1}>` uses `focus:outline-none`. It is the skip link's target, not a control, and a ring around the whole page body would mislead.
+- `<main tabIndex={-1}>` and the shop's results count use `focus:outline-none`. They are focus targets (the skip link; "Show results" on phones), not controls, and a ring around them would mislead.
 - Sentence case rather than Title Case (see Type), and "we" in copy: it's a one-person shop talking to customers.
 
 *M1 review (superseded layout):* hover states, `translate="no"`, `touch-action: manipulation`, tap-highlight colour and `min-w-0` on the header link were added then; all still apply.

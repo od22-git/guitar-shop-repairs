@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { formatMoney, MAX_FILS, parseAedToFils, vatIncludedFils } from "./money";
+import {
+  filsToDecimalString,
+  formatMoney,
+  MAX_FILS,
+  parseAedToFils,
+  vatIncludedFils,
+} from "./money";
 
 // Intl output contains direction marks in Arabic and no-break spaces; normalise to compare.
 const plain = (s: string) => s.replace(/[\u200e\u200f\u061c]/g, "").replace(/[\u00a0\u202f]/g, " ");
@@ -128,5 +134,19 @@ describe("parseAedToFils", () => {
     expect(parseAedToFils("21474836.47")).toBe(MAX_FILS);
     expect(parseAedToFils("21474836.48")).toBeNull();
     expect(parseAedToFils("99999999999999999999")).toBeNull();
+  });
+});
+
+describe("filsToDecimalString", () => {
+  it("writes dirhams with two decimals, without floating point", () => {
+    expect(filsToDecimalString(345_000)).toBe("3450.00");
+    expect(filsToDecimalString(1_999)).toBe("19.99");
+    expect(filsToDecimalString(5)).toBe("0.05");
+    expect(filsToDecimalString(0)).toBe("0.00");
+  });
+
+  it("rejects fractions and negatives", () => {
+    expect(() => filsToDecimalString(1.5)).toThrow(RangeError);
+    expect(() => filsToDecimalString(-100)).toThrow(RangeError);
   });
 });

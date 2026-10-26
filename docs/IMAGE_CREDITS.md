@@ -26,7 +26,7 @@ To replace one with your own photo, save it at the same three widths and aspect 
 
 Photos for the sample products that `pnpm db:seed` adds (M2), so the catalog can be built and tested before the owner's own product photos exist. They are not the owner's guitars, so they never appear in the live shop: the products are marked `is_sample`, and the launch check (M9) fails while any remain. Delete the products and this folder before launch. All are under the [Unsplash License](https://unsplash.com/license); Unsplash+ photos were excluded, and none is AI-generated or a 3D render.
 
-Files are in `public/images/samples/` as `<name>-<width>.webp`, at widths 640, 1280 and 1920, cropped to 4:5 by Unsplash's image CDN (`?w=<width>&h=<height>&fit=crop&fm=webp&q=50`). Each download was registered with Unsplash's download endpoint. Names, photographers and the products using each photo are in `src/lib/db/seed.ts` (checked by `src/lib/db/seed.test.ts`).
+Files are in `public/images/samples/` as `<name>-<width>.webp`, at widths 640, 1280 and 1920, cropped to 4:5 by Unsplash's image CDN (`?w=<width>&h=<height>&fit=crop&fm=webp&q=50`). Each download was registered with Unsplash's download endpoint. Each also has a `<name>-og.jpg` link preview (1200×630, the whole photo on a blurred copy of itself), made from the 1920 file by `scripts/sample-og-images.mts`. Names, photographers and the products using each photo are in `src/lib/db/seed.ts` (checked by `src/lib/db/seed.test.ts`).
 
 | Name | Sample product | Source | Author |
 |---|---|---|---|
@@ -46,3 +46,4 @@ Files are in `public/images/samples/` as `<name>-<width>.webp`, at widths 640, 1
 - WhatsApp glyph (`src/components/whatsapp-icon.tsx`): [Simple Icons](https://simpleicons.org), CC0-1.0. Used only to mark links that open WhatsApp.
 - `docs/design/*.png`, `docs/design/m1/*.png`: renders of the site's own fonts and M1 screenshots. Not shown on the site.
 - `docs/design/m1b/`: the contact sheet the owner chose from (made from Unsplash previews) and the M1b screenshots. Not shown on the site.
+- `docs/design/m3/`: screenshots of the catalog with the sample products. Not shown on the site.

@@ -9,6 +9,7 @@ import { SiteHeader } from "@/components/site-header";
 import { WhatsAppButton } from "@/components/whatsapp-button";
 import { brand } from "@/config/brand";
 import { localeDirection, routing, type Locale } from "@/i18n/routing";
+import { env } from "@/lib/env";
 
 import { outfit, tajawal } from "../fonts";
 
@@ -27,6 +28,8 @@ async function currentLocale(): Promise<Locale> {
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await currentLocale();
   return {
+    // Resolves relative URLs in metadata (canonical, hreflang, link previews).
+    metadataBase: new URL(env.SITE_URL),
     title: { default: brand.name[locale], template: `%s | ${brand.name[locale]}` },
     description: brand.tagline[locale],
     // Not public until launch (M9).

@@ -16,7 +16,9 @@ function leaf(messages: unknown, path: string): string {
     .reduce((node, key) => (node as Record<string, unknown>)[key], messages) as string;
 }
 
-const placeholders = (message: string) => [...message.matchAll(/\{(\w+)/g)].map((m) => m[1]).sort();
+// Unique names: Arabic plurals have more branches (zero, two, few, many) than English.
+const placeholders = (message: string) =>
+  [...new Set([...message.matchAll(/\{(\w+)/g)].map((m) => m[1]))].sort();
 
 describe("messages", () => {
   it("Arabic has exactly the English keys", () => {

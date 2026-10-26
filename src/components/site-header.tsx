@@ -4,11 +4,16 @@ import { brand } from "@/config/brand";
 import { Link } from "@/i18n/navigation";
 
 import { LocaleSwitch } from "./locale-switch";
+import { SiteNav } from "./site-nav";
 
 // Navigation links are added by the milestones that build each page (shop in M3,
 // repairs in M6, sell in M7, about/contact in M8), so none point at a 404.
 export async function SiteHeader() {
-  const [locale, t] = await Promise.all([getLocale(), getTranslations("LocaleSwitch")]);
+  const [locale, t, tNav] = await Promise.all([
+    getLocale(),
+    getTranslations("LocaleSwitch"),
+    getTranslations("Nav"),
+  ]);
 
   return (
     <header className="relative z-10">
@@ -22,7 +27,10 @@ export async function SiteHeader() {
           </span>
           <span className="text-sm leading-tight text-ink-subtle">{brand.location[locale]}</span>
         </Link>
-        <LocaleSwitch label={t("other")} />
+        <div className="flex items-center gap-1 sm:gap-3">
+          <SiteNav label={tNav("label")} links={[{ href: "/shop", label: tNav("shop") }]} />
+          <LocaleSwitch label={t("other")} />
+        </div>
       </div>
     </header>
   );
