@@ -22,6 +22,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: product.updatedAt,
       image: product.images[0] && `${product.images[0].src}-1920.webp`,
     })),
+    { href: "/repairs" },
+    { href: "/sell" },
     { href: "/faq" },
   ];
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
@@ -14,6 +15,7 @@ import type { RepairStatus } from "@/lib/db/schema";
 import { env } from "@/lib/env";
 import { formatMoney } from "@/lib/money";
 import { toPublicTicket, type PublicRepairEvent, type PublicTicket } from "@/lib/public-dto";
+import type { TicketBalance } from "@/lib/repairs/balance";
 import { accessCookieName, hasAccess, ticketIdByToken } from "@/lib/repairs/access";
 import { signedPhotoUrl } from "@/lib/repairs/photo-links";
 import { loadTicket } from "@/lib/repairs/tickets";
@@ -148,20 +150,7 @@ export default async function TicketPage({ params }: PageProps<"/[locale]/r/[tok
         />
       )}
 
-      {ticket.amountDueFils !== null && (
-        <section aria-labelledby="pay-heading" className="mt-8 rounded-sm bg-rosewood p-5 sm:p-6">
-          <h2 id="pay-heading" className="text-xl font-bold text-gold">
-            {t("payHeading")}
-          </h2>
-          <p className="mt-2 text-lg font-semibold">
-            {t.rich("amountDue", {
-              amount: formatMoney(ticket.amountDueFils ?? 0, locale),
-              bdi: (chunks) => <Bdi>{chunks}</Bdi>,
-            })}
-          </p>
-          <p className="mt-2 text-ink-subtle">{t("payNote")}</p>
-        </section>
-      )}
+      {ticket.payment && <PaySection payment={ticket.payment} locale={locale} />}
 
       {ticket.photos.length > 0 && (
         <section aria-labelledby="photos-heading" className="mt-10">
@@ -350,6 +339,61 @@ async function QuoteSection({
           />
         </div>
       )}
+    </section>
+  );
+}
+
+/**
+ * What's owed: the amount due on collection, or a balance once something has been paid
+ * (recorded by the shop on the ticket), or a thank-you once it's all paid.
+ */
+async function PaySection({ payment, locale }: { payment: TicketBalance; locale: Locale }) {
+  const t = await getTranslations("Ticket");
+  const money = (fils: number) => formatMoney(fils, locale);
+  const bdi = (chunks: ReactNode) => <Bdi>{chunks}</Bdi>;
+  const { chargeFils, paidFils, dueFils } = payment;
+  const settled = chargeFils !== null && dueFils === 0;
+
+  return (
+    <section aria-labelledby="pay-heading" className="mt-8 rounded-sm bg-rosewood p-5 sm:p-6">
+      <h2 id="pay-heading" className="text-xl font-bold text-gold">
+        {t("payHeading")}
+      </h2>
+      {paidFils <= 0 ? (
+        <p className="mt-2 text-lg font-semibold">
+          {t.rich("amountDue", { amount: money(dueFils), bdi })}
+        </p>
+      ) : settled ? (
+        <p className="mt-2 text-lg font-semibold" data-testid="ticket-balance">
+          {t.rich("paidInFull", { amount: money(paidFils), bdi })}
+        </p>
+      ) : (
+        <dl className="mt-2 flex flex-col gap-1">
+          {chargeFils !== null && (
+            <div className="flex flex-wrap gap-x-2">
+              <dt>{t("payTotal")}</dt>
+              <dd className="font-semibold">
+                <Bdi>{money(chargeFils)}</Bdi>
+              </dd>
+            </div>
+          )}
+          <div className="flex flex-wrap gap-x-2">
+            <dt>{t("payPaid")}</dt>
+            <dd className="font-semibold">
+              <Bdi>{money(paidFils)}</Bdi>
+            </dd>
+          </div>
+          {chargeFils !== null && (
+            <div className="flex flex-wrap gap-x-2 text-lg" data-testid="ticket-balance">
+              <dt className="font-semibold">{t("payBalance")}</dt>
+              <dd className="font-bold">
+                <Bdi>{money(dueFils)}</Bdi>
+              </dd>
+            </div>
+          )}
+        </dl>
+      )}
+      {!settled && <p className="mt-2 text-ink-subtle">{t("payNote")}</p>}
     </section>
   );
 }

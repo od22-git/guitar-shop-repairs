@@ -33,6 +33,8 @@ export async function SiteHeader() {
             links={[
               { href: "/shop", label: tNav("shop") },
               { href: "/repairs", label: tNav("repairs") },
+              // Phones find it in the footer.
+              { href: "/sell", label: tNav("sell"), wide: true },
             ]}
           />
           <LocaleSwitch label={t("other")} />

@@ -9,7 +9,10 @@ export type RepairProblem =
   | "empty_update"
   | "needs_terms"
   | "not_declined"
-  | "already_converted";
+  | "already_converted"
+  | "no_charge"
+  | "overpaid"
+  | "refund_too_large";
 
 export class RepairError extends Error {
   override name = "RepairError";

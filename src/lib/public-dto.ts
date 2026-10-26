@@ -1,6 +1,7 @@
 import type {
   Category,
   Customer,
+  Payment,
   Product,
   ProductImage,
   RepairCloseReason,
@@ -15,6 +16,7 @@ import type {
 } from "./db/schema";
 import { productImageSrc, productOgImageSrc } from "./product-images";
 import type { ProductSpecs } from "./product-specs";
+import { ticketBalance, ticketChargeFils, type TicketBalance } from "./repairs/balance";
 
 // The only shapes public pages receive. Each is built field by field from an allowlist,
 // so a column added later (cost, serials, hold notes, internal flags) stays private
@@ -201,8 +203,12 @@ export type PublicTicket = {
   /** Whether the repair terms are accepted; if not, approving a quote accepts them. */
   termsAccepted: boolean;
   quote: PublicRepairQuote | null;
-  /** What's owed on collection once it's Ready: the approved total, or the diagnosis fee. */
-  amountDueFils: number | null;
+  /**
+   * What the repair costs (the approved total, or the diagnosis fee after a decline), what's
+   * been paid and the balance. Shown once it's Ready, or once anything has been paid; never
+   * on a cancelled ticket.
+   */
+  payment: TicketBalance | null;
   /** Oldest first. */
   events: PublicRepairEvent[];
   photos: PublicRepairPhoto[];
@@ -214,11 +220,12 @@ type TicketSource = {
   quotes: (RepairQuote & { items: RepairQuoteItem[] })[];
   events: RepairEvent[];
   photos: RepairPhoto[];
+  payments: Pick<Payment, "kind" | "amountFils">[];
 };
 
 /** Builds the tracking page's ticket; `photoUrl` signs a link to one stored file. */
 export function toPublicTicket(
-  { ticket, quotes, events, photos }: TicketSource,
+  { ticket, quotes, events, photos, payments }: TicketSource,
   photoUrl: (file: string) => string,
 ): PublicTicket {
   const live = quotes.find((quote) => quote.status !== "superseded");
@@ -235,11 +242,12 @@ export function toPublicTicket(
         }
       : null;
 
-  let amountDueFils: number | null = null;
-  if (ticket.status === "ready") {
-    if (quote?.status === "approved") amountDueFils = quote.totalFils;
-    else if (quote?.status === "declined") amountDueFils = ticket.diagnosisFeeFils;
-  }
+  const balance = ticketBalance(ticketChargeFils(ticket, quote), payments);
+  const payment =
+    ticket.closeReason !== "cancelled" &&
+    ((ticket.status === "ready" && balance.chargeFils !== null) || balance.paidFils > 0)
+      ? balance
+      : null;
 
   const versionOf = (quoteId: number | null) =>
     quotes.find((q) => q.id === quoteId)?.version ?? null;
@@ -253,7 +261,7 @@ export function toPublicTicket(
     etaDate: ticket.etaDate,
     termsAccepted: ticket.termsAcceptedAt !== null,
     quote,
-    amountDueFils,
+    payment,
     events: events
       // A note only for the admin isn't the customer's news.
       .filter((event) => event.kind !== "update" || event.publicNote || event.etaDate)

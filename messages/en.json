@@ -22,7 +22,8 @@
     "faq": "Questions and condition guide",
     "contactHeading": "Contact",
     "whatsapp": "WhatsApp",
-    "repairs": "Repairs and booking"
+    "repairs": "Repairs and booking",
+    "sell": "Sell us your guitar"
   },
   "Home": {
     "intro": "Hand-picked used electric guitars and gear, and repairs from a basic setup to a full refret, from a home workshop in {location}.",
@@ -80,7 +81,8 @@
   "Nav": {
     "label": "Main",
     "shop": "Shop",
-    "repairs": "Repairs"
+    "repairs": "Repairs",
+    "sell": "Sell"
   },
   "Shop": {
     "title": "Shop",
@@ -359,6 +361,90 @@
       "sentBody": "We’ll message you on WhatsApp soon to arrange the next step."
     }
   },
+  "Sell": {
+    "title": "Sell us your guitar",
+    "description": "We buy used electric guitars, amps and pedals from players across the UAE. Send photos and details for an offer on WhatsApp.",
+    "intro": "We buy used electric guitars, amps and pedals from players across the UAE. Send us the details and a few photos, and we’ll reply on WhatsApp.",
+    "cta": "Send your guitar’s details",
+    "howHeading": "How it works",
+    "steps": {
+      "send": {
+        "title": "Send the details",
+        "body": "The make, model, condition and a few clear photos. The serial number helps too."
+      },
+      "offer": {
+        "title": "Get an offer",
+        "body": "We look it over and reply on WhatsApp with an offer, or questions if we need more photos."
+      },
+      "check": {
+        "title": "We check it in person",
+        "body": "Bring it by appointment or we arrange a courier pickup. We check it plays as described before we pay."
+      },
+      "paid": {
+        "title": "Get paid",
+        "body": "In cash at handover or by bank transfer, once we’ve both agreed."
+      }
+    },
+    "ownershipHeading": "Only instruments you own",
+    "ownershipBody": "We buy only instruments that are yours to sell. We check serial numbers and may ask for a receipt or other proof of ownership before we pay.",
+    "formHeading": "Offer us your guitar",
+    "formIntro": "Tell us what you have. Your photos are seen only by us, never shown on the site.",
+    "form": {
+      "name": "Your name",
+      "phone": "Mobile number (WhatsApp)",
+      "phoneHint": "Local, like 050 123 4567, or with a country code.",
+      "guitarHeading": "The instrument",
+      "brand": "Brand",
+      "model": "Model",
+      "year": "Year",
+      "serial": "Serial number",
+      "serialHint": "Usually on the back of the headstock or the neck plate.",
+      "condition": "Condition",
+      "chooseCondition": "Choose a grade",
+      "conditionHint": "How we grade condition (opens in a new tab)",
+      "askingPrice": "Asking price (AED)",
+      "askingPriceHint": "If you have a price in mind.",
+      "description": "Tell us about it",
+      "descriptionHint": "Mods, repairs, any faults, and what comes with it (case, tools, papers).",
+      "optional": "optional",
+      "photosHeading": "Photos",
+      "photosHint": "Up to {max}: the front, the back, the headstock, the serial number and any wear.",
+      "addPhotos": "Add photos",
+      "removePhoto": "Remove",
+      "photoAlt": "Your photo {n}",
+      "uploading": "Uploading photo {n} of {total}…",
+      "uploadingButton": "Uploading…",
+      "photoProblems": {
+        "unsupported_format": "{file} isn’t a JPEG, PNG or WebP photo.",
+        "not_an_image": "{file} isn’t a photo we can read.",
+        "too_large": "{file} is too large.",
+        "rate_limited": "Too many photos from your connection. Please try again later.",
+        "failed": "{file} didn’t upload. Please check your connection and try again."
+      },
+      "tooManyPhotos": "Up to {max} photos: the rest weren’t added.",
+      "ownership": "I own this instrument and it’s mine to sell.",
+      "consent": "You can reply to me about it on WhatsApp at this number.",
+      "honeypot": "Leave this field empty",
+      "submit": "Send to the shop",
+      "sending": "Sending…",
+      "errors": {
+        "required": "Please fill this in.",
+        "too_long": "That’s too long. Please shorten it.",
+        "phone": "Enter a mobile number, like 050 123 4567.",
+        "consent": "We reply on WhatsApp, so we need your OK to message you.",
+        "ownership": "We can only buy instruments you own. Please confirm.",
+        "year": "Enter a year, like 1998.",
+        "amount": "Enter an amount in dirhams, like 2500.",
+        "photos": "Please add at least one photo."
+      },
+      "fixErrors": "Please check the fields marked below.",
+      "spam": "We couldn’t confirm you’re a person. Please try again.",
+      "rateLimited": "Too many offers from your connection. Please try again later, or message us on WhatsApp.",
+      "photosExpired": "Your photos didn’t come through. Please add them again and resend.",
+      "sentHeading": "Thank you, we’ve got the details",
+      "sentBody": "We’ll look it over and message you on WhatsApp soon."
+    }
+  },
   "Ticket": {
     "title": "Repair ticket",
     "checkHeading": "Your repair ticket",
@@ -409,6 +495,10 @@
     "termsAccepted": "Repair terms accepted.",
     "payHeading": "To pay",
     "amountDue": "On collection or delivery: <bdi>{amount}</bdi>",
+    "payTotal": "Total:",
+    "payPaid": "Paid:",
+    "payBalance": "Balance on collection or delivery:",
+    "paidInFull": "Paid in full: <bdi>{amount}</bdi>. Thank you!",
     "payNote": "Pay in cash at collection, cash on delivery through the courier, or by bank transfer. Message us on WhatsApp to arrange it.",
     "photosHeading": "Photos",
     "photoStage": {
@@ -429,7 +519,8 @@
     "help": "Questions about your repair? Message us on WhatsApp."
   },
   "InboxWhatsApp": {
-    "repairReply": "Hello {name}, thanks for booking a repair with {brand}."
+    "repairReply": "Hello {name}, thanks for booking a repair with {brand}.",
+    "sellReply": "Hello {name}, thanks for offering us your {guitar} at {brand}."
   },
   "Receipt": {
     "receipt": "Receipt",

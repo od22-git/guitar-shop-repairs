@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 
 import { requireAdmin } from "@/lib/auth";
 import { formatDateTime } from "@/lib/datetime";
 import { db } from "@/lib/db/client";
-import { getSubmission, repairRequestOf } from "@/lib/inbox";
+import { getSubmission, repairRequestOf, sellOfferOf } from "@/lib/inbox";
+import { formatMoney } from "@/lib/money";
 import { formatPhone } from "@/lib/phone";
 import { inboxReplyUrl } from "@/lib/whatsapp/inbox-message";
 
@@ -21,20 +23,39 @@ export default async function InboxItemPage({ params }: PageProps<"/admin/inbox/
   const item = Number.isSafeInteger(id) && id >= 1 ? await getSubmission(db, id) : null;
   if (!item) notFound();
   const request = repairRequestOf(item);
+  const offer = sellOfferOf(item);
+  // The grades as the English shop names them.
+  const tCondition = await getTranslations({ locale: "en", namespace: "Condition" });
+  const guitar = offer ? [offer.brand, offer.model].filter(Boolean).join(" ") : undefined;
 
-  const details: [string, string | undefined][] = request
+  const details: [string, string | undefined][] = offer
     ? [
-        ["Brand", request.instrumentBrand],
-        ["Model", request.instrumentModel],
-        ["What needs doing", request.issue],
+        ["Brand", offer.brand],
+        ["Model", offer.model],
+        ["Year", offer.year?.toString()],
+        ["Serial number", offer.serial],
+        ["Condition (their grade)", tCondition(offer.condition)],
         [
-          "Getting it to you",
-          request.intakeMethod === "courier" && request.emirate
-            ? `${intakeLabels.courier}, ${emirateLabels[request.emirate]}`
-            : intakeLabels[request.intakeMethod],
+          "Asking price",
+          offer.askingPriceFils === undefined
+            ? "Not given"
+            : formatMoney(offer.askingPriceFils, "en"),
         ],
+        ["About it", offer.description],
       ]
-    : [];
+    : request
+      ? [
+          ["Brand", request.instrumentBrand],
+          ["Model", request.instrumentModel],
+          ["What needs doing", request.issue],
+          [
+            "Getting it to you",
+            request.intakeMethod === "courier" && request.emirate
+              ? `${intakeLabels.courier}, ${emirateLabels[request.emirate]}`
+              : intakeLabels[request.intakeMethod],
+          ],
+        ]
+      : [];
 
   return (
     <>
@@ -53,6 +74,7 @@ export default async function InboxItemPage({ params }: PageProps<"/admin/inbox/
         </p>
         <p className="mt-1">
           <span dir="ltr">{formatPhone(item.phoneE164)}</span> · agreed to replies on WhatsApp
+          {offer && " · confirmed they own it"}
         </p>
       </div>
 
@@ -76,6 +98,30 @@ export default async function InboxItemPage({ params }: PageProps<"/admin/inbox/
         </section>
       )}
 
+      {item.photoKeys.length > 0 && (
+        <section aria-labelledby="photos-heading" className="rounded-lg bg-paper p-4 sm:p-6">
+          <h2 id="photos-heading" className="mb-3 text-lg font-bold">
+            Photos
+          </h2>
+          <p className="mb-3 text-sm text-ink-muted">Private: only you can see them.</p>
+          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {item.photoKeys.map((key, index) => (
+              <li key={key}>
+                <a href={`/api/inbox-photos/${key}-1920.webp`} target="_blank" className="block">
+                  {/* Private files, for the signed-in admin: next/image can't fetch them. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`/api/inbox-photos/${key}-640.webp`}
+                    alt={`Photo ${index + 1} of ${item.photoKeys.length}`}
+                    className="aspect-[4/3] w-full rounded-sm object-cover"
+                  />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       {item.convertedTicketId && (
         <p className="rounded-lg bg-paper p-4">
           <Link
@@ -94,7 +140,7 @@ export default async function InboxItemPage({ params }: PageProps<"/admin/inbox/
         <ItemActions
           id={item.id}
           status={item.status}
-          replyHref={inboxReplyUrl(item)}
+          replyHref={inboxReplyUrl(item, guitar)}
           convertHref={
             request && item.status !== "converted" ? `/admin/repairs/new?from=${item.id}` : null
           }

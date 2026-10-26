@@ -272,7 +272,7 @@ describe("decisions on the tracking link", () => {
     await setDiagnosisFee(db, id, 5_000);
     await moveTicket(db, id, { expected: "diagnosed", to: "ready" });
     const page = toPublicTicket(await loadTicket(db, id), (file) => `/signed/${file}`);
-    expect(page.amountDueFils).toBe(5_000);
+    expect(page.payment).toEqual({ chargeFils: 5_000, paidFils: 0, dueFils: 5_000 });
     expect(page.termsAccepted).toBe(false);
   });
 });
@@ -321,6 +321,6 @@ describe("the tracking page's ticket", () => {
       ["status", "diagnosed", null],
       ["quote", null, 2],
     ]);
-    expect(page.amountDueFils).toBeNull();
+    expect(page.payment).toBeNull();
   });
 });

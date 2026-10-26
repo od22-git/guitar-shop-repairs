@@ -2,9 +2,12 @@ import { and, count, desc, eq, ne } from "drizzle-orm";
 import { z } from "zod";
 
 import type { Database } from "../db/connect";
+import { toWesternDigits } from "../digits";
+import { parseAedToFils } from "../money";
 import {
   emirate,
   inboxSubmissions,
+  productCondition,
   repairIntakeMethod,
   type InboxStatus,
   type InboxSubmission,
@@ -15,14 +18,17 @@ import type { Locale } from "@/i18n/routing";
 
 // The admin inbox: what the public forms send. A repair booking (/repairs) waits here
 // until the admin answers it on WhatsApp and, once the instrument arrives, converts it
-// into a ticket (the ticket form is prefilled from it). The /sell form (M7) adds its own
-// kind. Nothing is deleted: handled items are archived.
+// into a ticket (the ticket form is prefilled from it). A guitar offered on /sell (M7b)
+// waits here with its photos until the admin replies. Nothing is deleted: handled items
+// are archived.
 
 /** Why a public form field was refused; the page shows it in the visitor's language. */
 export type FieldProblem = "required" | "too_long" | "phone" | "consent";
+/** The /sell form's extra checks. */
+export type SellProblem = FieldProblem | "ownership" | "year" | "amount" | "photos";
 
-export type PublicFormResult<T> =
-  { ok: true; data: T } | { ok: false; errors: Partial<Record<string, FieldProblem>> };
+export type PublicFormResult<T, P extends string = FieldProblem> =
+  { ok: true; data: T } | { ok: false; errors: Partial<Record<string, P>> };
 
 const text = (max: number) =>
   z.preprocess(
@@ -40,17 +46,38 @@ const optionalText = (max: number) =>
     text(max).optional(),
   );
 
+// Replies go out on WhatsApp, which needs a mobile number; any country works.
+const mobile = requiredText(40).transform((value, ctx) => {
+  const phone = normalizePhone(value, { mobileOnly: true });
+  if (!phone) {
+    ctx.addIssue({ code: "custom", message: "phone" });
+    return z.NEVER;
+  }
+  return phone;
+});
+
+/** Form fields that are strings (files and repeats aside). */
+const stringFields = (form: FormData) =>
+  Object.fromEntries(
+    [...form.entries()].filter((entry): entry is [string, string] => typeof entry[1] === "string"),
+  );
+
+/** The first problem per field, as a code the page can show. */
+function problemsOf<P extends string>(
+  issues: readonly z.core.$ZodIssue[],
+  known: readonly P[],
+): Partial<Record<string, P>> {
+  const errors: Partial<Record<string, P>> = {};
+  for (const issue of issues) {
+    const message = issue.message as P;
+    errors[String(issue.path[0])] ??= known.includes(message) ? message : ("required" as P);
+  }
+  return errors;
+}
+
 const repairRequestSchema = z.object({
   name: requiredText(120),
-  phone: requiredText(40).transform((value, ctx) => {
-    // Replies go out on WhatsApp, which needs a mobile number; any country works.
-    const phone = normalizePhone(value, { mobileOnly: true });
-    if (!phone) {
-      ctx.addIssue({ code: "custom", message: "phone" });
-      return z.NEVER;
-    }
-    return phone;
-  }),
+  phone: mobile,
   instrumentBrand: optionalText(80),
   instrumentModel: optionalText(80),
   issue: requiredText(2000),
@@ -75,17 +102,14 @@ export type RepairRequestInput = RepairRequest & { name: string; phone: string }
 
 /** The Book-a-repair form. Errors are FieldProblem codes by field name. */
 export function parseRepairRequestForm(form: FormData): PublicFormResult<RepairRequestInput> {
-  const fields = Object.fromEntries(
-    [...form.entries()].filter((entry): entry is [string, string] => typeof entry[1] === "string"),
-  );
+  const fields = stringFields(form);
   const parsed = repairRequestSchema.safeParse(fields);
-  const errors: Partial<Record<string, FieldProblem>> = {};
-  for (const issue of parsed.error?.issues ?? []) {
-    const message = issue.message as FieldProblem;
-    errors[String(issue.path[0])] ??= ["required", "too_long", "phone", "consent"].includes(message)
-      ? message
-      : "required";
-  }
+  const errors = problemsOf<FieldProblem>(parsed.error?.issues ?? [], [
+    "required",
+    "too_long",
+    "phone",
+    "consent",
+  ]);
   // The courier needs to know where to collect from (checked with the other fields, so
   // every problem shows at once).
   if (fields.intakeMethod === "courier" && !fields.emirate) errors.emirate ??= "required";
@@ -133,6 +157,148 @@ export function repairRequestOf(submission: InboxSubmission): RepairRequest | nu
     issue: payload.issue,
     intakeMethod: payload.intakeMethod === "courier" ? "courier" : "drop_off",
     emirate: payload.emirate,
+  };
+}
+
+const sellSchema = z.object({
+  name: requiredText(120),
+  phone: mobile,
+  brand: requiredText(80),
+  model: optionalText(80),
+  year: z.preprocess(
+    (value) =>
+      typeof value === "string" && value.trim() !== "" ? toWesternDigits(value.trim()) : undefined,
+    z
+      .string()
+      .regex(/^\d{4}$/, "year")
+      .transform(Number)
+      .refine((year) => year >= 1930 && year <= new Date().getFullYear() + 1, "year")
+      .optional(),
+  ),
+  serial: optionalText(60),
+  condition: z.enum(productCondition.enumValues, { error: "required" }),
+  askingPrice: z.preprocess(
+    (value) => (typeof value === "string" && value.trim() !== "" ? value : undefined),
+    z
+      .string()
+      .transform((value, ctx) => {
+        const fils = parseAedToFils(value);
+        if (fils === null || fils === 0) {
+          ctx.addIssue({ code: "custom", message: "amount" });
+          return z.NEVER;
+        }
+        return fils;
+      })
+      .optional(),
+  ),
+  description: requiredText(2000),
+  ownership: z.literal("on", { error: "ownership" }),
+  whatsappConsent: z.literal("on", { error: "consent" }),
+});
+
+/** What a guitar offered on /sell stores beyond the name, phone and photos. */
+export type SellOffer = {
+  brand: string;
+  model?: string;
+  year?: number;
+  serial?: string;
+  condition: (typeof productCondition.enumValues)[number];
+  askingPriceFils?: number;
+  description: string;
+};
+
+export type SellOfferInput = SellOffer & {
+  name: string;
+  phone: string;
+  /** Signed tokens for the photos already uploaded (src/lib/inbox/sell-photos.ts). */
+  photoTokens: string[];
+};
+
+/**
+ * The /sell form. Photos come as `photo` tokens, from 1 to `maxPhotos`. Errors are
+ * SellProblem codes by field name.
+ */
+export function parseSellForm(
+  form: FormData,
+  maxPhotos: number,
+): PublicFormResult<SellOfferInput, SellProblem> {
+  const parsed = sellSchema.safeParse(stringFields(form));
+  const errors = problemsOf<SellProblem>(parsed.error?.issues ?? [], [
+    "required",
+    "too_long",
+    "phone",
+    "consent",
+    "ownership",
+    "year",
+    "amount",
+  ]);
+  const photoTokens = form
+    .getAll("photo")
+    .filter((value): value is string => typeof value === "string" && value.length <= 200);
+  if (photoTokens.length === 0 || photoTokens.length > maxPhotos) errors.photos = "photos";
+  if (!parsed.success || Object.keys(errors).length > 0) return { ok: false, errors };
+  // Consent and the ownership tick are required to submit, so they aren't kept as fields.
+  const { name, phone, brand, model, year, serial, condition, askingPrice, description } =
+    parsed.data;
+  return {
+    ok: true,
+    data: {
+      name,
+      phone,
+      photoTokens,
+      brand,
+      model,
+      year,
+      serial,
+      condition,
+      ...(askingPrice !== undefined ? { askingPriceFils: askingPrice } : {}),
+      description,
+    },
+  };
+}
+
+/** Saves a guitar offered on /sell, with photos already claimed for the inbox. */
+export async function createSellOffer(
+  db: Database,
+  input: SellOffer & { name: string; phone: string },
+  photoKeys: string[],
+  locale: Locale,
+): Promise<number> {
+  const { name, phone } = input;
+  // Field by field, so nothing else the caller holds (photo tokens) is stored.
+  const payload: SellOffer & { ownershipConfirmed: true; whatsappConsent: true } = {
+    brand: input.brand,
+    model: input.model,
+    year: input.year,
+    serial: input.serial,
+    condition: input.condition,
+    askingPriceFils: input.askingPriceFils,
+    description: input.description,
+    ownershipConfirmed: true,
+    whatsappConsent: true,
+  };
+  const [row] = await db
+    .insert(inboxSubmissions)
+    .values({ kind: "sell", name, phoneE164: phone, locale, payload, photoKeys })
+    .returning({ id: inboxSubmissions.id });
+  return row.id;
+}
+
+/** A guitar offer's details, read back from its payload. */
+export function sellOfferOf(submission: InboxSubmission): SellOffer | null {
+  if (submission.kind !== "sell") return null;
+  const payload = submission.payload as Partial<SellOffer> | null;
+  if (!payload || typeof payload.brand !== "string" || typeof payload.description !== "string") {
+    return null;
+  }
+  return {
+    brand: payload.brand,
+    model: payload.model,
+    year: payload.year,
+    serial: payload.serial,
+    condition: payload.condition ?? "good",
+    askingPriceFils: payload.askingPriceFils,
+    description: payload.description,
   };
 }
 

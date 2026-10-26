@@ -19,6 +19,8 @@ import {
   parseTicketForm,
   parseUpdateForm,
 } from "@/lib/repairs/forms";
+import { parsePaymentForm } from "@/lib/orders/forms";
+import { deleteTicketPayment, recordTicketPayment } from "@/lib/repairs/payments";
 import { deleteRepairPhoto, setRepairPhotoVisible } from "@/lib/repairs/photos";
 import { createQuote, decideQuote, setDiagnosisFee } from "@/lib/repairs/quotes";
 import {
@@ -57,6 +59,9 @@ const messages: Record<RepairProblem, string> = {
   needs_terms: "The customer needs to accept the repair terms.",
   not_declined: "The diagnosis fee applies only to a declined quote.",
   already_converted: "That booking already has a ticket. Open it from the inbox.",
+  no_charge: "Nothing is owed yet: approve a quote, or set the diagnosis fee, first.",
+  overpaid: "That's more than is still due.",
+  refund_too_large: "That's more than was paid.",
 };
 
 function failure(error: unknown): ActionState {
@@ -282,4 +287,27 @@ export async function deletePhotoAction(photoId: number): Promise<ActionState> {
     return failure(error);
   }
   return done("Photo deleted.");
+}
+
+export async function recordTicketPaymentAction(
+  ticketId: number,
+  _: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+  const parsed = parsePaymentForm(form);
+  if (!parsed.ok) return { ...invalid, errors: parsed.errors };
+  try {
+    await recordTicketPayment(db, toId(ticketId), parsed.data);
+  } catch (error) {
+    return failure(error);
+  }
+  return done(parsed.data.kind === "refund" ? "Refund recorded." : "Payment recorded.");
+}
+
+export async function deleteTicketPaymentAction(paymentId: number): Promise<ActionState> {
+  await requireAdmin();
+  const ticketId = await deleteTicketPayment(db, toId(paymentId));
+  if (ticketId === null) return { ok: false, message: "That payment was already removed." };
+  return done("Payment removed.");
 }

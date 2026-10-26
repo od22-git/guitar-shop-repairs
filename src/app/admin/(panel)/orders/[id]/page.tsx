@@ -11,6 +11,8 @@ import { formatPhone } from "@/lib/phone";
 import { waMeUrl } from "@/lib/whatsapp/wa-me";
 
 import { Panel } from "../../../_components/form";
+import { PaymentsPanel } from "../../../_components/payments-panel";
+import { deletePaymentAction, recordPaymentAction } from "../actions";
 import {
   deliveryMethodLabels,
   emirateLabels,
@@ -19,7 +21,7 @@ import {
   paymentMethodLabels,
 } from "../labels";
 
-import { PaymentsPanel, StatusPanel } from "./order-panels";
+import { StatusPanel } from "./order-panels";
 
 export const metadata: Metadata = { title: "Order" };
 
@@ -146,7 +148,8 @@ export default async function OrderPage({ params, searchParams }: PageProps<"/ad
       </Panel>
 
       <PaymentsPanel
-        orderId={order.id}
+        record={recordPaymentAction.bind(null, order.id)}
+        remove={deletePaymentAction}
         canPay={["pending", "confirmed", "fulfilled"].includes(order.status)}
         today={dubaiDateInputValue(new Date())}
         balance={{
