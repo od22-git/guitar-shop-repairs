@@ -248,13 +248,13 @@ Each row is a case found in this review and the plan's answer.
 
 ## Milestones
 
-Each milestone is **one session and one PR**, merged automatically by Claude once CI is green. Start each milestone in a fresh session: *"Do milestone Mx from docs/PLAN.md"*. Every milestone ends with lint, typecheck, unit tests, build and e2e passing. UI milestones also need en/ar screenshots on mobile and desktop.
+Done milestones are marked ✅. Each milestone is **one session and one PR**, merged automatically by Claude once CI is green. Start each milestone in a fresh session: *"Do milestone Mx from docs/PLAN.md"*. Every milestone ends with lint, typecheck, unit tests, build and e2e passing. UI milestones also need en/ar screenshots on mobile and desktop.
 
 **Before launch**
 
 | # | Milestone | Done when |
 |---|---|---|
-| **M0** | **Skeleton**: Next.js + TS strict, Tailwind, ESLint/Prettier, Vitest, Playwright, GitHub Actions (with a Postgres service), `env.ts`, `config/brand.ts`. Copy this plan to `docs/PLAN.md`; `CLAUDE.md` with conventions (logical CSS, fils, `requireAdmin()`, public DTOs, revalidate on change, Asia/Dubai, skills, auto-merge own green PRs) | CI green; build passes; a missing env var fails startup with a clear message |
+| **M0** ✅ | **Skeleton**: Next.js + TS strict, Tailwind, ESLint/Prettier, Vitest, Playwright, GitHub Actions (with a Postgres service), `env.ts`, `config/brand.ts`. Copy this plan to `docs/PLAN.md`; `CLAUDE.md` with conventions (logical CSS, fils, `requireAdmin()`, public DTOs, revalidate on change, Asia/Dubai, skills, auto-merge own green PRs) | CI green; build passes; a missing env var fails startup with a clear message |
 | **M1** | **i18n + design system**: next-intl, detection + cookie, RTL, font pair, colour tokens at **WCAG AA**, header, footer, language switch, WhatsApp button (inline-end; never covers content or focus), `<bdi>` helpers, `formatMoney`/`formatDate` (Asia/Dubai, Latin digits). **Atmosphere image set**: free-licence stock candidates shown to you as a contact sheet, chosen ones saved to the repo + `docs/IMAGE_CREDITS.md` | Both locales render with the correct `dir`/`lang`; axe has no serious issues; contrast table in `docs/design.md`; `web-design-guidelines` review clean; every image has a credits entry |
 | **M2** | **DB + catalog model**: schema (categories, products, images, settings, delivery zones), migrations, ~8 sample products (`is_sample`, free-licence photos), `money.ts`, `phone.ts`, `inventory.ts` + tests | Migrations run on Neon dev and PGlite; tests cover rounding, phone formats (incl. Arabic digits) and the two-buyer race |
 | **M3** | **Public catalog**: shop, filters, product page, Order on WhatsApp, Sold/On-hold states, condition guide, SEO (metadata, hreflang, sitemap, JSON-LD, OG) | e2e: browse → filter → product → exact wa.me URL in en and ar; drafts 404; English fallback works |
