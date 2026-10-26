@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { Bdi } from "@/components/bdi";
-import { formCard } from "@/components/form-parts";
+import { PageHero } from "@/components/page-hero";
 import { PhotoCredits } from "@/components/photo-credits";
-import { StockPhoto } from "@/components/stock-photo";
+import { buttonClass } from "@/components/ui/button";
+import { Container, Grid, PriceList, PriceRow, RuledColumn, Section } from "@/components/ui/layout";
+import { Heading, Label } from "@/components/ui/text";
 import { brand } from "@/config/brand";
 import { repairServices } from "@/config/repair-services";
 import { emirate } from "@/lib/db/schema";
@@ -44,9 +46,6 @@ const formLabels = [
   "sentBody",
 ] as const;
 
-const sectionHeadingClass =
-  "text-3xl leading-tight font-extrabold text-balance sm:text-4xl rtl:leading-[1.3]";
-
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
   const t = await getTranslations("Repairs");
@@ -78,100 +77,99 @@ export default async function RepairsPage() {
 
   return (
     <>
-      <section aria-labelledby="repairs-title" className="md:grid md:grid-cols-2">
-        <div className="relative aspect-[3/2] md:order-last md:aspect-auto md:min-h-[28rem]">
-          <StockPhoto
-            photo="bench"
-            alt={tPhoto("bench")}
-            sizes="(min-width: 768px) 50vw, 100vw"
-            eager
-          />
-        </div>
-        <div className="px-4 py-10 sm:px-6 md:self-center md:px-12 md:py-16 lg:px-16">
-          <div className="max-w-[32rem]">
-            <h1
-              id="repairs-title"
-              className="text-4xl leading-tight font-extrabold tracking-tight text-balance sm:text-5xl rtl:leading-[1.3] rtl:tracking-normal"
-            >
-              {t("title")}
-            </h1>
-            <p className="mt-4 text-lg text-ink-subtle">{t("intro", { location })}</p>
-            <a
-              href="#book"
-              className="mt-8 inline-flex min-h-12 items-center rounded-sm bg-fiesta px-5 font-semibold text-white hover:bg-fiesta-deep"
-            >
-              {t("bookCta")}
-            </a>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        title={t("title")}
+        lead={t("intro", { location })}
+        photo="workbench"
+        photoAlt={tPhoto("workbench")}
+        actions={
+          <a href="#book" className={buttonClass("primary")}>
+            {t("bookCta")}
+          </a>
+        }
+      />
 
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <section aria-labelledby="services-heading" className="py-14 md:py-20">
-          <h2 id="services-heading" className={sectionHeadingClass}>
-            {t("servicesHeading")}
-          </h2>
-          <p className="mt-3 max-w-[60ch] text-lg text-ink-subtle">{t("servicesNote")}</p>
-          <ul className="mt-8 grid border-t border-mist/15 md:grid-cols-2 md:gap-x-12">
+      <Section aria-labelledby="services-heading" className="pt-0 md:pt-0">
+        <Grid className="gap-y-10">
+          <div className="col-span-4 md:col-span-4">
+            <Heading level="headline" as="h2" id="services-heading">
+              {t("servicesHeading")}
+            </Heading>
+            <p className="mt-6 max-w-[40ch] text-grey-600">{t("servicesNote")}</p>
+          </div>
+          <PriceList className="col-span-4 md:col-span-7 md:col-start-6">
             {repairServices.map((service) => (
-              <li
+              <PriceRow
                 key={service.key}
-                className="flex items-baseline justify-between gap-4 border-b border-mist/15 py-4"
-              >
-                <div>
-                  <p className="font-bold">{t(`services.${service.key}.name`)}</p>
-                  <p className="mt-1 text-ink-subtle">{t(`services.${service.key}.detail`)}</p>
-                </div>
-                <p className="shrink-0 font-semibold text-gold">
-                  {t.rich("from", {
-                    price: formatMoney(service.fromFils, locale),
-                    bdi: (chunks) => <Bdi>{chunks}</Bdi>,
-                  })}
-                </p>
-              </li>
+                name={
+                  <>
+                    <span className="block text-lg font-bold">
+                      {t(`services.${service.key}.name`)}
+                    </span>
+                    <span className="mt-1 block max-w-[46ch] text-grey-600">
+                      {t(`services.${service.key}.detail`)}
+                    </span>
+                  </>
+                }
+                price={
+                  <span className="font-extrabold whitespace-nowrap font-stretch-semi-expanded tabular-nums">
+                    {t.rich("from", {
+                      price: formatMoney(service.fromFils, locale),
+                      bdi: (chunks) => <Bdi>{chunks}</Bdi>,
+                    })}
+                  </span>
+                }
+              />
             ))}
-          </ul>
-        </section>
+          </PriceList>
+        </Grid>
+      </Section>
 
-        <section aria-labelledby="how-heading" className="border-t border-mist/15 py-14 md:py-20">
-          <h2 id="how-heading" className={sectionHeadingClass}>
-            {t("howHeading")}
-          </h2>
-          <ol className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {steps.map((step, index) => (
-              <li key={step}>
-                <p aria-hidden="true" className="text-4xl font-extrabold text-gold tabular-nums">
-                  {index + 1}
-                </p>
-                <h3 className="mt-2 text-xl font-bold">{t(`steps.${step}.title`)}</h3>
-                <p className="mt-2 text-ink-subtle">{t(`steps.${step}.body`)}</p>
-              </li>
-            ))}
-          </ol>
-          <div className="mt-12 grid gap-6 md:grid-cols-2">
-            <div className="rounded-sm bg-rosewood p-6">
-              <h3 className="text-xl font-bold text-gold">{t("dropOffHeading")}</h3>
-              <p className="mt-2">{t("dropOffBody", { location })}</p>
+      <Section aria-labelledby="how-heading" className="pt-0 md:pt-0">
+        <Heading level="headline" as="h2" id="how-heading">
+          {t("howHeading")}
+        </Heading>
+        <ol className="mt-12 grid grid-cols-4 gap-x-4 gap-y-10 md:mt-16 md:grid-cols-12 md:gap-x-6">
+          {steps.map((step, index) => (
+            <li key={step} className="col-span-4 sm:col-span-2 md:col-span-3">
+              <RuledColumn>
+                {/* The list is numbered already; this is the visible number. */}
+                <Label as="p" aria-hidden="true" className="tabular-nums">
+                  {`0${index + 1}`}
+                </Label>
+                <h3 className="mt-6 text-xl font-extrabold font-stretch-semi-expanded md:mt-8">
+                  {t(`steps.${step}.title`)}
+                </h3>
+                <p className="mt-2 max-w-[40ch] text-grey-600">{t(`steps.${step}.body`)}</p>
+              </RuledColumn>
+            </li>
+          ))}
+        </ol>
+        <Grid className="mt-16 gap-y-6 md:mt-20">
+          {(["dropOff", "courier"] as const).map((key) => (
+            <div key={key} className="col-span-4 bg-grey-100 p-6 md:col-span-6 md:p-8">
+              <h3 className="text-title font-extrabold tracking-[-0.01em] font-stretch-semi-expanded rtl:leading-[1.4] rtl:tracking-normal">
+                {t(`${key}Heading`)}
+              </h3>
+              <p className="mt-3 max-w-[50ch]">{t(`${key}Body`, { location })}</p>
             </div>
-            <div className="rounded-sm bg-rosewood p-6">
-              <h3 className="text-xl font-bold text-gold">{t("courierHeading")}</h3>
-              <p className="mt-2">{t("courierBody")}</p>
-            </div>
-          </div>
-        </section>
+          ))}
+        </Grid>
+      </Section>
 
-        <section
-          id="book"
-          aria-labelledby="book-heading"
-          className="scroll-mt-6 border-t border-mist/15 py-14 md:grid md:grid-cols-[1fr_1.4fr] md:gap-12 md:py-20"
-        >
-          <div>
-            <h2 id="book-heading" className={sectionHeadingClass}>
+      <Section
+        id="book"
+        aria-labelledby="book-heading"
+        className="scroll-mt-6 border-t border-black"
+      >
+        <Grid className="gap-y-10">
+          <div className="col-span-4 md:col-span-4">
+            <Heading level="headline" as="h2" id="book-heading">
               {t("bookHeading")}
-            </h2>
-            <p className="mt-3 max-w-[45ch] text-lg text-ink-subtle">{t("bookIntro")}</p>
+            </Heading>
+            <p className="mt-6 max-w-[40ch] text-lg text-grey-600">{t("bookIntro")}</p>
           </div>
-          <div className={`mt-8 md:mt-0 ${formCard}`}>
+          <div className="col-span-4 md:col-span-7 md:col-start-6">
             <BookingForm
               labels={labels}
               emirates={emirate.enumValues.map((value) => ({ value, label: tEmirate(value) }))}
@@ -179,12 +177,12 @@ export default async function RepairsPage() {
               turnstileSiteKey={env.TURNSTILE_SITE_KEY}
             />
           </div>
-        </section>
+        </Grid>
+      </Section>
 
-        <div className="py-6">
-          <PhotoCredits photos={["bench"]} />
-        </div>
-      </div>
+      <Container className="py-6">
+        <PhotoCredits photos={["workbench"]} tone="light" />
+      </Container>
     </>
   );
 }

@@ -1,13 +1,20 @@
 import type { ComponentProps, ReactNode } from "react";
 
-import { fieldProps } from "../form-parts";
-
-// M9a form fields: square, a 1px black edge on white (19.8:1), 52px tall with 16px text so
+// Form fields: square, a 1px black edge on white (19.8:1), 52px tall with 16px text so
 // phones don't zoom in on focus. An error thickens the edge to 2px red and says what's
 // wrong in words under the field, so it never relies on colour. Wire inputs to their
-// label, hint and error with `fieldProps` (src/components/form-parts.tsx).
+// label, hint and error with `fieldProps`.
 
-export { fieldProps };
+/** aria props tying an input to its hint and error (`<name>-hint`, `<name>-error`). */
+export function fieldProps(name: string, error?: string, hint?: boolean) {
+  const ids = [hint && `${name}-hint`, error && `${name}-error`].filter(Boolean).join(" ");
+  return {
+    id: name,
+    name,
+    "aria-invalid": error ? true : undefined,
+    "aria-describedby": ids || undefined,
+  };
+}
 
 export const inputClass =
   "block min-h-13 w-full border border-black bg-white px-4 py-3 font-grotesk text-base text-black placeholder:text-grey-600 aria-invalid:border-2 aria-invalid:border-red";
@@ -39,14 +46,23 @@ export function Field({
           {hint}
         </p>
       )}
-      {error && (
-        <p id={`${name}-error`} className="text-sm font-semibold text-red">
-          {error}
-        </p>
-      )}
+      {error && <FieldError name={name}>{error}</FieldError>}
     </div>
   );
 }
+
+/** What's wrong with a field, in words, under it (`<name>-error`). */
+export function FieldError({ name, children }: { name: string; children: ReactNode }) {
+  return (
+    <p id={`${name}-error`} className="text-sm font-semibold text-red">
+      {children}
+    </p>
+  );
+}
+
+/** A form's message about the whole submission ("Please check the fields marked below"). */
+export const formAlertClass =
+  "border-s-4 border-red ps-4 font-semibold text-red empty:hidden focus:outline-none";
 
 /** A tick box with its label beside it; the whole row is the target. */
 export function Checkbox({

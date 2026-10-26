@@ -20,6 +20,10 @@ export const policyNumbers = {
   abandonDays: 90,
   /** Days the shop guarantees its repair work. */
   repairWarrantyDays: 30,
+  /** Months of local warranty on new devices (the NANOCORE, footswitches). */
+  warrantyMonths: 6,
+  /** Rounds of tweaks to a custom tone included before delivery. */
+  toneRounds: 3,
 } as const;
 
 export const isPolicySlug = (value: string): value is PolicySlug =>

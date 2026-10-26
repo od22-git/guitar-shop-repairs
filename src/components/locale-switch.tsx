@@ -19,7 +19,7 @@ export function LocaleSwitch({ label }: { label: string }) {
       locale={other}
       lang={other}
       hrefLang={other}
-      className="inline-flex min-h-11 items-center rounded-sm px-3 font-medium underline decoration-gold decoration-2 underline-offset-[6px] hover:decoration-fiesta"
+      className="inline-flex min-h-11 items-center px-2 font-medium underline decoration-blue decoration-2 underline-offset-[6px] hover:decoration-black"
     >
       {label}
     </Link>

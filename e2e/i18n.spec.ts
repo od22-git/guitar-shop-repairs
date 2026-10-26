@@ -74,14 +74,14 @@ test.describe("document language and direction", () => {
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(brand.tagline.ar);
   });
 
-  test("Arabic text uses Tajawal and Latin text uses Outfit", async ({ page }) => {
+  test("Arabic text uses Alexandria and Latin text uses Archivo", async ({ page }) => {
     await page.goto("/ar");
     await page.evaluate(() => document.fonts.ready);
     const loaded = await page.evaluate(() =>
       [...document.fonts].filter((f) => f.status === "loaded").map((f) => f.family),
     );
-    expect(loaded.some((family) => /tajawal/i.test(family))).toBe(true);
-    expect(loaded.some((family) => /outfit/i.test(family))).toBe(true);
+    expect(loaded.some((family) => /alexandria/i.test(family))).toBe(true);
+    expect(loaded.some((family) => /archivo/i.test(family))).toBe(true);
   });
 
   test("unknown pages are a localized 404 inside the site layout", async ({ page }) => {

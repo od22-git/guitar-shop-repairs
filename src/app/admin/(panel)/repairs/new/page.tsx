@@ -56,7 +56,7 @@ export default async function NewTicketPage({ searchParams }: PageProps<"/admin/
         </Link>
       </p>
       <h1 className="text-2xl font-bold">New repair ticket</h1>
-      <p className="text-ink-muted">
+      <p className="text-grey-600">
         {from
           ? "Filled in from the online booking. Check it against the instrument in front of you."
           : "A returning customer is found by their phone number."}{" "}

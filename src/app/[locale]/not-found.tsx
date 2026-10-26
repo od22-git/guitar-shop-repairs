@@ -1,22 +1,32 @@
 import { getTranslations } from "next-intl/server";
 
+import { Arrow, buttonClass } from "@/components/ui/button";
+import { Container } from "@/components/ui/layout";
+import { Heading, Label, Lead } from "@/components/ui/text";
 import { Link } from "@/i18n/navigation";
 
 export default async function NotFound() {
   const t = await getTranslations("NotFound");
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-      <h1 className="text-4xl font-extrabold tracking-tight text-balance rtl:tracking-normal">
+    <Container className="pt-10 pb-20 md:pt-16 md:pb-section">
+      <Label as="p" className="text-grey-600">
+        {t("label")}
+      </Label>
+      <Heading level="display" as="h1" className="mt-6">
         {t("title")}
-      </h1>
-      <p className="mt-4 text-lg text-ink-subtle">{t("body")}</p>
-      <Link
-        href="/"
-        className="mt-8 inline-flex min-h-11 items-center font-semibold underline decoration-gold decoration-2 underline-offset-4 hover:text-gold"
-      >
-        {t("home")}
-      </Link>
-    </div>
+      </Heading>
+      <Lead className="mt-8 text-grey-600">{t("body")}</Lead>
+      <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+        <Link href="/" className={buttonClass("primary")}>
+          {t("home")}
+          <Arrow />
+        </Link>
+        <Link href="/shop" className={buttonClass("secondary")}>
+          {t("shop")}
+          <Arrow />
+        </Link>
+      </div>
+    </Container>
   );
 }

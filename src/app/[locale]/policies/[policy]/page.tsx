@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 
 import { Bdi } from "@/components/bdi";
 import { Prose } from "@/components/prose";
+import { Container, Grid } from "@/components/ui/layout";
+import { Heading, Label, Lead } from "@/components/ui/text";
 import { brand } from "@/config/brand";
 import { isPolicySlug, policies, policiesUpdated, policyNumbers } from "@/config/policies";
 import { Link } from "@/i18n/navigation";
@@ -59,37 +61,52 @@ export default async function PolicyPage({ params }: PageProps<"/[locale]/polici
   };
 
   return (
-    <div className="mx-auto max-w-3xl px-4 pt-6 pb-20 sm:px-6 md:pt-10">
-      <h1 className="text-4xl leading-tight font-extrabold tracking-tight text-balance sm:text-5xl rtl:leading-[1.3] rtl:tracking-normal">
-        {t("title")}
-      </h1>
-      <p className="mt-3 text-ink-subtle">
+    <Container className="pt-10 pb-20 md:pt-16 md:pb-section">
+      <Label as="p" className="text-grey-600">
         {tPolicies("updated", { date: formatDate(policiesUpdated, locale) })}
-      </p>
-      <p className="mt-6 max-w-[65ch] text-lg text-ink-subtle">{t("intro", values)}</p>
+      </Label>
+      <Heading level="headline" as="h1" className="mt-4">
+        {t("title")}
+      </Heading>
+      <Lead wide className="mt-6 mb-12 text-grey-600 md:mb-20">
+        {t("intro", values)}
+      </Lead>
 
       {sections.map((key) => (
-        <section key={key} aria-labelledby={`${key}-heading`} className="mt-10">
-          <h2 id={`${key}-heading`} className="text-2xl font-extrabold text-gold">
-            {t(`sections.${key}.heading`, values)}
-          </h2>
-          <Prose text={t(`sections.${key}.body`, values)} className="mt-3" />
-          {policy === "delivery" && key === "fees" && <DeliveryZones />}
+        <section
+          key={key}
+          aria-labelledby={`${key}-heading`}
+          className="border-t border-black py-10 md:py-14"
+        >
+          <Grid className="gap-y-4">
+            <Heading
+              level="title"
+              as="h2"
+              id={`${key}-heading`}
+              className="col-span-4 md:col-span-4"
+            >
+              {t(`sections.${key}.heading`, values)}
+            </Heading>
+            <div className="col-span-4 md:col-span-7 md:col-start-6">
+              <Prose text={t(`sections.${key}.body`, values)} className="text-lg" />
+              {policy === "delivery" && key === "fees" && <DeliveryZones />}
+            </div>
+          </Grid>
         </section>
       ))}
 
-      <nav aria-labelledby="other-policies" className="mt-14 border-t border-mist/15 pt-6">
-        <h2 id="other-policies" className="font-bold">
+      <nav aria-labelledby="other-policies" className="border-t border-black pt-8">
+        <Label as="h2" id="other-policies" className="text-grey-600">
           {tPolicies("others")}
-        </h2>
-        <ul className="mt-2 flex flex-wrap gap-x-6">
+        </Label>
+        <ul className="mt-3 flex flex-wrap gap-x-8">
           {policies
             .filter((other) => other !== policy)
             .map((other) => (
               <li key={other}>
                 <Link
                   href={`/policies/${other}`}
-                  className="inline-flex min-h-11 items-center underline decoration-gold underline-offset-4 hover:text-gold"
+                  className="inline-flex min-h-11 items-center font-medium underline decoration-blue decoration-2 underline-offset-4 hover:decoration-black"
                 >
                   {tPolicies(`${other}.title`)}
                 </Link>
@@ -97,7 +114,7 @@ export default async function PolicyPage({ params }: PageProps<"/[locale]/polici
             ))}
         </ul>
       </nav>
-    </div>
+    </Container>
   );
 }
 
@@ -107,23 +124,23 @@ async function DeliveryZones() {
   if (zones.length === 0) return null;
 
   return (
-    <table className="mt-6 w-full max-w-md border-t border-mist/15">
+    <table className="mt-8 w-full max-w-md border-t border-black">
       <caption className="sr-only">{t("zonesCaption")}</caption>
       <thead>
-        <tr className="border-b border-mist/15">
-          <th scope="col" className="py-2 text-start font-bold">
+        <tr className="border-b border-grey-300">
+          <th scope="col" className="py-3 text-start font-bold">
             {t("zone")}
           </th>
-          <th scope="col" className="py-2 text-end font-bold">
+          <th scope="col" className="py-3 text-end font-bold">
             {t("fee")}
           </th>
         </tr>
       </thead>
       <tbody>
         {zones.map((zone) => (
-          <tr key={zone.nameEn} className="border-b border-mist/15">
-            <td className="py-2">{locale === "ar" ? zone.nameAr : zone.nameEn}</td>
-            <td className="py-2 text-end tabular-nums">
+          <tr key={zone.nameEn} className="border-b border-grey-300">
+            <td className="py-3">{locale === "ar" ? zone.nameAr : zone.nameEn}</td>
+            <td className="py-3 text-end font-bold tabular-nums">
               <Bdi>{zone.feeFils === 0 ? t("free") : formatMoney(zone.feeFils, locale)}</Bdi>
             </td>
           </tr>

@@ -62,7 +62,7 @@ export default async function OrderPage({ params, searchParams }: PageProps<"/ad
         <h1 className="text-2xl font-bold">
           Order <span dir="ltr">{order.number}</span>
         </h1>
-        <p className="text-ink-muted">
+        <p className="text-grey-600">
           {orderStatusLabels[order.status]} · made {formatDateTime(order.createdAt, "en")}
           {order.fulfilledAt && ` · handed over ${formatDate(order.fulfilledAt, "en")}`}
           {order.cancelledAt && ` · cancelled ${formatDate(order.cancelledAt, "en")}`}
@@ -89,7 +89,7 @@ export default async function OrderPage({ params, searchParams }: PageProps<"/ad
               <th scope="col">Amount</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-mist">
+          <tbody className="divide-y divide-grey-300">
             {items.map((item) => (
               <tr key={item.id}>
                 <td className="py-2 pe-3">
@@ -99,11 +99,11 @@ export default async function OrderPage({ params, searchParams }: PageProps<"/ad
                   >
                     {item.titleSnapshot}
                   </Link>{" "}
-                  <span className="text-sm text-ink-muted" dir="ltr">
+                  <span className="text-sm text-grey-600" dir="ltr">
                     {item.skuSnapshot}
                   </span>
                   {item.quantity > 1 && (
-                    <span className="block text-sm text-ink-muted">
+                    <span className="block text-sm text-grey-600">
                       {item.quantity} × {aed(item.unitPriceFils)}
                     </span>
                   )}
@@ -119,7 +119,7 @@ export default async function OrderPage({ params, searchParams }: PageProps<"/ad
             </tr>
           </tbody>
           <tfoot>
-            <tr className="border-t-2 border-ink font-bold">
+            <tr className="border-t-2 border-black font-bold">
               <th scope="row" className="py-2 pe-3 text-start">
                 Total
               </th>
@@ -127,7 +127,7 @@ export default async function OrderPage({ params, searchParams }: PageProps<"/ad
                 {aed(order.totalFils)}
               </td>
             </tr>
-            <tr className="text-ink-muted">
+            <tr className="text-grey-600">
               <th scope="row" className="pe-3 text-start font-normal">
                 {order.vatRateBps > 0 ? `Includes VAT at ${order.vatRateBps / 100}%` : "VAT"}
               </th>
@@ -178,7 +178,7 @@ export default async function OrderPage({ params, searchParams }: PageProps<"/ad
       <Panel title="Handover">
         <p>{deliveryMethodLabels[order.deliveryMethod]}</p>
         {address.length > 0 && <p dir="auto">{address.join(", ")}</p>}
-        {order.note && <p className="mt-2 whitespace-pre-line text-ink-muted">{order.note}</p>}
+        {order.note && <p className="mt-2 whitespace-pre-line text-grey-600">{order.note}</p>}
       </Panel>
     </>
   );

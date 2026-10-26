@@ -12,21 +12,21 @@ import {
 import { Bdi } from "./bdi";
 
 const tones = {
-  dark: {
-    text: "text-ink-subtle",
-    link: "underline decoration-gold underline-offset-4 hover:text-gold",
-  },
-  /** The M9a light pages. */
   light: {
     text: "text-grey-600",
     link: "underline decoration-blue underline-offset-4 hover:text-black",
+  },
+  /** On a black section. */
+  dark: {
+    text: "text-grey-400",
+    link: "underline underline-offset-4 hover:text-white",
   },
 } as const;
 
 /** "Photos by … on Unsplash": credits the photographers of the stock photos on a page. */
 export async function PhotoCredits({
   photos,
-  tone = "dark",
+  tone = "light",
 }: {
   photos: readonly StockPhotoKey[];
   tone?: keyof typeof tones;

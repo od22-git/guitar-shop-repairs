@@ -25,14 +25,14 @@ export default async function SettingsPage() {
         <WhatsAppForm value={formatPhone(settings.whatsapp_number)} />
       </Panel>
       <Panel title="VAT">
-        <p className="mb-4 text-ink-muted">
+        <p className="mb-4 text-grey-600">
           Prices are always final. Once registered, new orders show the 5% VAT inside them and the
           receipt becomes a tax invoice. Orders already made keep what they had.
         </p>
         <VatForm enabled={settings.vat_enabled} trn={settings.trn ?? ""} />
       </Panel>
       <Panel title="Delivery zones">
-        <p className="mb-4 text-ink-muted">
+        <p className="mb-4 text-grey-600">
           The courier fee added to an order for each emirate. Turn a zone off to stop offering
           delivery there.
         </p>

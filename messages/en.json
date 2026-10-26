@@ -13,64 +13,91 @@
     "order": "Hello {brand}, I’d like to order {title} (SKU {sku}).\n{url}",
     "hold": "Hello {brand}, I see {title} (SKU {sku}) is on hold. Please let me know if it comes free.\n{url}",
     "similar": "Hello {brand}, I see {title} (SKU {sku}) has sold. Do you have anything similar?\n{url}",
-    "stock": "Hello {brand}, what’s coming into the shop soon?"
+    "stock": "Hello {brand}, what’s coming into the shop soon?",
+    "nanocore": "Hello {brand}, I’d like to ask about the NANOCORE and its bundles."
   },
   "Footer": {
-    "serviceArea": "Home-based workshop in {location}. Drop-off by appointment; courier pickup and delivery across the UAE.",
-    "linksHeading": "Shop",
-    "shop": "Browse the shop",
-    "faq": "Questions and condition guide",
-    "contactHeading": "Contact",
+    "serviceArea": "Online, delivering across the {location}. Drop-off and collection by appointment, or a courier pickup from anywhere.",
+    "shop": "Everything in the shop",
+    "faq": "Questions and answers",
     "whatsapp": "WhatsApp",
-    "repairs": "Repairs and booking",
+    "repairs": "Repairs and setups",
     "sell": "Sell us your guitar",
     "about": "About us",
     "contact": "Contact us",
-    "policiesHeading": "Policies"
+    "policiesHeading": "Policies",
+    "shopHeading": "Shop",
+    "helpHeading": "Help",
+    "whereHeading": "Where"
   },
   "Home": {
-    "intro": "Hand-picked used electric guitars and gear, and repairs from a basic setup to a full refret, from a home workshop in {location}.",
-    "shopHeading": "In the shop",
-    "shopIntro": "Every guitar is checked, set up and photographed before it’s listed, flaws included.",
-    "categories": {
-      "guitars": {
-        "name": "Electric guitars",
-        "detail": "Used, set up and ready to play"
+    "intro": "Gear, custom tones and guitar care from three players in the {location}. Tested by us, set up for you, delivered to your door.",
+    "shopCta": "Shop gear",
+    "careCta": "Book a setup",
+    "index": {
+      "gear": {
+        "name": "Gear",
+        "title": "Gear that earns its place",
+        "body": "The NANOCORE, the parts around it and a few used guitars. Every unit is tested before it ships.",
+        "link": "Shop gear"
       },
-      "pedals": {
-        "name": "Pedals",
-        "detail": "Drive, delay, modulation and tuners"
+      "tones": {
+        "name": "Tones",
+        "title": "Tones built for your rig",
+        "body": "Tell us the song, your guitar and your pickups. We build the tones and send demos until you approve.",
+        "link": "How custom tones work"
       },
-      "amps": {
-        "name": "Amps",
-        "detail": "Valve and solid-state, tested before sale"
-      },
-      "parts": {
-        "name": "Parts and accessories",
-        "detail": "Pickups, knobs, strings and cases"
+      "care": {
+        "name": "Care",
+        "title": "Setups that make it play right",
+        "body": "Fresh strings to a full setup, at published prices. Drop it off by appointment or we send a courier.",
+        "link": "See prices"
       }
     },
-    "shopCta": "Browse the shop",
-    "repairsHeading": "Repairs at the bench",
-    "repairsIntro": "Tell us what’s wrong and we’ll quote first. Work starts only when you approve the price.",
-    "services": {
-      "setup": "Setups and string changes",
-      "frets": "Fret levelling, crowning and refrets",
-      "electronics": "Pickups, wiring and noisy pots",
-      "hardware": "Nuts, bridges and tuners"
+    "nanocore": {
+      "label": "The one we lead with",
+      "body": "A pocket amp-and-effects unit for practice, recording and the stage. One device, three ways to buy it.",
+      "variants": {
+        "device": "Device only",
+        "starter": "Starter Bundle",
+        "custom": "Custom Tone Bundle"
+      },
+      "pick": "Our pick",
+      "extraTone": "Extra custom tone, on either bundle",
+      "note": "Launch prices. Order on WhatsApp for now.",
+      "cta": "Ask about NANOCORE",
+      "photo": "NANOCORE photos coming soon"
     },
-    "repairsCta": "Book a repair",
-    "visitHeading": "Drop-off by appointment",
-    "visitBody": "We work from a home workshop in {location}, so there’s no walk-in shop. Message us to arrange a drop-off or collection, or we’ll send a courier anywhere in the UAE."
+    "why": {
+      "heading": "Why {brand}, <hl>not Amazon</hl>",
+      "warranty": {
+        "title": "Warranty here, not overseas",
+        "body": "{warrantyMonths} months on every device, handled in the UAE. No shipping it back to another continent."
+      },
+      "tested": {
+        "title": "Tested by us",
+        "body": "Every unit goes over our bench before it ships."
+      },
+      "tones": {
+        "title": "Tones that fit",
+        "body": "Built for your guitar and what you play through, not a generic preset."
+      },
+      "people": {
+        "title": "People, on WhatsApp",
+        "body": "Three players who answer in English or Arabic."
+      }
+    },
+    "care": {
+      "label": "Care",
+      "heading": "Guitar care, priced in public",
+      "note": "Starting prices. Every job is quoted before work starts."
+    },
+    "statement": {
+      "label": "Who it’s for",
+      "heading": "For players who’d rather spend on the gig than the logo."
+    }
   },
   "Photos": {
-    "hero": "A cream electric guitar with three pickups and a vibrato arm, lit against a black background",
-    "guitars": "Close-up of an electric guitar’s pickups, strings and vibrato arm",
-    "pedals": "A pedalboard of guitar effects pedals",
-    "amps": "Gain, treble, middle, bass and master knobs on a guitar amp",
-    "parts": "Tone knobs and the pickguard of a black electric guitar",
-    "bench": "A repairer at a workbench crowded with tools",
-    "strings": "Guitar strings over the frets in warm light, out of focus",
     "bend": "Black and white close-up of a hand bending a string on an electric guitar’s fretboard",
     "player": "Black and white photo of a guitarist playing a single-cut electric guitar on stage",
     "gig": "A guitarist on stage under blue lights, playing a sunburst electric guitar to a crowd",
@@ -84,21 +111,25 @@
   },
   "NotFound": {
     "title": "Page not found",
-    "body": "This page doesn’t exist, or it has moved.",
-    "home": "Go to the home page"
+    "body": "This page doesn’t exist, or it has moved. Try the home page or the shop.",
+    "home": "Go to the home page",
+    "label": "Error 404",
+    "shop": "Browse the shop"
   },
   "Nav": {
     "label": "Main",
     "shop": "Shop",
     "repairs": "Repairs",
     "sell": "Sell",
-    "contact": "Contact"
+    "contact": "Contact",
+    "about": "About",
+    "menu": "Menu"
   },
   "Shop": {
     "title": "Shop",
-    "description": "Used electric guitars, pedals, amps and parts from a home workshop in {location}. Every item is checked and photographed with its flaws; order on WhatsApp.",
-    "intro": "Every item is checked, set up and photographed with its flaws before it’s listed. Order anything on WhatsApp.",
-    "categoryDescription": "{category} for sale in {location}: checked, set up and photographed with every flaw. Order on WhatsApp.",
+    "description": "Gear tested by us and used electric guitars set up and photographed with every flaw, delivered across the {location}. Order on WhatsApp.",
+    "intro": "Gear we’ve tested ourselves, and used guitars set up and photographed with every flaw. Order anything on WhatsApp.",
+    "categoryDescription": "{category} from {brand}: tested, set up and photographed with every flaw, delivered across the {location}. Order on WhatsApp.",
     "categoriesLabel": "Categories",
     "all": "Everything",
     "results": "{count, plural, one {{n} item} other {{n} items}}",
@@ -146,7 +177,6 @@
     "askSimilar": "Ask about similar",
     "soldNote": "This one has found a new home. Tell us what you’re after and we’ll look out for something similar.",
     "soldOutNote": "Sold out for now. Ask us when more are coming in.",
-    "delivery": "Courier delivery across the UAE, or collection by appointment in {location}.",
     "condition": "Condition",
     "conditionGuide": "How we grade condition",
     "availability": "Availability",
@@ -178,6 +208,21 @@
       "next": "Next photo",
       "position": "Photo {current} of {total}",
       "show": "Show photo {n}"
+    },
+    "priceDrop": "Price drop",
+    "promises": {
+      "checked": {
+        "title": "Checked at our bench",
+        "body": "We test every unit, and play and set up every guitar, before it’s listed."
+      },
+      "delivery": {
+        "title": "Delivered across the {location}",
+        "body": "A courier to your door, or collection by appointment."
+      },
+      "returns": {
+        "title": "{returnDays} days to send it back",
+        "body": "Not what you expected? Tell us within {returnDays} days of delivery. <link>Returns policy</link>"
+      }
     }
   },
   "Condition": {
@@ -214,7 +259,7 @@
   },
   "Faq": {
     "title": "Questions and answers",
-    "description": "How we grade the condition of used guitars and gear, and answers about ordering, delivery, returns, repairs and selling us a guitar.",
+    "description": "How we grade used gear, and answers about ordering, custom tones, delivery, returns, repairs and selling us a guitar.",
     "conditionHeading": "How we grade condition",
     "conditionIntro": "Every used item gets one of these grades. Whatever the grade, the listing shows each flaw in the photos and says what it is, and you can ask on WhatsApp for more photos of anything.",
     "grades": {
@@ -240,7 +285,7 @@
           },
           "delivery": {
             "q": "Do you deliver?",
-            "a": "Yes, by courier anywhere in the UAE. You can also collect by appointment in {location}."
+            "a": "Yes, by courier anywhere in the UAE. You can also collect by appointment."
           },
           "payment": {
             "q": "How do I pay?",
@@ -253,6 +298,27 @@
           "several": {
             "q": "Can I buy several items together?",
             "a": "Yes. Order one on WhatsApp and tell us what else you’d like; we put everything in one order with one delivery fee."
+          }
+        }
+      },
+      "tones": {
+        "heading": "Custom tones",
+        "questions": {
+          "what": {
+            "q": "What is a custom tone?",
+            "a": "A preset for the NANOCORE, built for a song or sound you’re after and set for your guitar, pickups and tuning, and for what you play through."
+          },
+          "how": {
+            "q": "How is a custom tone made?",
+            "a": "You order with the tone details: the song, your guitar, pickups and tuning, and how you’ll use it. We build the tone and send you demo clips; you approve it or ask for a tweak. Up to {toneRounds} rounds of tweaks are included. Once you approve, we load it and ship."
+          },
+          "after": {
+            "q": "Can I change a tone after delivery?",
+            "a": "Tweaks happen before we ship, while you approve the demos. After delivery the tone stays as you approved it; another tone is a new order."
+          },
+          "names": {
+            "q": "Can you name a tone after my favourite band?",
+            "a": "We name tones by how they sound, never after a band. Tell us the band and song you’re after all the same: that stays between us."
           }
         }
       },
@@ -303,7 +369,7 @@
         "questions": {
           "visit": {
             "q": "Can I visit the shop?",
-            "a": "We work from a home workshop in {location}, so visits are by appointment. Message us on WhatsApp to arrange a time to see or try something."
+            "a": "We’re online first and don’t publish our workshop’s address, so visits are by appointment. Message us on WhatsApp to arrange a time to see or try something."
           },
           "language": {
             "q": "Which languages do you speak?",
@@ -349,9 +415,9 @@
     "fujairah": "Fujairah"
   },
   "Repairs": {
-    "title": "Guitar repairs",
-    "description": "Setups, fretwork, electronics and hardware repairs from a home workshop in {location}. We quote first; work starts only when you approve.",
-    "intro": "Setups, fretwork, electronics and hardware, from a home workshop in {location}. We check the instrument and quote first, and work starts only when you approve the price.",
+    "title": "Repairs and setups",
+    "description": "Setups, fretwork and electronics at published starting prices, for players across the {location}. We quote first; work starts only when you approve.",
+    "intro": "Setups, fretwork and electronics at published starting prices. We check the guitar and quote first; nothing starts until you say yes.",
     "bookCta": "Book a repair",
     "servicesHeading": "Services and starting prices",
     "servicesNote": "Prices are where a job starts. Every instrument is checked and quoted before any work, and you follow it all on your own ticket page.",
@@ -402,9 +468,9 @@
       }
     },
     "dropOffHeading": "Drop-off by appointment",
-    "dropOffBody": "We work from a home workshop in {location}, so drop-off and collection are by appointment. We’ll send the details on WhatsApp.",
+    "dropOffBody": "Drop-off and collection are by appointment. Our workshop address isn’t published, so we send the details on WhatsApp.",
     "courierHeading": "Courier pickup and delivery",
-    "courierBody": "Anywhere in the UAE. Pack the guitar in a hard case or a well-padded box; we’ll tell you the courier fee for your area before booking it.",
+    "courierBody": "From anywhere in the {location}. Pack the guitar in a hard case or a well-padded box; we tell you the courier fee for your area before booking it.",
     "bookHeading": "Book a repair",
     "bookIntro": "Tell us about the instrument and what it needs. We’ll reply on WhatsApp to arrange drop-off or a courier pickup.",
     "form": {
@@ -561,7 +627,7 @@
     "stale": "This quote changed while the page was open. Please reload to see the latest version.",
     "reload": "Reload",
     "needsTerms": "Please tick to accept the repair terms.",
-    "acceptTerms": "I accept the repair terms below.",
+    "acceptTerms": "I accept the repair terms above.",
     "termsHeading": "Repair terms",
     "terms": {
       "quote": "Work starts only after you approve the quote. If we find more to fix, we send a new quote and wait for your approval again.",
@@ -640,39 +706,45 @@
   },
   "About": {
     "title": "About us",
-    "description": "A small, home-based shop in {location} for used electric guitars, gear and repairs.",
-    "intro": "{brand} is a small, home-based guitar shop in {location}. We sell used electric guitars and gear, and repair guitars for players across the UAE.",
+    "heading": "Three players, one bench",
+    "description": "{brand} is three players in the {location} selling gear, building custom tones and looking after guitars, online first.",
+    "intro": "{brand} is three players in the {location}: one runs the business, one the bench and one the community. We sell gear we’d use ourselves, build tones for the music you play and look after your guitar.",
     "sections": {
-      "shop": {
-        "heading": "Every guitar checked before it’s listed",
-        "body": "We play every guitar we sell, set it up and fix what needs fixing before it goes in the shop. Then we photograph it, the actual guitar, flaws and all, and grade its condition honestly.\n\nWe’d rather you know about a ding before you buy than be surprised when it arrives."
+      "gear": {
+        "heading": "Gear we’d use ourselves",
+        "body": "We lead with the NANOCORE, a pocket amp-and-effects unit, sold with tones and a {warrantyMonths}-month warranty handled here in the {location}. Every unit is tested at our bench before it ships.\n\nUsed guitars are a side line. We play each one, set it up, photograph it flaws and all, and grade its condition honestly."
       },
-      "repairs": {
-        "heading": "Repairs that start with a quote",
-        "body": "From a basic setup to a full refret, we check the instrument first and quote before any work. You follow every step on your own ticket page, and we message you on WhatsApp whenever it changes."
+      "tones": {
+        "heading": "Tones built for your music",
+        "body": "Tell us the song you’re chasing, your guitar, pickups and tuning, and what you play through. We build the tones, send you demo clips and tweak them until you approve, then load them before the device ships.\n\nWe name tones by how they sound, never after a band."
       },
-      "home": {
-        "heading": "A home workshop, by appointment",
-        "body": "We work from home in {location}, so we don’t publish our address. Drop-off, collection and visits to try a guitar are by appointment, arranged on WhatsApp.\n\nFor everyone else in the UAE, there’s courier pickup and delivery."
+      "care": {
+        "heading": "Care at our bench",
+        "body": "From fresh strings to a full setup, our starting prices are published. We check the guitar and quote first, and you follow every step on your own ticket page, with a WhatsApp message whenever it changes."
+      },
+      "online": {
+        "heading": "Online first, by appointment",
+        "body": "There’s no shop floor, and we don’t publish our workshop’s address. Orders start on WhatsApp; drop-off and collection are by appointment, and couriers cover the rest of the {location}."
       }
     },
-    "shopCta": "Browse the shop",
-    "contactCta": "Get in touch"
+    "shopCta": "Shop gear",
+    "contactCta": "Talk to us"
   },
   "Contact": {
-    "title": "Contact us",
-    "description": "Message us on WhatsApp or call. A home-based guitar shop in {location}; visits by appointment.",
-    "intro": "WhatsApp is the quickest way to reach us, for orders, repairs or questions.",
+    "title": "Talk to us",
+    "description": "Message us on WhatsApp or call. Online across the {location}; visits by appointment.",
+    "intro": "WhatsApp is the quickest way to reach us, for orders, tones, repairs or a quick question. We answer in English or Arabic.",
     "whatsappHeading": "WhatsApp",
-    "whatsappBody": "Send us a message, a photo of your guitar or a link to an item. We reply as soon as we can.",
+    "whatsappBody": "Send a message, a photo of your guitar or a link to something you’ve seen. We reply as soon as we can.",
     "callHeading": "Call",
     "callBody": "Prefer to talk? Call the same number.",
     "visitHeading": "Visits by appointment",
-    "visitBody": "We work from a home workshop in {location}, so our address isn’t published. Message us to arrange drop-off, collection or a time to try a guitar, and we’ll send the location then.",
+    "visitBody": "We’re online first and don’t publish our workshop’s address. Message us to arrange a drop-off, a collection or a time to try a guitar, and we’ll send the location then.",
     "moreHeading": "Looking for something else?",
     "bookRepair": "Book a repair",
     "sell": "Sell us your guitar",
-    "faq": "Questions and answers"
+    "faq": "Questions and answers",
+    "socialHeading": "Follow us"
   },
   "Policies": {
     "updated": "Last updated {date}",
@@ -684,7 +756,7 @@
     "terms": {
       "title": "Terms of sale",
       "description": "How ordering, prices, holds and payment work when you buy from us.",
-      "intro": "These terms cover buying from {brand}, a home-based shop in {location}. By ordering from us you agree to them. They don’t affect your rights under UAE consumer protection law.",
+      "intro": "These terms cover buying from {brand}, an online-first shop in the {location}. By ordering from us you agree to them. They don’t affect your rights under UAE consumer protection law.",
       "sections": {
         "listings": {
           "heading": "Listings and condition",
@@ -708,7 +780,7 @@
         },
         "delivery": {
           "heading": "Delivery and collection",
-          "body": "We deliver across the UAE by courier, or you can collect by appointment in {location}. The delivery policy covers fees, times and what happens if something arrives damaged."
+          "body": "We deliver across the UAE by courier, or you can collect by appointment. The delivery policy covers fees, times and what happens if something arrives damaged."
         },
         "returns": {
           "heading": "Returns",
@@ -805,11 +877,11 @@
     "delivery": {
       "title": "Delivery",
       "description": "Courier delivery across the UAE, collection by appointment, fees and times.",
-      "intro": "We’re a home-based shop in {location}. You can collect by appointment, or we send your order by courier anywhere in the UAE.",
+      "intro": "We’re an online-first shop in the {location}. You can collect by appointment, or we send your order by courier anywhere in the UAE.",
       "sections": {
         "collection": {
           "heading": "Collection by appointment",
-          "body": "Collection is free. We agree a time on WhatsApp and send you the location then: our address isn’t published, because we work from home."
+          "body": "Collection is free. We agree a time on WhatsApp and send you the location then: our workshop’s address isn’t published."
         },
         "courier": {
           "heading": "Courier delivery",

@@ -64,16 +64,16 @@ export function PaymentsPanel({
     <Panel title="Payments">
       <dl className="mb-4 grid grid-cols-2 gap-3">
         <div>
-          <dt className="text-sm text-ink-muted">Paid</dt>
+          <dt className="text-sm text-grey-600">Paid</dt>
           <dd className="text-xl font-bold tabular-nums" data-testid="order-paid">
             {balance.paid}
           </dd>
         </div>
         <div>
-          <dt className="text-sm text-ink-muted">{balance.toRefund ? "To refund" : "Still due"}</dt>
+          <dt className="text-sm text-grey-600">{balance.toRefund ? "To refund" : "Still due"}</dt>
           <dd
             data-testid="order-due"
-            className={`text-xl font-bold tabular-nums ${balance.due || balance.toRefund ? "text-fiesta-deep" : ""}`}
+            className={`text-xl font-bold tabular-nums ${balance.due || balance.toRefund ? "text-red" : ""}`}
           >
             {balance.toRefund ?? balance.due ?? balance.settled ?? "Paid in full"}
           </dd>
@@ -81,14 +81,14 @@ export function PaymentsPanel({
       </dl>
 
       {payments.length > 0 && (
-        <ul className="mb-4 flex flex-col divide-y divide-mist">
+        <ul className="mb-4 flex flex-col divide-y divide-grey-300">
           {payments.map((payment) => (
             <li key={payment.id} className="flex flex-wrap items-center gap-3 py-2">
               <div className="min-w-0 flex-1">
                 <p className="font-medium">
                   {payment.label}: <span className="tabular-nums">{payment.amount}</span>
                 </p>
-                <p className="text-sm text-ink-muted">
+                <p className="text-sm text-grey-600">
                   {payment.at}
                   {payment.detail && ` · ${payment.detail}`}
                 </p>
@@ -110,12 +110,12 @@ export function PaymentsPanel({
       )}
 
       {blocked ? (
-        <p className="border-t border-mist pt-4">{blocked}</p>
+        <p className="border-t border-grey-300 pt-4">{blocked}</p>
       ) : (
         <ActionForm
           action={record}
           announce={setResult}
-          className="flex flex-col gap-4 border-t border-mist pt-4"
+          className="flex flex-col gap-4 border-t border-grey-300 pt-4"
         >
           {(pending, state) => {
             const e = state.errors ?? {};
@@ -184,7 +184,7 @@ export function PaymentsPanel({
       )}
       <p
         role="status"
-        className={result.ok === false ? "mt-3 font-medium text-fiesta-deep" : "mt-3 font-medium"}
+        className={result.ok === false ? "mt-3 font-medium text-red" : "mt-3 font-medium"}
       >
         {result.message}
       </p>

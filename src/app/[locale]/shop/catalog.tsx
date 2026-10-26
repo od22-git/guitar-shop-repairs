@@ -1,7 +1,11 @@
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { CatalogControls, type FilterGroup } from "@/components/catalog-controls";
-import { ProductCard } from "@/components/product-card";
+import { Badge } from "@/components/ui/badge";
+import { Container } from "@/components/ui/layout";
+import { Price } from "@/components/ui/price";
+import { ProductCard } from "@/components/ui/product-card";
+import { Heading, Label, Lead } from "@/components/ui/text";
 import { WhatsAppIcon } from "@/components/whatsapp-icon";
 import { getPathname, Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
@@ -17,7 +21,10 @@ import {
   queryParams,
   type SearchParams,
 } from "@/lib/catalog/filters";
+import { localized } from "@/lib/localized";
 import { FILS_PER_AED, formatMoney } from "@/lib/money";
+import { statusKey } from "@/lib/product-status";
+import type { PublicProduct } from "@/lib/public-dto";
 import { shopWhatsAppUrl } from "@/lib/whatsapp/shop-link";
 
 // The parts of /shop and /shop/[category] shared by both: the page heading with the
@@ -40,16 +47,28 @@ export async function ShopHeader({ category }: Props) {
   ];
 
   return (
-    <div className="mx-auto max-w-6xl px-4 pt-6 sm:px-6 md:pt-10">
-      <h1 className="text-4xl leading-tight font-extrabold tracking-tight text-balance sm:text-5xl rtl:leading-[1.3] rtl:tracking-normal">
+    <Container className="pt-10 md:pt-16">
+      {category && (
+        <Label as="p" className="mb-4 text-grey-600">
+          <Link
+            href="/shop"
+            className="underline decoration-blue underline-offset-4 hover:decoration-black"
+          >
+            {t("title")}
+          </Link>
+        </Label>
+      )}
+      <Heading level="headline" as="h1">
         {category?.name ?? t("title")}
-      </h1>
-      <p className="mt-3 max-w-[60ch] text-lg text-ink-subtle">{t("intro")}</p>
+      </Heading>
+      <Lead wide className="mt-6 text-grey-600">
+        {t("intro")}
+      </Lead>
       <nav
         aria-label={t("categoriesLabel")}
-        className="-mx-4 mt-6 overflow-x-auto px-4 sm:mx-0 sm:px-0"
+        className="-mx-5 mt-10 overflow-x-auto border-b border-black px-5 md:mx-0 md:px-0"
       >
-        <ul className="flex gap-1 whitespace-nowrap">
+        <ul className="flex gap-x-6 whitespace-nowrap">
           {links.map((link) => {
             const current = link.slug === (category?.slug ?? null);
             return (
@@ -57,7 +76,7 @@ export async function ShopHeader({ category }: Props) {
                 <Link
                   href={shopHref(link.slug)}
                   aria-current={current ? "page" : undefined}
-                  className={`inline-flex min-h-11 items-center rounded-sm px-3 font-medium underline-offset-[6px] hover:text-gold aria-[current=page]:font-bold aria-[current=page]:text-gold aria-[current=page]:underline aria-[current=page]:decoration-2 ${link.slug === null ? "ps-0" : ""}`}
+                  className="-mb-px inline-flex min-h-12 items-center border-b-4 border-transparent font-medium hover:border-grey-300 aria-[current=page]:border-blue aria-[current=page]:font-bold"
                 >
                   {link.name}
                 </Link>
@@ -66,7 +85,7 @@ export async function ShopHeader({ category }: Props) {
           })}
         </ul>
       </nav>
-    </div>
+    </Container>
   );
 }
 
@@ -74,14 +93,14 @@ export async function ShopHeader({ category }: Props) {
 export async function CatalogFallback() {
   const t = await getTranslations("Shop");
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6" aria-busy="true">
+    <Container className="pt-8 pb-20 md:pb-section" aria-busy="true">
       <p className="sr-only">{t("loading")}</p>
-      <ul className="grid grid-cols-2 gap-x-4 gap-y-10 md:ms-[15rem] md:grid-cols-3 md:ps-10 lg:ms-[17rem]">
+      <ul className="grid grid-cols-2 gap-x-4 gap-y-12 md:ms-[15rem] md:grid-cols-3 md:gap-x-6 md:ps-12 lg:ms-[16rem]">
         {Array.from({ length: 6 }, (_, i) => (
-          <li key={i} aria-hidden="true" className="aspect-[4/5] rounded-sm bg-rosewood/60" />
+          <li key={i} aria-hidden="true" className="aspect-[4/5] bg-grey-100" />
         ))}
       </ul>
-    </div>
+    </Container>
   );
 }
 
@@ -154,7 +173,7 @@ export async function CatalogResults({
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+    <Container className="pt-8 pb-20 md:pb-section">
       <CatalogControls
         action={getPathname({ href: shopHref(category?.slug ?? null), locale })}
         queryKey={queryKey.toString()}
@@ -196,24 +215,21 @@ export async function CatalogResults({
         resultCount={t("results", { count: results.length, n: String(results.length) })}
       >
         {results.length > 0 ? (
-          <ul className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 md:gap-x-6">
+          <ul className="grid grid-cols-2 gap-x-4 gap-y-12 md:grid-cols-3 md:gap-x-6">
             {results.map((product, i) => (
               <li key={product.slug}>
-                <ProductCard product={product} eager={i < 2} />
+                <ShopCard product={product} locale={locale} eager={i < 2} />
               </li>
             ))}
           </ul>
         ) : (
           <div className="max-w-[40ch] py-6">
-            <p className="text-lg font-semibold">
+            <p className="text-title font-extrabold font-stretch-semi-expanded rtl:leading-[1.4]">
               {isFiltered(query) ? t("empty") : t("emptyCategory")}
             </p>
             <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3">
               {isFiltered(query) && (
-                <Link
-                  href={shopHref(category?.slug ?? null)}
-                  className="inline-flex min-h-11 items-center font-semibold underline decoration-gold decoration-2 underline-offset-4 hover:text-gold"
-                >
+                <Link href={shopHref(category?.slug ?? null)} className={textLink}>
                   {t("clearFilters")}
                 </Link>
               )}
@@ -221,7 +237,7 @@ export async function CatalogResults({
                 href={askUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex min-h-11 items-center gap-2 font-semibold underline decoration-gold decoration-2 underline-offset-4 hover:text-gold"
+                className={`gap-2 ${textLink}`}
               >
                 <WhatsAppIcon className="size-5" />
                 {t("askStock")}
@@ -230,6 +246,57 @@ export async function CatalogResults({
           </div>
         )}
       </CatalogControls>
-    </div>
+    </Container>
+  );
+}
+
+const textLink =
+  "inline-flex min-h-11 items-center font-bold underline decoration-blue decoration-2 underline-offset-[6px] hover:decoration-black";
+
+/** A product in the shop grid: the price, or what replaced it, and a badge for its state. */
+async function ShopCard({
+  product,
+  locale,
+  eager,
+}: {
+  product: PublicProduct;
+  locale: Locale;
+  eager: boolean;
+}) {
+  const [t, tCondition] = await Promise.all([
+    getTranslations("Product"),
+    getTranslations("Condition"),
+  ]);
+  const status = statusKey(product);
+  const sold = product.status === "sold";
+
+  return (
+    <ProductCard
+      href={`/product/${product.slug}`}
+      title={localized(locale, product.titleEn, product.titleAr)}
+      locale={locale}
+      photo={product.images[0]?.src}
+      detail={tCondition(product.condition ?? "new")}
+      muted={sold}
+      eager={eager}
+      price={
+        sold ? (
+          <Label className="text-grey-600">{t(`status.${status}`)}</Label>
+        ) : (
+          <Price fils={product.priceFils} compareAtFils={product.compareAtFils} size="md" />
+        )
+      }
+      badge={
+        sold ? (
+          <Badge variant="solid">{t(`status.${status}`)}</Badge>
+        ) : product.status === "reserved" ? (
+          <Badge variant="outline" className="bg-white">
+            {t("status.reserved")}
+          </Badge>
+        ) : product.compareAtFils !== null ? (
+          <Badge>{t("priceDrop")}</Badge>
+        ) : undefined
+      }
+    />
   );
 }

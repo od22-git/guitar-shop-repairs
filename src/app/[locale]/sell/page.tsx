@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 
-import { formCard } from "@/components/form-parts";
+import { PageHero } from "@/components/page-hero";
 import { PhotoCredits } from "@/components/photo-credits";
-import { StockPhoto } from "@/components/stock-photo";
+import { buttonClass } from "@/components/ui/button";
+import { Container, Grid, RuledColumn, Section } from "@/components/ui/layout";
+import { Heading, Label } from "@/components/ui/text";
 import { productCondition } from "@/lib/db/schema";
 import { env } from "@/lib/env";
 import { MAX_SELL_PHOTOS } from "@/lib/inbox/sell-photos";
@@ -71,9 +73,6 @@ const photoProblems = [
   "failed",
 ] as const;
 
-const sectionHeadingClass =
-  "text-3xl leading-tight font-extrabold text-balance sm:text-4xl rtl:leading-[1.3]";
-
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
   const t = await getTranslations("Sell");
@@ -103,68 +102,58 @@ export default async function SellPage() {
 
   return (
     <>
-      <section aria-labelledby="sell-title" className="md:grid md:grid-cols-2">
-        <div className="relative aspect-[3/2] md:order-last md:aspect-auto md:min-h-[26rem]">
-          <StockPhoto
-            photo="guitars"
-            alt={tPhoto("guitars")}
-            sizes="(min-width: 768px) 50vw, 100vw"
-            eager
-          />
-        </div>
-        <div className="px-4 py-10 sm:px-6 md:self-center md:px-12 md:py-16 lg:px-16">
-          <div className="max-w-[32rem]">
-            <h1
-              id="sell-title"
-              className="text-4xl leading-tight font-extrabold tracking-tight text-balance sm:text-5xl rtl:leading-[1.3] rtl:tracking-normal"
-            >
-              {t("title")}
-            </h1>
-            <p className="mt-4 text-lg text-ink-subtle">{t("intro")}</p>
-            <a
-              href="#offer"
-              className="mt-8 inline-flex min-h-12 items-center rounded-sm bg-fiesta px-5 font-semibold text-white hover:bg-fiesta-deep"
-            >
-              {t("cta")}
-            </a>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        title={t("title")}
+        lead={t("intro")}
+        photo="knobs"
+        photoAlt={tPhoto("knobs")}
+        actions={
+          <a href="#offer" className={buttonClass("primary")}>
+            {t("cta")}
+          </a>
+        }
+      />
 
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <section aria-labelledby="how-heading" className="py-14 md:py-20">
-          <h2 id="how-heading" className={sectionHeadingClass}>
-            {t("howHeading")}
-          </h2>
-          <ol className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {steps.map((step, index) => (
-              <li key={step}>
-                <p aria-hidden="true" className="text-4xl font-extrabold text-gold tabular-nums">
-                  {index + 1}
-                </p>
-                <h3 className="mt-2 text-xl font-bold">{t(`steps.${step}.title`)}</h3>
-                <p className="mt-2 text-ink-subtle">{t(`steps.${step}.body`)}</p>
-              </li>
-            ))}
-          </ol>
-          <div className="mt-12 rounded-sm bg-rosewood p-6">
-            <h3 className="text-xl font-bold text-gold">{t("ownershipHeading")}</h3>
-            <p className="mt-2 max-w-[70ch]">{t("ownershipBody")}</p>
-          </div>
-        </section>
+      <Section aria-labelledby="how-heading" className="pt-0 md:pt-0">
+        <Heading level="headline" as="h2" id="how-heading">
+          {t("howHeading")}
+        </Heading>
+        <ol className="mt-12 grid grid-cols-4 gap-x-4 gap-y-10 md:mt-16 md:grid-cols-12 md:gap-x-6">
+          {steps.map((step, index) => (
+            <li key={step} className="col-span-4 sm:col-span-2 md:col-span-3">
+              <RuledColumn>
+                <Label as="p" aria-hidden="true" className="tabular-nums">
+                  {`0${index + 1}`}
+                </Label>
+                <h3 className="mt-6 text-xl font-extrabold font-stretch-semi-expanded md:mt-8">
+                  {t(`steps.${step}.title`)}
+                </h3>
+                <p className="mt-2 max-w-[40ch] text-grey-600">{t(`steps.${step}.body`)}</p>
+              </RuledColumn>
+            </li>
+          ))}
+        </ol>
+        <div className="mt-16 bg-grey-100 p-6 md:mt-20 md:p-8">
+          <h3 className="text-title font-extrabold tracking-[-0.01em] font-stretch-semi-expanded rtl:leading-[1.4] rtl:tracking-normal">
+            {t("ownershipHeading")}
+          </h3>
+          <p className="mt-3 max-w-[70ch]">{t("ownershipBody")}</p>
+        </div>
+      </Section>
 
-        <section
-          id="offer"
-          aria-labelledby="offer-heading"
-          className="scroll-mt-6 border-t border-mist/15 py-14 md:grid md:grid-cols-[1fr_1.4fr] md:gap-12 md:py-20"
-        >
-          <div>
-            <h2 id="offer-heading" className={sectionHeadingClass}>
+      <Section
+        id="offer"
+        aria-labelledby="offer-heading"
+        className="scroll-mt-6 border-t border-black"
+      >
+        <Grid className="gap-y-10">
+          <div className="col-span-4 md:col-span-4">
+            <Heading level="headline" as="h2" id="offer-heading">
               {t("formHeading")}
-            </h2>
-            <p className="mt-3 max-w-[45ch] text-lg text-ink-subtle">{t("formIntro")}</p>
+            </Heading>
+            <p className="mt-6 max-w-[40ch] text-lg text-grey-600">{t("formIntro")}</p>
           </div>
-          <div className={`mt-8 md:mt-0 ${formCard}`}>
+          <div className="col-span-4 md:col-span-7 md:col-start-6">
             <SellForm
               labels={labels}
               conditions={productCondition.enumValues.map((value) => ({
@@ -176,12 +165,12 @@ export default async function SellPage() {
               turnstileSiteKey={env.TURNSTILE_SITE_KEY}
             />
           </div>
-        </section>
+        </Grid>
+      </Section>
 
-        <div className="py-6">
-          <PhotoCredits photos={["guitars"]} />
-        </div>
-      </div>
+      <Container className="py-6">
+        <PhotoCredits photos={["knobs"]} tone="light" />
+      </Container>
     </>
   );
 }

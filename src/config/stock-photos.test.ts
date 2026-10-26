@@ -48,10 +48,10 @@ describe("stock photos", () => {
 
 describe("image loader", () => {
   it("picks the smallest stored width that covers the requested one", () => {
-    const src = stockPhotoSrc("hero");
-    expect(imageLoader({ src, width: 640 })).toBe("/images/stock/hero-640.webp");
-    expect(imageLoader({ src, width: 641 })).toBe("/images/stock/hero-1280.webp");
-    expect(imageLoader({ src, width: 1920 })).toBe("/images/stock/hero-1920.webp");
-    expect(imageLoader({ src, width: 3840 })).toBe("/images/stock/hero-1920.webp");
+    const src = stockPhotoSrc("bend");
+    expect(imageLoader({ src, width: 640 })).toBe("/images/stock/bend-640.webp");
+    expect(imageLoader({ src, width: 641 })).toBe("/images/stock/bend-1280.webp");
+    expect(imageLoader({ src, width: 1920 })).toBe("/images/stock/bend-1920.webp");
+    expect(imageLoader({ src, width: 3840 })).toBe("/images/stock/bend-1920.webp");
   });
 });

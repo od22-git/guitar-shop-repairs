@@ -7,7 +7,7 @@ import { postUpdateAction } from "../actions";
 /** Post update: a note with no status change, e.g. waiting for parts, with a new ETA. */
 export function UpdateForm({ ticketId }: { ticketId: number }) {
   return (
-    <section aria-labelledby="update-heading" className="rounded-lg bg-paper p-4 sm:p-6">
+    <section aria-labelledby="update-heading" className="rounded-lg bg-white p-4 sm:p-6">
       <h2 id="update-heading" className="mb-4 text-lg font-bold">
         Post update
       </h2>

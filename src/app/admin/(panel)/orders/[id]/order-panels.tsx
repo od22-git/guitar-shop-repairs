@@ -101,7 +101,7 @@ export function StatusPanel({
                     <input
                       type="checkbox"
                       name="restock"
-                      className="size-6 shrink-0 accent-fiesta"
+                      className="size-6 shrink-0 accent-black"
                     />
                     The items came back and go back into the shop
                   </label>
@@ -117,10 +117,7 @@ export function StatusPanel({
             }}
           </ActionForm>
         )}
-        <p
-          role="status"
-          className={result.ok === false ? "font-medium text-fiesta-deep" : "font-medium"}
-        >
+        <p role="status" className={result.ok === false ? "font-medium text-red" : "font-medium"}>
           {result.message}
         </p>
       </div>

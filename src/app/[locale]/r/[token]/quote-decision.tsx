@@ -2,7 +2,8 @@
 
 import { startTransition, useActionState, useEffect, useRef } from "react";
 
-import { checkClass, FieldError, submitClass } from "@/components/form-parts";
+import { buttonClass } from "@/components/ui/button";
+import { Checkbox, FieldError, formAlertClass } from "@/components/ui/field";
 
 import { decideQuoteAction, type DecisionState } from "./actions";
 
@@ -46,7 +47,7 @@ export function QuoteDecision({
 
   if (state.status === "approved" || state.status === "declined") {
     return (
-      <p role="status" className="font-semibold">
+      <p role="status" className="text-lg font-bold">
         {state.status === "approved" ? labels.approvedNow : labels.declinedNow}
       </p>
     );
@@ -66,27 +67,18 @@ export function QuoteDecision({
     >
       {needsTerms && (
         <div className="flex flex-col gap-1">
-          <label className="flex min-h-11 items-center gap-3">
-            <input
-              type="checkbox"
-              name="acceptTerms"
-              aria-invalid={state.status === "needs_terms" ? true : undefined}
-              aria-describedby={state.status === "needs_terms" ? "acceptTerms-error" : undefined}
-              className={checkClass}
-            />
-            <span className="font-semibold">{labels.acceptTerms}</span>
-          </label>
+          <Checkbox
+            name="acceptTerms"
+            label={labels.acceptTerms}
+            aria-invalid={state.status === "needs_terms" ? true : undefined}
+            aria-describedby={state.status === "needs_terms" ? "acceptTerms-error" : undefined}
+          />
           {state.status === "needs_terms" && (
             <FieldError name="acceptTerms">{labels.needsTerms}</FieldError>
           )}
         </div>
       )}
-      <div
-        ref={status}
-        tabIndex={-1}
-        role="alert"
-        className="font-semibold text-fiesta-deep empty:hidden focus:outline-none"
-      >
+      <div ref={status} tabIndex={-1} role="alert" className={formAlertClass}>
         {state.status === "stale" || state.status === "no_access" ? (
           <>
             {labels.stale}{" "}
@@ -106,7 +98,7 @@ export function QuoteDecision({
           name="decision"
           value="approved"
           disabled={pending}
-          className={submitClass}
+          className={buttonClass("primary")}
         >
           {pending ? labels.sending : labels.approve}
         </button>
@@ -115,7 +107,7 @@ export function QuoteDecision({
           name="decision"
           value="declined"
           disabled={pending}
-          className="inline-flex min-h-12 items-center justify-center rounded-sm border-2 border-ink px-6 font-semibold hover:bg-mist disabled:opacity-70"
+          className={buttonClass("secondary")}
         >
           {labels.decline}
         </button>

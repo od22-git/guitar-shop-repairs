@@ -9,6 +9,8 @@ export const brand = {
     en: "Big tone, no big-brand tax.",
     ar: "صوت كبير، بلا ضريبة الماركات.",
   },
+  /** The words of the tagline picked out in blue where it is the home page's headline. */
+  taglineHighlight: { en: "big-brand", ar: "الماركات" },
   // Online-first and UAE-wide; the home workshop's address is never published.
   location: { en: "UAE", ar: "الإمارات" },
   /**

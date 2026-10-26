@@ -4,7 +4,7 @@ import type { Metadata, Viewport } from "next";
 
 import { brand } from "@/config/brand";
 
-import { outfit, tajawal } from "../fonts";
+import { fontVariables } from "../fonts";
 
 import "../globals.css";
 
@@ -19,19 +19,15 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#4a2f27",
+  themeColor: "#0a0a0a",
 };
 
 export default function AdminLayout({ children }: LayoutProps<"/admin">) {
   return (
-    <html
-      lang="en"
-      dir="ltr"
-      className={`${outfit.variable} ${tajawal.variable} h-full antialiased [color-scheme:light]`}
-    >
-      <body className="surface-light flex min-h-full flex-col bg-mist text-ink">
+    <html lang="en" dir="ltr" className={`${fontVariables} h-full antialiased`}>
+      <body className="theme-midtown flex min-h-full flex-col bg-grey-100">
         {/* Every admin page reads the session, so it renders at request time. */}
-        <Suspense fallback={<p className="p-6 text-ink-muted">Loading…</p>}>{children}</Suspense>
+        <Suspense fallback={<p className="p-6 text-grey-600">Loading…</p>}>{children}</Suspense>
       </body>
     </html>
   );

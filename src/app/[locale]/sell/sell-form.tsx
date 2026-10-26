@@ -2,15 +2,17 @@
 
 import { startTransition, useActionState, useEffect, useRef, useState } from "react";
 
+import { Turnstile } from "@/components/turnstile";
+import { buttonClass } from "@/components/ui/button";
 import {
-  checkClass,
+  Checkbox,
+  Field,
   FieldError,
   fieldProps,
-  FormField,
+  formAlertClass,
   inputClass,
-  submitClass,
-} from "@/components/form-parts";
-import { Turnstile } from "@/components/turnstile";
+  selectClass,
+} from "@/components/ui/field";
 import { Link } from "@/i18n/navigation";
 import type { SellProblem } from "@/lib/inbox";
 import { shrinkPhoto } from "@/lib/photo-shrink";
@@ -145,9 +147,16 @@ export function SellForm({ labels, conditions, maxPhotos, locale, turnstileSiteK
 
   if (state.status === "sent") {
     return (
-      <div ref={done} tabIndex={-1} role="status" className="focus:outline-none">
-        <h3 className="text-xl font-bold">{labels.sentHeading}</h3>
-        <p className="mt-2">{labels.sentBody}</p>
+      <div
+        ref={done}
+        tabIndex={-1}
+        role="status"
+        className="border-t-4 border-black pt-6 focus:outline-none"
+      >
+        <h3 className="text-title font-extrabold font-stretch-semi-expanded rtl:leading-[1.4]">
+          {labels.sentHeading}
+        </h3>
+        <p className="mt-3 max-w-[50ch] text-lg">{labels.sentBody}</p>
       </div>
     );
   }
@@ -169,7 +178,7 @@ export function SellForm({ labels, conditions, maxPhotos, locale, turnstileSiteK
             : null;
   const optional = (label: string) => (
     <>
-      {label} <span className="font-normal text-ink-muted">({labels.optional})</span>
+      {label} <span className="font-normal text-grey-600">({labels.optional})</span>
     </>
   );
   const photoError = photos.length === 0 ? error("photos") : undefined;
@@ -177,19 +186,14 @@ export function SellForm({ labels, conditions, maxPhotos, locale, turnstileSiteK
   return (
     <form
       noValidate
-      className="flex flex-col gap-5"
+      className="flex flex-col gap-6"
       onSubmit={(event) => {
         event.preventDefault();
         const form = new FormData(event.currentTarget);
         startTransition(() => formAction(form));
       }}
     >
-      <p
-        ref={summary}
-        tabIndex={-1}
-        role="alert"
-        className="font-semibold text-fiesta-deep empty:hidden focus:outline-none"
-      >
+      <p ref={summary} tabIndex={-1} role="alert" className={formAlertClass}>
         {message}
       </p>
       <input type="hidden" name="locale" value={locale} />
@@ -201,15 +205,15 @@ export function SellForm({ labels, conditions, maxPhotos, locale, turnstileSiteK
         </label>
       </div>
 
-      <FormField label={labels.name} name="name" error={error("name")}>
+      <Field label={labels.name} name="name" error={error("name")}>
         <input
           {...fieldProps("name", error("name"))}
           autoComplete="name"
           maxLength={120}
           className={inputClass}
         />
-      </FormField>
-      <FormField label={labels.phone} name="phone" error={error("phone")} hint={labels.phoneHint}>
+      </Field>
+      <Field label={labels.phone} name="phone" error={error("phone")} hint={labels.phoneHint}>
         <input
           {...fieldProps("phone", error("phone"), true)}
           type="tel"
@@ -217,29 +221,31 @@ export function SellForm({ labels, conditions, maxPhotos, locale, turnstileSiteK
           autoComplete="tel"
           dir="ltr"
           maxLength={40}
-          className={`${inputClass} rtl:text-end`}
+          className={`${inputClass} text-start rtl:text-end`}
         />
-      </FormField>
+      </Field>
 
-      <fieldset className="flex flex-col gap-4">
-        <legend className="mb-1 text-lg font-bold">{labels.guitarHeading}</legend>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <FormField label={labels.brand} name="brand" error={error("brand")}>
+      <fieldset className="flex flex-col gap-6 border-t border-black pt-6">
+        <legend className="float-start mb-2 w-full text-title font-extrabold font-stretch-semi-expanded rtl:leading-[1.4]">
+          {labels.guitarHeading}
+        </legend>
+        <div className="grid gap-6 sm:grid-cols-2">
+          <Field label={labels.brand} name="brand" error={error("brand")}>
             <input {...fieldProps("brand", error("brand"))} maxLength={80} className={inputClass} />
-          </FormField>
-          <FormField label={optional(labels.model)} name="model" error={error("model")}>
+          </Field>
+          <Field label={optional(labels.model)} name="model" error={error("model")}>
             <input {...fieldProps("model", error("model"))} maxLength={80} className={inputClass} />
-          </FormField>
-          <FormField label={optional(labels.year)} name="year" error={error("year")}>
+          </Field>
+          <Field label={optional(labels.year)} name="year" error={error("year")}>
             <input
               {...fieldProps("year", error("year"))}
               inputMode="numeric"
               dir="ltr"
               maxLength={4}
-              className={`${inputClass} rtl:text-end`}
+              className={`${inputClass} text-start rtl:text-end`}
             />
-          </FormField>
-          <FormField
+          </Field>
+          <Field
             label={optional(labels.serial)}
             name="serial"
             error={error("serial")}
@@ -250,16 +256,20 @@ export function SellForm({ labels, conditions, maxPhotos, locale, turnstileSiteK
               dir="ltr"
               autoComplete="off"
               maxLength={60}
-              className={`${inputClass} rtl:text-end`}
+              className={`${inputClass} text-start rtl:text-end`}
             />
-          </FormField>
-          <FormField
+          </Field>
+          <Field
             label={labels.condition}
             name="condition"
             error={error("condition")}
             hint={
               // A new tab, so what's typed here stays.
-              <Link href="/faq#condition" target="_blank" className="underline underline-offset-4">
+              <Link
+                href="/faq#condition"
+                target="_blank"
+                className="underline decoration-blue underline-offset-4 hover:decoration-black"
+              >
                 {labels.conditionHint}
               </Link>
             }
@@ -267,7 +277,7 @@ export function SellForm({ labels, conditions, maxPhotos, locale, turnstileSiteK
             <select
               {...fieldProps("condition", error("condition"), true)}
               defaultValue=""
-              className={inputClass}
+              className={selectClass}
             >
               <option value="" disabled>
                 {labels.chooseCondition}
@@ -278,8 +288,8 @@ export function SellForm({ labels, conditions, maxPhotos, locale, turnstileSiteK
                 </option>
               ))}
             </select>
-          </FormField>
-          <FormField
+          </Field>
+          <Field
             label={optional(labels.askingPrice)}
             name="askingPrice"
             error={error("askingPrice")}
@@ -290,11 +300,11 @@ export function SellForm({ labels, conditions, maxPhotos, locale, turnstileSiteK
               inputMode="decimal"
               dir="ltr"
               maxLength={12}
-              className={`${inputClass} rtl:text-end`}
+              className={`${inputClass} text-start rtl:text-end`}
             />
-          </FormField>
+          </Field>
         </div>
-        <FormField
+        <Field
           label={labels.description}
           name="description"
           error={error("description")}
@@ -306,15 +316,17 @@ export function SellForm({ labels, conditions, maxPhotos, locale, turnstileSiteK
             maxLength={2000}
             className={inputClass}
           />
-        </FormField>
+        </Field>
       </fieldset>
 
       <fieldset
-        className="flex flex-col gap-3"
+        className="flex flex-col gap-3 border-t border-black pt-6"
         aria-describedby={`photos-hint${photoError ? " photos-error" : ""}`}
       >
-        <legend className="mb-1 text-lg font-bold">{labels.photosHeading}</legend>
-        <p id="photos-hint" className="text-sm text-ink-muted">
+        <legend className="float-start w-full text-title font-extrabold font-stretch-semi-expanded rtl:leading-[1.4]">
+          {labels.photosHeading}
+        </legend>
+        <p id="photos-hint" className="text-sm text-grey-600">
           {fill(labels.photosHint, { max: maxPhotos })}
         </p>
         {photos.length > 0 && (
@@ -326,13 +338,13 @@ export function SellForm({ labels, conditions, maxPhotos, locale, turnstileSiteK
                 <img
                   src={photo.preview}
                   alt={fill(labels.photoAlt, { n: index + 1 })}
-                  className="aspect-square w-full rounded-sm object-cover"
+                  className="aspect-square w-full bg-grey-100 object-cover"
                 />
                 <input type="hidden" name="photo" value={photo.token} />
                 <button
                   type="button"
                   onClick={() => remove(photo)}
-                  className="mt-1 min-h-11 w-full rounded-sm border border-ink-muted px-2 text-sm font-semibold hover:bg-white"
+                  className="mt-1 min-h-11 w-full border border-black px-2 text-sm font-bold hover:bg-black hover:text-white"
                 >
                   {labels.removePhoto}
                   <span className="sr-only"> {index + 1}</span>
@@ -344,7 +356,7 @@ export function SellForm({ labels, conditions, maxPhotos, locale, turnstileSiteK
         {photos.length < maxPhotos && (
           <label
             htmlFor="sell-photos"
-            className="inline-flex min-h-11 cursor-pointer items-center self-start rounded-sm border-2 border-ink px-4 font-semibold hover:bg-white has-focus-visible:outline-2 has-focus-visible:outline-offset-2"
+            className={`${buttonClass("secondary")} cursor-pointer self-start has-focus-visible:outline-3 has-focus-visible:outline-offset-3 has-focus-visible:outline-blue`}
           >
             {uploading ? labels.uploadingButton : labels.addPhotos}
             <input
@@ -362,36 +374,28 @@ export function SellForm({ labels, conditions, maxPhotos, locale, turnstileSiteK
             />
           </label>
         )}
-        <p role="status" className="text-sm text-ink-muted empty:hidden">
+        <p role="status" className="text-sm text-grey-600 empty:hidden">
           {photoStatus}
         </p>
         {photoError && <FieldError name="photos">{photoError}</FieldError>}
       </fieldset>
 
-      <div className="flex flex-col gap-1">
-        <label className="flex min-h-11 items-center gap-3">
-          <input
-            type="checkbox"
-            name="ownership"
-            aria-invalid={error("ownership") ? true : undefined}
-            aria-describedby={error("ownership") ? "ownership-error" : undefined}
-            className={checkClass}
-          />
-          <span>{labels.ownership}</span>
-        </label>
+      <div className="flex flex-col gap-1 border-t border-black pt-4">
+        <Checkbox
+          name="ownership"
+          label={labels.ownership}
+          aria-invalid={error("ownership") ? true : undefined}
+          aria-describedby={error("ownership") ? "ownership-error" : undefined}
+        />
         {error("ownership") && <FieldError name="ownership">{error("ownership")}</FieldError>}
       </div>
       <div className="flex flex-col gap-1">
-        <label className="flex min-h-11 items-center gap-3">
-          <input
-            type="checkbox"
-            name="whatsappConsent"
-            aria-invalid={error("whatsappConsent") ? true : undefined}
-            aria-describedby={error("whatsappConsent") ? "whatsappConsent-error" : undefined}
-            className={checkClass}
-          />
-          <span>{labels.consent}</span>
-        </label>
+        <Checkbox
+          name="whatsappConsent"
+          label={labels.consent}
+          aria-invalid={error("whatsappConsent") ? true : undefined}
+          aria-describedby={error("whatsappConsent") ? "whatsappConsent-error" : undefined}
+        />
         {error("whatsappConsent") && (
           <FieldError name="whatsappConsent">{error("whatsappConsent")}</FieldError>
         )}
@@ -403,7 +407,11 @@ export function SellForm({ labels, conditions, maxPhotos, locale, turnstileSiteK
         resetKey={state.status === "idle" ? 0 : state.at}
       />
 
-      <button type="submit" disabled={pending || uploading} className={`${submitClass} self-start`}>
+      <button
+        type="submit"
+        disabled={pending || uploading}
+        className={`${buttonClass("primary")} max-sm:w-full sm:self-start`}
+      >
         {pending ? labels.sending : labels.submit}
       </button>
     </form>

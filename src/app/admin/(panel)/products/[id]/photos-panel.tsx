@@ -23,13 +23,13 @@ export function PhotosPanel({ productId, photos }: { productId: number; photos: 
   return (
     <section
       aria-labelledby="photos-heading"
-      className="flex flex-col gap-4 rounded-lg bg-paper p-4 sm:p-6"
+      className="flex flex-col gap-4 rounded-lg bg-white p-4 sm:p-6"
     >
       <div>
         <h2 id="photos-heading" className="text-lg font-bold">
           Photos
         </h2>
-        <p className="text-ink-muted">
+        <p className="text-grey-600">
           The first photo is the main one. Shoot the front, back, headstock and every flaw.
         </p>
       </div>
@@ -39,7 +39,7 @@ export function PhotosPanel({ productId, photos }: { productId: number; photos: 
           {photos.map((photo, index) => (
             <li
               key={photo.id}
-              className="flex flex-col gap-3 border-b border-mist pb-4 sm:flex-row"
+              className="flex flex-col gap-3 border-b border-grey-300 pb-4 sm:flex-row"
             >
               <Image
                 src={photo.src}
@@ -47,7 +47,7 @@ export function PhotosPanel({ productId, photos }: { productId: number; photos: 
                 width={photo.width}
                 height={photo.height}
                 sizes="160px"
-                className="h-auto w-40 shrink-0 self-start rounded-md bg-mist"
+                className="h-auto w-40 shrink-0 self-start rounded-md bg-grey-100"
               />
               <div className="flex flex-1 flex-col gap-2">
                 <ActionForm

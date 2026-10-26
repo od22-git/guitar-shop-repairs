@@ -13,6 +13,9 @@ import {
 
 import { usePathname, useRouter } from "@/i18n/navigation";
 
+import { buttonClass } from "./ui/button";
+import { selectClass } from "./ui/field";
+
 export type FilterOption = { value: string; label: string; translate?: boolean };
 
 export type FilterGroup = {
@@ -67,8 +70,9 @@ function editedSinceRender(form: HTMLFormElement): boolean {
   });
 }
 
-const selectClass =
-  "min-h-11 rounded-sm border border-ink-subtle bg-ink px-3 text-mist hover:border-mist";
+// The group names, styled like <Label> (a client component can't render the server one).
+const legendClass =
+  "font-mono text-label font-medium tracking-[0.08em] text-grey-600 uppercase rtl:font-grotesk rtl:text-sm rtl:tracking-normal";
 
 /**
  * The shop's filter form around the server-rendered results. Every change updates the
@@ -137,14 +141,14 @@ export function CatalogControls(props: Props) {
       method="get"
       onChange={apply}
       onSubmit={showResults}
-      className="md:grid md:grid-cols-[13rem_1fr] md:gap-x-10 lg:grid-cols-[15rem_1fr]"
+      className="md:grid md:grid-cols-[13rem_1fr] md:gap-x-12 lg:grid-cols-[14rem_1fr] lg:gap-x-[calc(2rem+2vw)]"
     >
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-mist/15 pb-4 md:col-start-2">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-grey-300 pb-4 md:col-start-2">
         <p
           id={resultsId}
           tabIndex={-1}
           aria-live="polite"
-          className="w-full font-semibold focus:outline-none md:w-auto"
+          className="w-full font-bold focus:outline-none md:w-auto"
         >
           {props.resultCount}
         </p>
@@ -154,17 +158,17 @@ export function CatalogControls(props: Props) {
             aria-expanded={open}
             aria-controls={panelId}
             onClick={() => setOpen((value) => !value)}
-            className="min-h-11 rounded-sm border border-ink-subtle px-4 font-semibold hover:border-mist md:hidden"
+            className="min-h-13 border-2 border-black px-5 font-bold hover:bg-black hover:text-white md:hidden"
           >
             {labels.toggle}
             {activeCount > 0 && ` (${activeCount})`}
           </button>
           <label className="flex min-w-0 flex-1 items-center justify-end gap-2">
-            <span className="text-sm whitespace-nowrap text-ink-subtle">{sort.label}</span>
+            <span className="text-sm whitespace-nowrap text-grey-600">{sort.label}</span>
             <select
               name={sort.name}
               defaultValue={sort.value}
-              className={`min-w-0 flex-1 md:flex-none ${selectClass}`}
+              className={`min-w-0 flex-1 md:w-auto md:flex-none ${selectClass}`}
             >
               {sort.options.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -178,24 +182,24 @@ export function CatalogControls(props: Props) {
 
       <div
         id={panelId}
-        className={`${open ? "" : "hidden"} border-b border-mist/15 md:col-start-1 md:row-span-2 md:row-start-1 md:block md:border-b-0`}
+        className={`${open ? "" : "hidden"} border-b border-black md:col-start-1 md:row-span-2 md:row-start-1 md:block md:border-b-0`}
       >
         <h2 className="sr-only">{labels.heading}</h2>
-        <label className="flex min-h-11 items-center gap-3 py-2 font-semibold">
+        <label className="flex min-h-12 items-center gap-3 border-t border-black py-2 font-bold md:border-t-0">
           <input
             type="checkbox"
             name={availableOnly.name}
             value="1"
             defaultChecked={availableOnly.checked}
-            className="size-5 accent-gold"
+            className="size-5 accent-black"
           />
           {availableOnly.label}
         </label>
 
         {groups.map((group) => (
-          <fieldset key={group.name} className="border-t border-mist/15 pt-1 pb-3">
+          <fieldset key={group.name} className="border-t border-grey-300 pt-2 pb-3">
             <legend className="sr-only">{group.legend}</legend>
-            <p aria-hidden="true" className="pt-2 pb-1 font-bold text-gold">
+            <p aria-hidden="true" className={`pt-2 pb-1 ${legendClass}`}>
               {group.legend}
             </p>
             {group.options.map((option) => (
@@ -205,7 +209,7 @@ export function CatalogControls(props: Props) {
                   name={group.name}
                   value={option.value}
                   defaultChecked={group.selected.includes(option.value)}
-                  className="size-5 shrink-0 accent-gold"
+                  className="size-5 shrink-0 accent-black"
                 />
                 <span translate={option.translate === false ? "no" : undefined}>
                   {option.label}
@@ -215,19 +219,19 @@ export function CatalogControls(props: Props) {
           </fieldset>
         ))}
 
-        <fieldset className="border-t border-mist/15 pt-1 pb-3">
+        <fieldset className="border-t border-grey-300 pt-2 pb-3">
           <legend className="sr-only">{price.legend}</legend>
-          <p aria-hidden="true" className="pt-2 pb-2 font-bold text-gold">
+          <p aria-hidden="true" className={`pt-2 pb-2 ${legendClass}`}>
             {price.legend}
           </p>
           <div className="grid grid-cols-2 gap-3">
             {[price.min, price.max].map((limit) => (
               <label key={limit.name} className="grid min-w-0 gap-1">
-                <span className="text-sm text-ink-subtle">{limit.label}</span>
+                <span className="text-sm text-grey-600">{limit.label}</span>
                 <select
                   name={limit.name}
                   defaultValue={limit.value}
-                  className={`w-full min-w-0 ${selectClass}`}
+                  className={`min-w-0 ${selectClass}`}
                 >
                   <option value="">{price.anyLabel}</option>
                   {price.options.map((option) => (
@@ -244,7 +248,7 @@ export function CatalogControls(props: Props) {
         {/* Phones: closes the panel to show the results. Without JavaScript it submits. */}
         <button
           type="submit"
-          className={`mb-4 inline-flex min-h-12 w-full items-center justify-center rounded-sm bg-fiesta px-5 font-semibold text-white hover:bg-fiesta-deep ${hydrated ? "md:hidden" : ""}`}
+          className={`mb-6 w-full ${buttonClass("primary")} ${hydrated ? "md:hidden" : ""}`}
         >
           {labels.apply}
         </button>

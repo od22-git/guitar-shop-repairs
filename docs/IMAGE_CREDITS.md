@@ -6,34 +6,20 @@ Allowed sources: the owner's photos, or free-licence stock from Unsplash or Pexe
 
 ## Stock images
 
-The M1b atmosphere set, approved by the owner from [`design/m1b/contact-sheet.jpg`](design/m1b/contact-sheet.jpg) (numbers 01–07) in October 2026. All are under the [Unsplash License](https://unsplash.com/license): free for commercial use, no permission needed. Attribution isn't required, but the home page credits each photographer anyway (`src/components/photo-credits.tsx`). Unsplash+ photos were excluded from the search.
+The Midtown Gears atmosphere set, picked in October 2026 (M9a) for the bold editorial redesign from [`design/m9a/contact-sheet.jpg`](design/m9a/contact-sheet.jpg); the owner asked Claude to choose. All are under the [Unsplash License](https://unsplash.com/license): free for commercial use, no permission needed. Attribution isn't required, but each page credits the photographers of its photos anyway (`src/components/photo-credits.tsx`). Unsplash+ photos were excluded from the search.
 
-Files are in `public/images/stock/` as `<key>-<width>.webp`, at widths 640, 1280 and 1920. Each was fetched once from Unsplash's image CDN, cropped to the listed aspect ratio (`?w=<width>&h=<height>&fit=crop&fm=webp&q=70`), and each download was registered with Unsplash's download endpoint as their API guidelines ask. The site serves its own copies and never loads images from Unsplash. Photographer, aspect ratio and alt text for each key are in `src/config/stock-photos.ts` and `messages/*.json` (`Photos`).
-
-| Key | Used for | Source | Author | Aspect |
-|---|---|---|---|---|
-| `hero` | Home hero | https://unsplash.com/photos/6A0YGZjHnhI | [Dominik Scythe](https://unsplash.com/@drscythe) | 4:5 |
-| `guitars` | Home, "Electric guitars" | https://unsplash.com/photos/HgXhGxLQL7Q | [Nestor Mehanikov](https://unsplash.com/@nestormehanikov) | 3:4 |
-| `pedals` | Home, "Pedals" | https://unsplash.com/photos/tVi650LKjYI | [Luis Morera](https://unsplash.com/@luismorerat) | 3:4 |
-| `amps` | Home, "Amps" | https://unsplash.com/photos/ItqhAPGc7qM | [Ksenia Pixelesse](https://unsplash.com/@pixelesse) | 3:4 |
-| `parts` | Home, "Parts and accessories" | https://unsplash.com/photos/d8FzwoW80H0 | [byVlado](https://unsplash.com/@vlado_) | 3:4 |
-| `bench` | Home, repairs section | https://unsplash.com/photos/j69zgeO8IlI | [Michel Stockman](https://unsplash.com/@michelstock) | 3:2 |
-| `strings` | Home, "Drop-off by appointment" band | https://unsplash.com/photos/1Pzhr6XPl6k | [Derek Story](https://unsplash.com/@derekstory) | 2:1 |
-
-### M9a set (Midtown Gears)
-
-Picked in October 2026 for the bold editorial redesign from [`design/m9a/contact-sheet.jpg`](design/m9a/contact-sheet.jpg); the owner asked Claude to choose. Same licence, files and process as above. Shown in black and white with a CSS filter where a page calls for it (the files are the photographers' originals), except `gig`, whose blue light suits the palette.
+Files are in `public/images/stock/` as `<key>-<width>.webp`, at widths 640, 1280 and 1920. Each was fetched once from Unsplash's image CDN, cropped to the listed aspect ratio (`?w=<width>&h=<height>&fit=crop&fm=webp&q=70`), and each download was registered with Unsplash's download endpoint as their API guidelines ask. The site serves its own copies and never loads images from Unsplash. Photographer, aspect ratio and alt text for each key are in `src/config/stock-photos.ts` and `messages/*.json` (`Photos`). Pages show them in black and white with a CSS filter (the files are the photographers' originals), except `gig`, whose blue light suits the palette.
 
 | Key | Contact sheet | Used for | Source | Author | Aspect |
 |---|---|---|---|---|---|
-| `bend` | 01 | Home hero (M9b) | https://unsplash.com/photos/C7RFkKvThG4 | [Caio Silva](https://unsplash.com/@caaaaaaaaaio) | 3:2 |
-| `player` | 03 | "Who it’s for" band | https://unsplash.com/photos/KN6fiY-nCIM | [Daniel Tafjord](https://unsplash.com/@danieltafjord) | 3:2 |
-| `gig` | 05 | Gigs and handover points | https://unsplash.com/photos/gioH4gHo0-g | [Marcus Neto](https://unsplash.com/@marcusneto) | 3:2 |
-| `knobs` | 06 | Tones | https://unsplash.com/photos/BX5LN7QmqvM | [Isak Photography](https://unsplash.com/@isak_photography) | 2:3 |
-| `workbench` | 09 | Care and services | https://unsplash.com/photos/ii9TaOZhHwU | [Juan Pablo Ramirez](https://unsplash.com/@jpablorato) | 3:2 |
-| `jam` | 10 | Community, jams | https://unsplash.com/photos/JK4BYBb5HnQ | [Jackie Alexander](https://unsplash.com/@jac_kie_co) | 3:2 |
+| `bend` | 01 | Home hero | https://unsplash.com/photos/C7RFkKvThG4 | [Caio Silva](https://unsplash.com/@caaaaaaaaaio) | 3:2 |
+| `player` | 03 | Home, "Who it’s for" band | https://unsplash.com/photos/KN6fiY-nCIM | [Daniel Tafjord](https://unsplash.com/@danieltafjord) | 3:2 |
+| `gig` | 05 | Design system page; later gigs and handover points | https://unsplash.com/photos/gioH4gHo0-g | [Marcus Neto](https://unsplash.com/@marcusneto) | 3:2 |
+| `knobs` | 06 | Sell page; later tones | https://unsplash.com/photos/BX5LN7QmqvM | [Isak Photography](https://unsplash.com/@isak_photography) | 2:3 |
+| `workbench` | 09 | Home, care prices; repairs page | https://unsplash.com/photos/ii9TaOZhHwU | [Juan Pablo Ramirez](https://unsplash.com/@jpablorato) | 3:2 |
+| `jam` | 10 | About page | https://unsplash.com/photos/JK4BYBb5HnQ | [Jackie Alexander](https://unsplash.com/@jac_kie_co) | 3:2 |
 
-The M1b set above stays until M9b moves the pages to this one.
+The M1b set (`hero`, `guitars`, `pedals`, `amps`, `parts`, `bench`, `strings`, from [`design/m1b/contact-sheet.jpg`](design/m1b/contact-sheet.jpg)) was removed in M9b with the dark look it was picked for.
 
 To replace one with your own photo, save it at the same three widths and aspect ratio under the same key, and move its row to an "Owner's photos" section.
 

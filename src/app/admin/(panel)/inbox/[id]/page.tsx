@@ -68,7 +68,7 @@ export default async function InboxItemPage({ params }: PageProps<"/admin/inbox/
         <h1 className="text-2xl font-bold">
           {kindLabels[item.kind]} · {item.name}
         </h1>
-        <p className="text-ink-muted">
+        <p className="text-grey-600">
           {inboxStatusLabels[item.status]} · sent {formatDateTime(item.createdAt, "en")} · in{" "}
           {item.locale === "ar" ? "Arabic" : "English"}
         </p>
@@ -79,7 +79,7 @@ export default async function InboxItemPage({ params }: PageProps<"/admin/inbox/
       </div>
 
       {details.length > 0 && (
-        <section aria-labelledby="details-heading" className="rounded-lg bg-paper p-4 sm:p-6">
+        <section aria-labelledby="details-heading" className="rounded-lg bg-white p-4 sm:p-6">
           <h2 id="details-heading" className="mb-3 text-lg font-bold">
             Details
           </h2>
@@ -88,7 +88,7 @@ export default async function InboxItemPage({ params }: PageProps<"/admin/inbox/
               .filter((entry): entry is [string, string] => Boolean(entry[1]))
               .map(([label, value]) => (
                 <div key={label}>
-                  <dt className="text-sm text-ink-muted">{label}</dt>
+                  <dt className="text-sm text-grey-600">{label}</dt>
                   <dd dir="auto" className="whitespace-pre-line">
                     {value}
                   </dd>
@@ -99,11 +99,11 @@ export default async function InboxItemPage({ params }: PageProps<"/admin/inbox/
       )}
 
       {item.photoKeys.length > 0 && (
-        <section aria-labelledby="photos-heading" className="rounded-lg bg-paper p-4 sm:p-6">
+        <section aria-labelledby="photos-heading" className="rounded-lg bg-white p-4 sm:p-6">
           <h2 id="photos-heading" className="mb-3 text-lg font-bold">
             Photos
           </h2>
-          <p className="mb-3 text-sm text-ink-muted">Private: only you can see them.</p>
+          <p className="mb-3 text-sm text-grey-600">Private: only you can see them.</p>
           <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             {item.photoKeys.map((key, index) => (
               <li key={key}>
@@ -123,7 +123,7 @@ export default async function InboxItemPage({ params }: PageProps<"/admin/inbox/
       )}
 
       {item.convertedTicketId && (
-        <p className="rounded-lg bg-paper p-4">
+        <p className="rounded-lg bg-white p-4">
           <Link
             href={`/admin/repairs/${item.convertedTicketId}`}
             className="font-semibold underline underline-offset-4"
@@ -133,7 +133,7 @@ export default async function InboxItemPage({ params }: PageProps<"/admin/inbox/
         </p>
       )}
 
-      <section aria-labelledby="actions-heading" className="rounded-lg bg-paper p-4 sm:p-6">
+      <section aria-labelledby="actions-heading" className="rounded-lg bg-white p-4 sm:p-6">
         <h2 id="actions-heading" className="mb-3 text-lg font-bold">
           Next step
         </h2>

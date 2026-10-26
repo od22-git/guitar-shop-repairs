@@ -1,5 +1,5 @@
-// Free-licence atmosphere photos from Unsplash, approved by the owner from contact sheets
-// (M1b: docs/design/m1b/contact-sheet.jpg; M9a: docs/design/m9a/contact-sheet.jpg). Each is stored in public/images/stock as
+// Free-licence atmosphere photos from Unsplash, picked from a contact sheet
+// (docs/design/m9a/contact-sheet.jpg). Each is stored in public/images/stock as
 // `<key>-<width>.webp`, one file per width in `stockPhotoWidths`, cropped to `aspect`.
 // Every entry must also be listed in docs/IMAGE_CREDITS.md (checked by stock-photos.test.ts).
 // Alt text lives in messages/{en,ar}.json under "Photos.<key>".
@@ -17,45 +17,8 @@ export type StockPhoto = {
 };
 
 export const stockPhotos = {
-  hero: {
-    unsplashId: "6A0YGZjHnhI",
-    author: "Dominik Scythe",
-    username: "drscythe",
-    aspect: [4, 5],
-  },
-  guitars: {
-    unsplashId: "HgXhGxLQL7Q",
-    author: "Nestor Mehanikov",
-    username: "nestormehanikov",
-    aspect: [3, 4],
-  },
-  pedals: {
-    unsplashId: "tVi650LKjYI",
-    author: "Luis Morera",
-    username: "luismorerat",
-    aspect: [3, 4],
-  },
-  amps: {
-    unsplashId: "ItqhAPGc7qM",
-    author: "Ksenia Pixelesse",
-    username: "pixelesse",
-    aspect: [3, 4],
-  },
-  parts: { unsplashId: "d8FzwoW80H0", author: "byVlado", username: "vlado_", aspect: [3, 4] },
-  bench: {
-    unsplashId: "j69zgeO8IlI",
-    author: "Michel Stockman",
-    username: "michelstock",
-    aspect: [3, 2],
-  },
-  strings: {
-    unsplashId: "1Pzhr6XPl6k",
-    author: "Derek Story",
-    username: "derekstory",
-    aspect: [2, 1],
-  },
-  // M9a: the Midtown Gears set, for the redesigned pages (M9b). Shown in black and white
-  // where a page calls for it (grayscale), except the blue-lit gig.
+  // The Midtown Gears set (M9a). Shown in black and white (grayscale), except the
+  // blue-lit gig.
   bend: {
     unsplashId: "C7RFkKvThG4",
     author: "Caio Silva",

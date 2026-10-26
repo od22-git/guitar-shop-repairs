@@ -15,7 +15,7 @@ export function MessagesPanel({ messages }: { messages: Message[] }) {
   return (
     <section
       aria-labelledby="messages-heading"
-      className="flex flex-col gap-4 rounded-lg border-2 border-fiesta bg-paper p-4 sm:p-6"
+      className="flex flex-col gap-4 rounded-lg border-2 border-blue bg-white p-4 sm:p-6"
     >
       <h2 id="messages-heading" className="text-lg font-bold">
         {messages.length === 1
@@ -24,14 +24,14 @@ export function MessagesPanel({ messages }: { messages: Message[] }) {
       </h2>
       <ol className="flex flex-col gap-4">
         {messages.map((message) => (
-          <li key={message.id} className="flex flex-col gap-2 border-b border-mist pb-4">
+          <li key={message.id} className="flex flex-col gap-2 border-b border-grey-300 pb-4">
             <p className="font-medium">
               {message.label}{" "}
-              <span className="text-sm font-normal text-ink-muted">· {message.at}</span>
+              <span className="text-sm font-normal text-grey-600">· {message.at}</span>
             </p>
             <p
               dir="auto"
-              className="rounded-md bg-mist p-3 [overflow-wrap:anywhere] whitespace-pre-line"
+              className="rounded-md bg-grey-100 p-3 [overflow-wrap:anywhere] whitespace-pre-line"
               data-testid="message-text"
             >
               {message.text}

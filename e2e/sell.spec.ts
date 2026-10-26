@@ -7,7 +7,7 @@ import sharp from "sharp";
 test("the sell page explains how buying works, in both languages", async ({ page, isMobile }) => {
   await page.goto("/en/sell");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Sell us your guitar");
-  // Phones have room for two header links; Sell is in the footer there.
+  // Phones fold the header links behind Menu; Sell is in the footer too.
   const nav = page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Sell" });
   if (isMobile) await expect(nav).toBeHidden();
   else await expect(nav).toHaveAttribute("aria-current", "page");

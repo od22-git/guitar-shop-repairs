@@ -30,13 +30,13 @@ export function PhotosPanel({ ticketId, photos }: { ticketId: number; photos: Ph
   return (
     <section
       aria-labelledby="photos-heading"
-      className="flex flex-col gap-4 rounded-lg bg-paper p-4 sm:p-6"
+      className="flex flex-col gap-4 rounded-lg bg-white p-4 sm:p-6"
     >
       <div>
         <h2 id="photos-heading" className="text-lg font-bold">
           Photos
         </h2>
-        <p className="text-ink-muted">
+        <p className="text-grey-600">
           At intake, photograph the whole instrument and every existing mark. Photos stay private
           unless you show them to the customer.
         </p>
@@ -59,7 +59,7 @@ export function PhotosPanel({ ticketId, photos }: { ticketId: number; photos: Ph
                       alt={`${label}, photo ${index + 1}`}
                       width={photo.width}
                       height={photo.height}
-                      className="aspect-square w-full rounded-md bg-mist object-cover"
+                      className="aspect-square w-full rounded-md bg-grey-100 object-cover"
                     />
                   </a>
                   <ActionForm

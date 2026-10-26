@@ -107,7 +107,7 @@ test("a courier customer approves the quote on the tracking link and follows it 
   await expect(quote.getByText("within 90 days")).toBeVisible();
   await quote.getByRole("button", { name: "Approve the quote" }).click();
   await expect(quote.getByText("Please tick to accept the repair terms.")).toBeVisible();
-  await quote.getByLabel("I accept the repair terms below.").check();
+  await quote.getByLabel("I accept the repair terms above.").check();
   await quote.getByRole("button", { name: "Approve the quote" }).click();
   await expect(quote.getByText(/^You approved this quote on /)).toBeVisible();
   await expect(visitor.getByText("Now: Quote ready")).toBeVisible();

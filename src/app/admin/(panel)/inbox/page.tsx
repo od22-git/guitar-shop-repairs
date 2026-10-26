@@ -39,7 +39,7 @@ export default async function InboxPage({ searchParams }: PageProps<"/admin/inbo
               <Link
                 href={`/admin/inbox?status=${value}`}
                 aria-current={filter === value ? "page" : undefined}
-                className="inline-flex min-h-11 items-center rounded-full border border-ink-muted px-4 aria-[current=page]:border-ink aria-[current=page]:bg-ink aria-[current=page]:text-mist"
+                className="inline-flex min-h-11 items-center rounded-full border border-grey-600 px-4 aria-[current=page]:border-black aria-[current=page]:bg-black aria-[current=page]:text-white"
               >
                 {label}
               </Link>
@@ -49,11 +49,11 @@ export default async function InboxPage({ searchParams }: PageProps<"/admin/inbo
       </nav>
 
       {rows.length === 0 ? (
-        <p className="rounded-lg bg-paper p-6">
+        <p className="rounded-lg bg-white p-6">
           {filter === "open" ? "Nothing to handle." : "Nothing here."}
         </p>
       ) : (
-        <ul className="flex flex-col divide-y divide-mist overflow-hidden rounded-lg bg-paper">
+        <ul className="flex flex-col divide-y divide-grey-300 overflow-hidden rounded-lg bg-white">
           {rows.map((item) => {
             const request = repairRequestOf(item);
             const offer = sellOfferOf(item);
@@ -75,26 +75,22 @@ export default async function InboxPage({ searchParams }: PageProps<"/admin/inbo
                     <p className="font-semibold">
                       {kindLabels[item.kind]} · {item.name}
                     </p>
-                    <p className="truncate text-sm text-ink-muted">
+                    <p className="truncate text-sm text-grey-600">
                       {instrument && `${instrument} · `}
                       <span dir="ltr">{formatPhone(item.phoneE164)}</span>
                     </p>
                     {summary && (
-                      <p dir="auto" className="truncate text-sm text-ink-muted">
+                      <p dir="auto" className="truncate text-sm text-grey-600">
                         {offer && item.photoKeys.length > 0 && `${item.photoKeys.length} photos · `}
                         {summary}
                       </p>
                     )}
                   </div>
                   <div className="text-end">
-                    <p
-                      className={
-                        item.status === "new" ? "font-semibold text-fiesta-deep" : "font-medium"
-                      }
-                    >
+                    <p className={item.status === "new" ? "font-semibold text-red" : "font-medium"}>
                       {inboxStatusLabels[item.status]}
                     </p>
-                    <p className="text-sm text-ink-muted">{formatDateTime(item.createdAt, "en")}</p>
+                    <p className="text-sm text-grey-600">{formatDateTime(item.createdAt, "en")}</p>
                   </div>
                 </Link>
               </li>
