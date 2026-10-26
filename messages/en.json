@@ -230,5 +230,31 @@
         "a": "In cash when you collect, cash on delivery through the courier, or by bank transfer."
       }
     }
+  },
+  "RepairStatus": {
+    "received": "Received",
+    "diagnosed": "Quote ready",
+    "in_repair": "In repair",
+    "ready": "Ready",
+    "closed": "Closed"
+  },
+  "RepairWhatsApp": {
+    "instrumentNamed": "your {instrument}",
+    "instrumentUnnamed": "your instrument",
+    "received": "Hello {name}, we’ve received {instrument} for repair. Your ticket number is {number}.",
+    "diagnosed": "Hello {name}, we’ve checked {instrument} (ticket {number}). The quote comes to {total}.",
+    "in_repair": "Hello {name}, work on {instrument} (ticket {number}) has started.",
+    "ready": "Hello {name}, {instrument} (ticket {number}) is ready. Message us to arrange collection or delivery.",
+    "total": "Total: {total}.",
+    "closed_collected": "Thank you, {name}. Ticket {number} is now closed. Enjoy playing!",
+    "closed_delivered": "Thank you, {name}. Ticket {number} is now closed. Enjoy playing!",
+    "closed_abandoned": "Hello {name}, ticket {number} has been closed under our repair terms, as the instrument wasn’t collected.",
+    "closed_cancelled": "Hello {name}, ticket {number} has been cancelled. Message us if you have any questions.",
+    "update": "Hello {name}, an update on {instrument} (ticket {number}):",
+    "quote": "Hello {name}, we’ve revised the quote for {instrument} (ticket {number}). The new quote comes to {total}.",
+    "correction": "Hello {name}, a correction on ticket {number}: its status is back to “{status}”. Sorry for the confusion.",
+    "eta": "Expected to be ready by {date}.",
+    "approve": "Please review and approve the quote here: {url}",
+    "track": "Follow your repair here: {url}"
   }
 }

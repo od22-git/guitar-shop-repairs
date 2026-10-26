@@ -1,13 +1,21 @@
 import Link from "next/link";
 
+import { count, isNull } from "drizzle-orm";
+
 import { brand } from "@/config/brand";
 import { requireAdmin } from "@/lib/auth";
+import { db } from "@/lib/db/client";
+import { repairEvents } from "@/lib/db/schema";
 
 import { AdminNav } from "./admin-nav";
 import { SignOutButton } from "./sign-out-button";
 
 export default async function PanelLayout({ children }: LayoutProps<"/admin">) {
   await requireAdmin();
+  const [{ unsent }] = await db
+    .select({ unsent: count() })
+    .from(repairEvents)
+    .where(isNull(repairEvents.notifiedAt));
   return (
     <>
       <header className="sticky top-0 z-10 bg-rosewood text-mist">
@@ -15,7 +23,7 @@ export default async function PanelLayout({ children }: LayoutProps<"/admin">) {
           <Link href="/admin" className="me-auto py-2 font-bold">
             {brand.name.en}
           </Link>
-          <AdminNav />
+          <AdminNav unsent={unsent} />
           <SignOutButton />
         </div>
       </header>

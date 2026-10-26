@@ -1,0 +1,174 @@
+import { z } from "zod";
+
+import { locale, repairIntakeMethod } from "../db/schema";
+import { endOfDubaiDay } from "../datetime";
+import { MAX_FILS, parseAedToFils } from "../money";
+import { normalizePhone } from "../phone";
+
+// Parsing the admin's repair forms. Each returns field errors by input name, like the
+// product form (src/lib/admin/products.ts).
+
+export type FormResult<T> = { ok: true; data: T } | { ok: false; errors: Record<string, string> };
+
+const blankToUndefined = (value: unknown) =>
+  typeof value === "string" && value.trim() === "" ? undefined : value;
+const optionalText = (max: number) =>
+  z.preprocess(blankToUndefined, z.string().trim().max(max).optional());
+const requiredText = (max: number) => z.string().trim().min(1, "Required").max(max);
+const checkbox = z.preprocess((value) => value === "on" || value === "true", z.boolean());
+
+/** A date input's "YYYY-MM-DD", a day in Dubai. */
+export const optionalDay = z.preprocess(
+  blankToUndefined,
+  z
+    .string()
+    .refine((value) => endOfDubaiDay(value) !== null, "Enter a valid date")
+    .optional(),
+);
+
+const amount = z.string().transform((value, ctx) => {
+  const fils = parseAedToFils(value);
+  if (fils === null || fils > MAX_FILS) {
+    ctx.addIssue({ code: "custom", message: "Enter an amount in AED, like 150 or 150.50" });
+    return z.NEVER;
+  }
+  return fils;
+});
+export const optionalAmount = z.preprocess(blankToUndefined, amount.optional());
+
+function errorsOf(error: z.ZodError | undefined): Record<string, string> {
+  const errors: Record<string, string> = {};
+  for (const issue of error?.issues ?? []) errors[String(issue.path[0])] ??= issue.message;
+  return errors;
+}
+
+function fieldsOf(form: FormData): Record<string, string> {
+  return Object.fromEntries(
+    [...form.entries()].filter((entry): entry is [string, string] => typeof entry[1] === "string"),
+  );
+}
+
+const detailsShape = {
+  instrumentBrand: optionalText(80),
+  instrumentModel: optionalText(80),
+  serial: optionalText(60),
+  colour: optionalText(60),
+  issue: requiredText(2000),
+  intakeNotes: optionalText(3000),
+  accessories: optionalText(500),
+  etaDate: optionalDay,
+};
+
+const ticketSchema = z
+  .object({
+    name: requiredText(120),
+    phone: z
+      .string()
+      .trim()
+      .min(1, "Required")
+      .transform((value, ctx) => {
+        // WhatsApp needs a mobile; any country works.
+        const phone = normalizePhone(value, { mobileOnly: true });
+        if (!phone) {
+          ctx.addIssue({ code: "custom", message: "Enter a mobile number, like 050 123 4567" });
+          return z.NEVER;
+        }
+        return phone;
+      }),
+    preferredLocale: z.enum(locale.enumValues),
+    whatsappConsent: checkbox,
+    intakeMethod: z.enum(repairIntakeMethod.enumValues),
+    termsAccepted: checkbox,
+    ...detailsShape,
+  })
+  .superRefine((value, ctx) => {
+    // At drop-off the customer accepts the terms at the bench. A courier customer can
+    // accept them when approving the quote (M6).
+    if (value.intakeMethod === "drop_off" && !value.termsAccepted) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["termsAccepted"],
+        message: "The customer accepts the repair terms at drop-off",
+      });
+    }
+  });
+
+export type TicketInput = z.infer<typeof ticketSchema>;
+
+export function parseTicketForm(form: FormData): FormResult<TicketInput> {
+  const parsed = ticketSchema.safeParse(fieldsOf(form));
+  return parsed.success
+    ? { ok: true, data: parsed.data }
+    : { ok: false, errors: errorsOf(parsed.error) };
+}
+
+const detailsSchema = z.object(detailsShape);
+export type TicketDetailsInput = z.infer<typeof detailsSchema>;
+
+export function parseTicketDetailsForm(form: FormData): FormResult<TicketDetailsInput> {
+  const parsed = detailsSchema.safeParse(fieldsOf(form));
+  return parsed.success
+    ? { ok: true, data: parsed.data }
+    : { ok: false, errors: errorsOf(parsed.error) };
+}
+
+const updateSchema = z.object({
+  publicNote: optionalText(1000),
+  internalNote: optionalText(2000),
+  etaDate: optionalDay,
+});
+export type UpdateInput = z.infer<typeof updateSchema>;
+
+export function parseUpdateForm(form: FormData): FormResult<UpdateInput> {
+  const parsed = updateSchema.safeParse(fieldsOf(form));
+  if (!parsed.success) return { ok: false, errors: errorsOf(parsed.error) };
+  const { publicNote, internalNote, etaDate } = parsed.data;
+  if (!publicNote && !internalNote && !etaDate) {
+    return { ok: false, errors: { publicNote: "Write a note or set a new ETA" } };
+  }
+  return { ok: true, data: parsed.data };
+}
+
+export const MAX_QUOTE_ITEMS = 20;
+
+export type QuoteInput = {
+  items: { label: string; amountFils: number }[];
+  notes?: string;
+  /** The customer agreed on the spot (a fixed-price job at drop-off). */
+  approvedInPerson: boolean;
+};
+
+/**
+ * The quote builder: rows of `itemLabel` and `itemAmount`, in order. Blank rows are
+ * skipped; errors name the row, as "itemLabel.2".
+ */
+export function parseQuoteForm(form: FormData): FormResult<QuoteInput> {
+  const labels = form.getAll("itemLabel").map(String);
+  const amounts = form.getAll("itemAmount").map(String);
+  const errors: Record<string, string> = {};
+  const items: QuoteInput["items"] = [];
+  for (let row = 0; row < Math.max(labels.length, amounts.length); row++) {
+    const label = (labels[row] ?? "").trim();
+    const rawAmount = (amounts[row] ?? "").trim();
+    if (!label && !rawAmount) continue;
+    if (!label) errors[`itemLabel.${row}`] = "Describe the work";
+    else if (label.length > 200) errors[`itemLabel.${row}`] = "Keep it under 200 characters";
+    const parsed = amount.safeParse(rawAmount);
+    if (!parsed.success) errors[`itemAmount.${row}`] = parsed.error.issues[0].message;
+    if (label && parsed.success) items.push({ label, amountFils: parsed.data });
+  }
+  if (items.length === 0 && Object.keys(errors).length === 0) {
+    errors["itemLabel.0"] = "Add at least one line";
+  }
+  if (items.length > MAX_QUOTE_ITEMS) errors.items = `Up to ${MAX_QUOTE_ITEMS} lines`;
+  const total = items.reduce((sum, item) => sum + item.amountFils, 0);
+  if (total > MAX_FILS) errors.items = "The total is too large";
+
+  const notes = optionalText(1000).safeParse(form.get("notes") ?? undefined);
+  if (!notes.success) errors.notes = notes.error.issues[0].message;
+  if (Object.keys(errors).length > 0) return { ok: false, errors };
+  return {
+    ok: true,
+    data: { items, notes: notes.data, approvedInPerson: form.get("approvedInPerson") === "on" },
+  };
+}

@@ -38,7 +38,14 @@ export type ProcessedPhoto = {
   files: PhotoFile[];
 };
 
-export async function processPhoto(input: Buffer): Promise<ProcessedPhoto> {
+/**
+ * `preview: false` skips the link-preview JPEG, for private photos that are never
+ * shared (repairs).
+ */
+export async function processPhoto(
+  input: Buffer,
+  { preview = true }: { preview?: boolean } = {},
+): Promise<ProcessedPhoto> {
   if (input.byteLength > MAX_UPLOAD_BYTES) throw new ImageError("too_large");
   const options = { limitInputPixels: MAX_INPUT_PIXELS, failOn: "error" } as const;
 
@@ -70,6 +77,7 @@ export async function processPhoto(input: Buffer): Promise<ProcessedPhoto> {
           .toBuffer(),
       })),
     );
+    if (!preview) return { width, height, files: sizes };
     const og = { suffix: "-og.jpg", contentType: "image/jpeg", body: await makeOgImage(input) };
     return { width, height, files: [...sizes, og] };
   } catch {
@@ -78,6 +86,10 @@ export async function processPhoto(input: Buffer): Promise<ProcessedPhoto> {
 }
 
 /** Every stored file of a photo, from its key. */
-export function photoFileKeys(key: string): string[] {
-  return [...stockPhotoWidths.map((w) => `${key}-${w}.webp`), `${key}-og.jpg`];
+export function photoFileKeys(
+  key: string,
+  { preview = true }: { preview?: boolean } = {},
+): string[] {
+  const sizes = stockPhotoWidths.map((w) => `${key}-${w}.webp`);
+  return preview ? [...sizes, `${key}-og.jpg`] : sizes;
 }

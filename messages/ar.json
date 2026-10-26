@@ -230,5 +230,31 @@
         "a": "نقداً عند الاستلام، أو الدفع عند التوصيل عبر شركة الشحن، أو بالتحويل البنكي."
       }
     }
+  },
+  "RepairStatus": {
+    "received": "مستلمة",
+    "diagnosed": "عرض السعر جاهز",
+    "in_repair": "قيد التصليح",
+    "ready": "جاهزة",
+    "closed": "مغلقة"
+  },
+  "RepairWhatsApp": {
+    "instrumentNamed": "آلتك {instrument}",
+    "instrumentUnnamed": "آلتك",
+    "received": "مرحباً {name}، استلمنا {instrument} للتصليح. رقم التذكرة {number}.",
+    "diagnosed": "مرحباً {name}، فحصنا {instrument} (التذكرة {number}). قيمة عرض السعر: {total}",
+    "in_repair": "مرحباً {name}، بدأنا العمل على {instrument} (التذكرة {number}).",
+    "ready": "مرحباً {name}، {instrument} (التذكرة {number}) جاهزة. راسلنا لترتيب الاستلام أو التوصيل.",
+    "total": "المبلغ الإجمالي: {total}",
+    "closed_collected": "شكراً لك يا {name}. أُغلقت التذكرة {number}. استمتع بالعزف!",
+    "closed_delivered": "شكراً لك يا {name}. أُغلقت التذكرة {number}. استمتع بالعزف!",
+    "closed_abandoned": "مرحباً {name}، أُغلقت التذكرة {number} وفق شروط التصليح، لعدم استلام الآلة.",
+    "closed_cancelled": "مرحباً {name}، أُلغيت التذكرة {number}. راسلنا إن كان لديك أي سؤال.",
+    "update": "مرحباً {name}، لدينا تحديث بخصوص {instrument} (التذكرة {number}):",
+    "quote": "مرحباً {name}، عدّلنا عرض سعر تصليح {instrument} (التذكرة {number}). قيمة العرض الجديد: {total}",
+    "correction": "مرحباً {name}، تصحيح بخصوص التذكرة {number}: حالتها الآن «{status}». نعتذر عن الالتباس.",
+    "eta": "الموعد المتوقع للانتهاء: {date}.",
+    "approve": "يرجى مراجعة عرض السعر والموافقة عليه هنا: {url}",
+    "track": "تابع التصليح هنا: {url}"
   }
 }

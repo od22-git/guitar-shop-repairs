@@ -39,6 +39,9 @@ test("every admin page sends a signed-out visitor to sign in", async ({ page }) 
       "/admin/products",
       "/admin/products/new",
       "/admin/products/1",
+      "/admin/repairs",
+      "/admin/repairs/new",
+      "/admin/repairs/1",
     ]),
   );
   for (const path of pages) {
@@ -50,7 +53,7 @@ test("every admin page sends a signed-out visitor to sign in", async ({ page }) 
 
 test("every admin action refuses a signed-out caller", async ({ request }) => {
   const actions = adminActions();
-  expect(actions.length).toBeGreaterThanOrEqual(13);
+  expect(actions.length).toBeGreaterThanOrEqual(24);
   for (const { id, name } of actions) {
     // Called the way the browser calls a server action, with a product or photo id.
     const response = await request.post("/admin", {
@@ -70,6 +73,11 @@ test("the photo upload route refuses a signed-out caller", async ({ request, bas
       file: { name: "a.jpg", mimeType: "image/jpeg", buffer: Buffer.from("x") },
     },
   });
+  expect(response.status()).toBe(401);
+});
+
+test("repair photos refuse a signed-out caller", async ({ request }) => {
+  const response = await request.get("/api/repair-photos/repairs/1/0123456789abcdef0123-640.webp");
   expect(response.status()).toBe(401);
 });
 
