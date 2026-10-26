@@ -25,6 +25,8 @@ const pages = [
   "/en/policies/privacy",
   "/ar/policies/delivery",
   "/ar/policies/repair-terms",
+  "/en/design-system",
+  "/ar/design-system",
 ];
 
 for (const path of pages) {

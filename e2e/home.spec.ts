@@ -1,6 +1,17 @@
 import { expect, test } from "@playwright/test";
 
-import { stockPhotos } from "../src/config/stock-photos";
+import { stockPhotos, type StockPhotoKey } from "../src/config/stock-photos";
+
+// The M1b photos on the home page; the M9a set is for the pages M9b redesigns.
+const homePhotos: StockPhotoKey[] = [
+  "hero",
+  "guitars",
+  "pedals",
+  "amps",
+  "parts",
+  "bench",
+  "strings",
+];
 
 for (const locale of ["en", "ar"] as const) {
   test.describe(`home page photos (${locale})`, () => {
@@ -31,7 +42,8 @@ for (const locale of ["en", "ar"] as const) {
     test("credits each photographer, linking to Unsplash", async ({ page }) => {
       await page.goto(`/${locale}`);
       const credits = page.locator("main p", { hasText: "Unsplash" });
-      for (const { author, username } of Object.values(stockPhotos)) {
+      for (const key of homePhotos) {
+        const { author, username } = stockPhotos[key];
         await expect(credits.getByRole("link", { name: author })).toHaveAttribute(
           "href",
           `https://unsplash.com/@${username}?utm_source=guitar_shop_repairs&utm_medium=referral`,

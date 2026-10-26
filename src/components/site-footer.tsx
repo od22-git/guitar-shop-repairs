@@ -5,6 +5,8 @@ import { policies } from "@/config/policies";
 import { Link } from "@/i18n/navigation";
 import { shopWhatsAppUrl } from "@/lib/whatsapp/shop-link";
 
+import { SocialLinks } from "./social-links";
+
 const linkClass =
   "inline-flex min-h-11 items-center underline decoration-gold underline-offset-4 hover:text-gold";
 
@@ -39,6 +41,7 @@ export async function SiteFooter() {
           <p className="mt-4 max-w-[60ch] text-ink-subtle">
             {t("serviceArea", { location: brand.location[locale] })}
           </p>
+          <SocialLinks linkClass={linkClass} className="mt-2" />
         </div>
         <div>
           <h2 className="font-bold text-gold">{t("linksHeading")}</h2>
