@@ -430,5 +430,36 @@
   },
   "InboxWhatsApp": {
     "repairReply": "مرحباً {name}، شكراً لحجزك موعد تصليح لدى {brand}."
+  },
+  "Receipt": {
+    "receipt": "إيصال",
+    "taxInvoice": "فاتورة ضريبية",
+    "order": "الطلب <ltr>{number}</ltr>",
+    "date": "التاريخ: {date}",
+    "trn": "رقم التسجيل الضريبي: <ltr>{trn}</ltr>",
+    "customer": "العميل",
+    "item": "المنتج",
+    "quantity": "الكمية",
+    "amount": "المبلغ",
+    "delivery": "التوصيل",
+    "total": "الإجمالي",
+    "vatIncluded": "يشمل ضريبة القيمة المضافة بنسبة {rate}٪",
+    "notVatRegistered": "غير مسجل في ضريبة القيمة المضافة. الأسعار نهائية.",
+    "payments": "الدفعات",
+    "deposit": "عربون",
+    "payment": "دفعة",
+    "refund": "استرداد",
+    "cash": "نقدًا",
+    "cod": "الدفع عند الاستلام",
+    "bank_transfer": "تحويل بنكي",
+    "card_online": "بطاقة",
+    "paid": "المدفوع",
+    "due": "المبلغ المتبقي",
+    "paidInFull": "مدفوع بالكامل",
+    "cancelled": "أُلغي هذا الطلب.",
+    "refunded": "تم استرداد مبلغ هذا الطلب.",
+    "thanks": "شكرًا لتسوقك معنا.",
+    "print": "طباعة",
+    "paymentLine": "{kind}، {method} · {date}"
   }
 }

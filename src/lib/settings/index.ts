@@ -3,9 +3,9 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 
 import { db } from "@/lib/db/client";
-import { settings } from "@/lib/db/schema";
 
-import { parseSettings, SETTINGS_TAG, type Settings } from "./schema";
+import { SETTINGS_TAG, type Settings } from "./schema";
+import { loadSettings } from "./store";
 
 export { SETTINGS_TAG, type Settings } from "./schema";
 
@@ -17,6 +17,5 @@ export async function getSettings(): Promise<Settings> {
   "use cache";
   cacheLife("max");
   cacheTag(SETTINGS_TAG);
-  const rows = await db.select({ key: settings.key, value: settings.value }).from(settings);
-  return parseSettings(rows);
+  return loadSettings(db);
 }

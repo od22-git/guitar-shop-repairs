@@ -94,7 +94,9 @@ test("a courier customer approves the quote on the tracking link and follows it 
   const signed = await visitor.request.get(src);
   expect(signed.status()).toBe(200);
   expect(signed.headers()["cache-control"]).toBe("private, no-store");
-  expect((await visitor.request.get(src.replace(/s=./, "s=x"))).status()).toBe(404);
+  // A different first character, whatever the signature starts with.
+  const tampered = src.replace(/s=(.)/, (_, c: string) => `s=${c === "x" ? "y" : "x"}`);
+  expect((await visitor.request.get(tampered)).status()).toBe(404);
   expect((await visitor.request.get(src.replace(/-640\.webp/, "-1920.webp"))).status()).toBe(404);
 
   // Courier customers accept the repair terms when they approve.

@@ -1,52 +1,23 @@
 import { z } from "zod";
 
+import {
+  amount,
+  checkbox,
+  errorsOf,
+  fieldsOf,
+  mobilePhone,
+  optionalDay,
+  optionalText,
+  requiredText,
+  type FormResult,
+} from "../admin/form-fields";
 import { locale, repairIntakeMethod } from "../db/schema";
-import { endOfDubaiDay } from "../datetime";
-import { MAX_FILS, parseAedToFils } from "../money";
-import { normalizePhone } from "../phone";
+import { MAX_FILS } from "../money";
+
+export { optionalAmount, optionalDay, type FormResult } from "../admin/form-fields";
 
 // Parsing the admin's repair forms. Each returns field errors by input name, like the
 // product form (src/lib/admin/products.ts).
-
-export type FormResult<T> = { ok: true; data: T } | { ok: false; errors: Record<string, string> };
-
-const blankToUndefined = (value: unknown) =>
-  typeof value === "string" && value.trim() === "" ? undefined : value;
-const optionalText = (max: number) =>
-  z.preprocess(blankToUndefined, z.string().trim().max(max).optional());
-const requiredText = (max: number) => z.string().trim().min(1, "Required").max(max);
-const checkbox = z.preprocess((value) => value === "on" || value === "true", z.boolean());
-
-/** A date input's "YYYY-MM-DD", a day in Dubai. */
-export const optionalDay = z.preprocess(
-  blankToUndefined,
-  z
-    .string()
-    .refine((value) => endOfDubaiDay(value) !== null, "Enter a valid date")
-    .optional(),
-);
-
-const amount = z.string().transform((value, ctx) => {
-  const fils = parseAedToFils(value);
-  if (fils === null || fils > MAX_FILS) {
-    ctx.addIssue({ code: "custom", message: "Enter an amount in AED, like 150 or 150.50" });
-    return z.NEVER;
-  }
-  return fils;
-});
-export const optionalAmount = z.preprocess(blankToUndefined, amount.optional());
-
-function errorsOf(error: z.ZodError | undefined): Record<string, string> {
-  const errors: Record<string, string> = {};
-  for (const issue of error?.issues ?? []) errors[String(issue.path[0])] ??= issue.message;
-  return errors;
-}
-
-function fieldsOf(form: FormData): Record<string, string> {
-  return Object.fromEntries(
-    [...form.entries()].filter((entry): entry is [string, string] => typeof entry[1] === "string"),
-  );
-}
 
 const detailsShape = {
   instrumentBrand: optionalText(80),
@@ -62,19 +33,7 @@ const detailsShape = {
 const ticketSchema = z
   .object({
     name: requiredText(120),
-    phone: z
-      .string()
-      .trim()
-      .min(1, "Required")
-      .transform((value, ctx) => {
-        // WhatsApp needs a mobile; any country works.
-        const phone = normalizePhone(value, { mobileOnly: true });
-        if (!phone) {
-          ctx.addIssue({ code: "custom", message: "Enter a mobile number, like 050 123 4567" });
-          return z.NEVER;
-        }
-        return phone;
-      }),
+    phone: mobilePhone,
     preferredLocale: z.enum(locale.enumValues),
     whatsappConsent: checkbox,
     intakeMethod: z.enum(repairIntakeMethod.enumValues),

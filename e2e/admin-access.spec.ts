@@ -44,6 +44,11 @@ test("every admin page sends a signed-out visitor to sign in", async ({ page }) 
       "/admin/repairs/1",
       "/admin/inbox",
       "/admin/inbox/1",
+      "/admin/orders",
+      "/admin/orders/new",
+      "/admin/orders/1",
+      "/admin/orders/1/receipt",
+      "/admin/settings",
     ]),
   );
   for (const path of pages) {
@@ -55,7 +60,7 @@ test("every admin page sends a signed-out visitor to sign in", async ({ page }) 
 
 test("every admin action refuses a signed-out caller", async ({ request }) => {
   const actions = adminActions();
-  expect(actions.length).toBeGreaterThanOrEqual(24);
+  expect(actions.length).toBeGreaterThanOrEqual(33);
   for (const { id, name } of actions) {
     // Called the way the browser calls a server action, with a product or photo id.
     const response = await request.post("/admin", {
