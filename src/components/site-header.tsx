@@ -6,8 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { LocaleSwitch } from "./locale-switch";
 import { SiteNav } from "./site-nav";
 
-// Navigation links are added by the milestones that build each page (shop in M3,
-// repairs in M6, sell in M7, about/contact in M8), so none point at a 404.
+// Phones show Shop and Repairs; the rest are in the footer, which links every page.
 export async function SiteHeader() {
   const [locale, t, tNav] = await Promise.all([
     getLocale(),
@@ -33,8 +32,8 @@ export async function SiteHeader() {
             links={[
               { href: "/shop", label: tNav("shop") },
               { href: "/repairs", label: tNav("repairs") },
-              // Phones find it in the footer.
-              { href: "/sell", label: tNav("sell"), wide: true },
+              { href: "/sell", label: tNav("sell"), from: "sm" },
+              { href: "/contact", label: tNav("contact"), from: "md" },
             ]}
           />
           <LocaleSwitch label={t("other")} />

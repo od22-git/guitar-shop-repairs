@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { locale as rootLocale } from "next/root-params";
 
+import { ErrorTextProvider } from "@/components/error-text";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { WhatsAppButton } from "@/components/whatsapp-button";
@@ -43,7 +44,13 @@ export const viewport: Viewport = {
 
 export default async function LocaleLayout({ children }: LayoutProps<"/[locale]">) {
   const locale = await currentLocale();
-  const t = await getTranslations("Layout");
+  const [t, tError] = await Promise.all([getTranslations("Layout"), getTranslations("ErrorPage")]);
+  const errorText = {
+    title: tError("title"),
+    body: tError("body"),
+    retry: tError("retry"),
+    home: tError("home"),
+  };
 
   return (
     <html
@@ -62,7 +69,7 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
         <NextIntlClientProvider messages={null}>
           <SiteHeader />
           <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
-            {children}
+            <ErrorTextProvider value={errorText}>{children}</ErrorTextProvider>
           </main>
           <SiteFooter />
           <WhatsAppButton />

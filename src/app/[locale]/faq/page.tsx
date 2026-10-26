@@ -2,13 +2,18 @@ import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { brand } from "@/config/brand";
+import { policies, policyNumbers } from "@/config/policies";
+import { Link } from "@/i18n/navigation";
+import { getContentText } from "@/lib/content-text";
 import { conditionFilters } from "@/lib/catalog/filters";
 import { pageMetadata } from "@/lib/seo";
 
-// The condition guide that product pages link to (#condition), and the ordering basics.
-// More questions, and the final copy, come with the content pages in M8.
+// The condition guide that product pages link to (#condition), then questions by topic.
+// The groups and questions are those in messages/*.json ("Faq.groups"), in order. Answers
+// quote the numbers in src/config/policies.ts, so they match the policies.
 
-const questions = ["order", "hold", "delivery", "payment"] as const;
+const linkClass =
+  "inline-flex min-h-11 items-center underline decoration-gold underline-offset-4 hover:text-gold";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
@@ -18,7 +23,13 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function FaqPage() {
   const locale = await getLocale();
-  const [t, tCondition] = await Promise.all([getTranslations("Faq"), getTranslations("Condition")]);
+  const [t, text, tCondition, tPolicies] = await Promise.all([
+    getTranslations("Faq"),
+    getContentText("Faq"),
+    getTranslations("Condition"),
+    getTranslations("Policies"),
+  ]);
+  const values = { location: brand.location[locale], ...policyNumbers };
 
   return (
     <div className="mx-auto max-w-3xl px-4 pt-6 pb-20 sm:px-6 md:pt-10">
@@ -44,19 +55,41 @@ export default async function FaqPage() {
         </dl>
       </section>
 
-      <section aria-labelledby="ordering-heading" className="mt-14">
-        <h2 id="ordering-heading" className="text-2xl font-extrabold text-gold">
-          {t("questionsHeading")}
+      {text.keys("groups").map((group) => (
+        <section
+          key={group}
+          id={group}
+          aria-labelledby={`${group}-heading`}
+          className="mt-14 scroll-mt-6"
+        >
+          <h2 id={`${group}-heading`} className="text-2xl font-extrabold text-gold">
+            {text(`groups.${group}.heading`)}
+          </h2>
+          {text.keys(`groups.${group}.questions`).map((key) => (
+            <div key={key} className="mt-6">
+              <h3 className="text-lg font-bold">{text(`groups.${group}.questions.${key}.q`)}</h3>
+              <p className="mt-2 max-w-[65ch] text-ink-subtle">
+                {text(`groups.${group}.questions.${key}.a`, values)}
+              </p>
+            </div>
+          ))}
+        </section>
+      ))}
+
+      <nav aria-labelledby="policies-heading" className="mt-14 border-t border-mist/15 pt-6">
+        <h2 id="policies-heading" className="font-bold">
+          {t("policiesHeading")}
         </h2>
-        {questions.map((key) => (
-          <div key={key} className="mt-6">
-            <h3 className="text-lg font-bold">{t(`questions.${key}.q`)}</h3>
-            <p className="mt-2 max-w-[65ch] text-ink-subtle">
-              {t(`questions.${key}.a`, { location: brand.location[locale] })}
-            </p>
-          </div>
-        ))}
-      </section>
+        <ul className="mt-2 flex flex-wrap gap-x-6">
+          {policies.map((policy) => (
+            <li key={policy}>
+              <Link href={`/policies/${policy}`} className={linkClass}>
+                {tPolicies(`${policy}.title`)}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
     </div>
   );
 }

@@ -10,7 +10,7 @@ import { pageAlternates } from "@/lib/seo";
 import { shopWhatsAppUrl } from "@/lib/whatsapp/shop-link";
 
 // The home page shows what the shop sells and repairs; repairs lead to /repairs, where
-// the booking form is. The final copy comes in M8.
+// the booking form is.
 
 // Each home category, with its shop category (slugs from src/lib/db/seed.ts).
 const categories = {

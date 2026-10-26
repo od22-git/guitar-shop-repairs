@@ -15,7 +15,7 @@ import { pageMetadata } from "@/lib/seo";
 import { BookingForm, type BookingLabels } from "./booking-form";
 
 // Repairs: services and starting prices, how drop-off and courier pickup work, and the
-// Book-a-repair form, which lands in the admin inbox. The final copy comes in M8.
+// Book-a-repair form, which lands in the admin inbox.
 
 const steps = ["book", "arrive", "quote", "track"] as const;
 const formLabels = [

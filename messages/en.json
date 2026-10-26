@@ -23,7 +23,10 @@
     "contactHeading": "Contact",
     "whatsapp": "WhatsApp",
     "repairs": "Repairs and booking",
-    "sell": "Sell us your guitar"
+    "sell": "Sell us your guitar",
+    "about": "About us",
+    "contact": "Contact us",
+    "policiesHeading": "Policies"
   },
   "Home": {
     "intro": "Hand-picked used electric guitars and gear, and repairs from a basic setup to a full refret, from a home workshop in {location}.",
@@ -82,7 +85,8 @@
     "label": "Main",
     "shop": "Shop",
     "repairs": "Repairs",
-    "sell": "Sell"
+    "sell": "Sell",
+    "contact": "Contact"
   },
   "Shop": {
     "title": "Shop",
@@ -204,7 +208,7 @@
   },
   "Faq": {
     "title": "Questions and answers",
-    "description": "How we grade the condition of used guitars and gear, and how ordering, holds, delivery and payment work.",
+    "description": "How we grade the condition of used guitars and gear, and answers about ordering, delivery, returns, repairs and selling us a guitar.",
     "conditionHeading": "How we grade condition",
     "conditionIntro": "Every used item gets one of these grades. Whatever the grade, the listing shows each flaw in the photos and says what it is, and you can ask on WhatsApp for more photos of anything.",
     "grades": {
@@ -215,23 +219,91 @@
       "good": "Clearly used: heavier wear such as buckle rash, chips or worn frets, or a past repair. Plays well.",
       "fair": "Well worn, or with a non-original part. It works, and it’s priced for how it looks."
     },
-    "questionsHeading": "Ordering",
-    "questions": {
-      "order": {
-        "q": "How do I order?",
-        "a": "Tap Order on WhatsApp on the item’s page. WhatsApp opens with a message naming the item; we reply to confirm it’s still here and arrange delivery or collection."
+    "policiesHeading": "Our policies",
+    "groups": {
+      "ordering": {
+        "heading": "Ordering",
+        "questions": {
+          "order": {
+            "q": "How do I order?",
+            "a": "Tap Order on WhatsApp on the item’s page. WhatsApp opens with a message naming the item; we reply to confirm it’s still here and arrange delivery or collection."
+          },
+          "hold": {
+            "q": "Can you hold an item for me?",
+            "a": "Yes, with a deposit. We mark it On hold on the site until you collect it or it’s delivered."
+          },
+          "delivery": {
+            "q": "Do you deliver?",
+            "a": "Yes, by courier anywhere in the UAE. You can also collect by appointment in {location}."
+          },
+          "payment": {
+            "q": "How do I pay?",
+            "a": "In cash when you collect, cash on delivery through the courier, or by bank transfer."
+          },
+          "returns": {
+            "q": "Can I return something?",
+            "a": "Yes. You have {returnDays} days from receiving an item to tell us about a problem and send it back in the condition you got it. The returns policy has the details."
+          },
+          "several": {
+            "q": "Can I buy several items together?",
+            "a": "Yes. Order one on WhatsApp and tell us what else you’d like; we put everything in one order with one delivery fee."
+          }
+        }
       },
-      "hold": {
-        "q": "Can you hold an item for me?",
-        "a": "Yes, with a deposit. We mark it On hold on the site until you collect it or it’s delivered."
+      "repairs": {
+        "heading": "Repairs",
+        "questions": {
+          "quote": {
+            "q": "Do I pay anything before I agree to a repair?",
+            "a": "No. We check the instrument and send a quote to your ticket page first. Work starts only when you approve it."
+          },
+          "time": {
+            "q": "How long does a repair take?",
+            "a": "A setup usually takes a few days. Bigger jobs, or ones waiting for parts, take longer: your ticket page shows the expected date, and we message you if it changes."
+          },
+          "track": {
+            "q": "How do I follow my repair?",
+            "a": "You get a private link to your ticket page. Enter the last 4 digits of your phone number to see each step, the quote and photos."
+          },
+          "decline": {
+            "q": "What if I decline the quote?",
+            "a": "We get the instrument ready for you to collect. A diagnosis fee may apply for the time spent checking it."
+          },
+          "warranty": {
+            "q": "Is repair work guaranteed?",
+            "a": "Yes, for {repairWarrantyDays} days from collection. If a problem we fixed comes back in that time, we fix it again at no charge."
+          },
+          "collect": {
+            "q": "How long do I have to collect my instrument?",
+            "a": "Please collect it within {abandonDays} days of it being ready. After that it may be treated as abandoned under the repair terms."
+          }
+        }
       },
-      "delivery": {
-        "q": "Do you deliver?",
-        "a": "Yes, by courier anywhere in the UAE. You can also collect by appointment in {location}."
+      "selling": {
+        "heading": "Selling us a guitar",
+        "questions": {
+          "sell": {
+            "q": "Do you buy guitars?",
+            "a": "Yes: electric guitars, amps and pedals. Send the details and photos with the Sell us your guitar form, and we reply on WhatsApp with an offer."
+          },
+          "sellPaid": {
+            "q": "How do you pay for a guitar you buy?",
+            "a": "In cash at handover or by bank transfer, once we’ve checked it in person. We buy only instruments that are yours to sell, and may ask for proof of ownership."
+          }
+        }
       },
-      "payment": {
-        "q": "How do I pay?",
-        "a": "In cash when you collect, cash on delivery through the courier, or by bank transfer."
+      "shop": {
+        "heading": "The shop",
+        "questions": {
+          "visit": {
+            "q": "Can I visit the shop?",
+            "a": "We work from a home workshop in {location}, so visits are by appointment. Message us on WhatsApp to arrange a time to see or try something."
+          },
+          "language": {
+            "q": "Which languages do you speak?",
+            "a": "Arabic and English. Message us in either."
+          }
+        }
       }
     }
   },
@@ -489,7 +561,7 @@
       "quote": "Work starts only after you approve the quote. If we find more to fix, we send a new quote and wait for your approval again.",
       "fee": "If you decline a quote, a diagnosis fee may apply for the time spent checking the instrument.",
       "parts": "Special-order parts may need a deposit before we order them.",
-      "collection": "Please collect within 90 days of the instrument being ready; after that it may be treated as abandoned.",
+      "collection": "Please collect within {abandonDays} days of the instrument being ready; after that it may be treated as abandoned.",
       "liability": "We take care with every instrument, but aren’t liable for existing faults or for wear in parts we didn’t work on."
     },
     "termsAccepted": "Repair terms accepted.",
@@ -516,7 +588,8 @@
       "update": "Update"
     },
     "newEta": "New expected date: {date}",
-    "help": "Questions about your repair? Message us on WhatsApp."
+    "help": "Questions about your repair? Message us on WhatsApp.",
+    "fullTerms": "Read the full repair terms (opens in a new tab)"
   },
   "InboxWhatsApp": {
     "repairReply": "Hello {name}, thanks for booking a repair with {brand}.",
@@ -552,5 +625,254 @@
     "thanks": "Thank you for shopping with us.",
     "print": "Print",
     "paymentLine": "{kind}, {method} · {date}"
+  },
+  "ErrorPage": {
+    "title": "Something went wrong",
+    "body": "The page hit a problem on our side. Please try again; if it keeps happening, message us on WhatsApp.",
+    "retry": "Try again",
+    "home": "Go to the home page"
+  },
+  "About": {
+    "title": "About us",
+    "description": "A small, home-based shop in {location} for used electric guitars, gear and repairs.",
+    "intro": "{brand} is a small, home-based guitar shop in {location}. We sell used electric guitars and gear, and repair guitars for players across the UAE.",
+    "sections": {
+      "shop": {
+        "heading": "Every guitar checked before it’s listed",
+        "body": "We play every guitar we sell, set it up and fix what needs fixing before it goes in the shop. Then we photograph it, the actual guitar, flaws and all, and grade its condition honestly.\n\nWe’d rather you know about a ding before you buy than be surprised when it arrives."
+      },
+      "repairs": {
+        "heading": "Repairs that start with a quote",
+        "body": "From a basic setup to a full refret, we check the instrument first and quote before any work. You follow every step on your own ticket page, and we message you on WhatsApp whenever it changes."
+      },
+      "home": {
+        "heading": "A home workshop, by appointment",
+        "body": "We work from home in {location}, so we don’t publish our address. Drop-off, collection and visits to try a guitar are by appointment, arranged on WhatsApp.\n\nFor everyone else in the UAE, there’s courier pickup and delivery."
+      }
+    },
+    "shopCta": "Browse the shop",
+    "contactCta": "Get in touch"
+  },
+  "Contact": {
+    "title": "Contact us",
+    "description": "Message us on WhatsApp or call. A home-based guitar shop in {location}; visits by appointment.",
+    "intro": "WhatsApp is the quickest way to reach us, for orders, repairs or questions.",
+    "whatsappHeading": "WhatsApp",
+    "whatsappBody": "Send us a message, a photo of your guitar or a link to an item. We reply as soon as we can.",
+    "callHeading": "Call",
+    "callBody": "Prefer to talk? Call the same number.",
+    "visitHeading": "Visits by appointment",
+    "visitBody": "We work from a home workshop in {location}, so our address isn’t published. Message us to arrange drop-off, collection or a time to try a guitar, and we’ll send the location then.",
+    "moreHeading": "Looking for something else?",
+    "bookRepair": "Book a repair",
+    "sell": "Sell us your guitar",
+    "faq": "Questions and answers"
+  },
+  "Policies": {
+    "updated": "Last updated {date}",
+    "others": "Other policies",
+    "zonesCaption": "Delivery fees by area",
+    "zone": "Area",
+    "fee": "Fee",
+    "free": "Free",
+    "terms": {
+      "title": "Terms of sale",
+      "description": "How ordering, prices, holds and payment work when you buy from us.",
+      "intro": "These terms cover buying from {brand}, a home-based shop in {location}. By ordering from us you agree to them. They don’t affect your rights under UAE consumer protection law.",
+      "sections": {
+        "listings": {
+          "heading": "Listings and condition",
+          "body": "Most of what we sell is used. Each listing gives a condition grade (see the condition guide in our questions and answers) and shows every flaw we know of in its photos and description. The photos are of the item itself, not a stock picture.\n\nIf you’d like more photos or a sound clip before buying, ask on WhatsApp."
+        },
+        "prices": {
+          "heading": "Prices",
+          "body": "Prices are in UAE dirhams (AED) and are the final price for the item. We aren’t registered for VAT yet; once we are, prices will include VAT and receipts will show it with our tax registration number (TRN).\n\nDelivery is charged separately, as the delivery policy lists. If a price is wrong because of an obvious mistake, we’ll tell you before you pay, and you can cancel."
+        },
+        "orders": {
+          "heading": "Orders",
+          "body": "You order on WhatsApp: the Order button on each item opens a message naming it. Your order is confirmed when we reply to confirm the item is available and agree the price, delivery and payment with you. Until then, the item can still sell to someone else.\n\nWe sell to customers in the UAE only."
+        },
+        "holds": {
+          "heading": "Holds and deposits",
+          "body": "We can hold an item for you with a deposit until a date we agree. While it’s held, the site shows it as On hold, and the deposit counts towards the price.\n\nIf you change your mind before the hold ends, tell us and we’ll refund the deposit. If the hold ends and we can’t reach you, we may release the item and refund the deposit the way you paid it."
+        },
+        "payment": {
+          "heading": "Payment",
+          "body": "You can pay:\n\n- in cash when you collect\n- in cash on delivery, to the courier\n- by bank transfer, to the account we send you on WhatsApp\n\nWe don’t take card payments online yet. You get a receipt for every order."
+        },
+        "delivery": {
+          "heading": "Delivery and collection",
+          "body": "We deliver across the UAE by courier, or you can collect by appointment in {location}. The delivery policy covers fees, times and what happens if something arrives damaged."
+        },
+        "returns": {
+          "heading": "Returns",
+          "body": "You have {returnDays} days from receiving an item to tell us about a problem and ask to return it. The returns policy has the details."
+        },
+        "liability": {
+          "heading": "Our responsibility",
+          "body": "We describe every item as honestly and accurately as we can, and stand behind that description. We aren’t responsible for wear the listing shows, or for damage after you receive the item. Nothing in these terms limits any responsibility the law doesn’t allow us to limit."
+        },
+        "law": {
+          "heading": "Law and disputes",
+          "body": "These terms are governed by the laws of the United Arab Emirates. If something goes wrong, message us first: most problems are sorted out quickly that way."
+        },
+        "changes": {
+          "heading": "Changes to these terms",
+          "body": "We may update these terms. The version on this page when you order is the one that applies to your order."
+        }
+      }
+    },
+    "privacy": {
+      "title": "Privacy policy",
+      "description": "What we collect when you order, book a repair or offer us a guitar, why, and your rights.",
+      "intro": "{brand} collects as little about you as it can, and only to sell to you, repair your instrument or answer your messages. This policy explains what we keep, why, and your rights under the UAE’s personal data protection law.",
+      "sections": {
+        "collect": {
+          "heading": "What we collect",
+          "body": "- Your name and mobile number, when you order, book a repair or offer us a guitar\n- Your address, if we deliver to you or collect from you\n- Details and photos of your instrument, for a repair or an offer\n- Records of what you bought, the repairs we did and the payments you made\n- Your messages to us on WhatsApp\n\nWe don’t ask for your email, your ID or your card details, and there are no accounts to sign up for."
+        },
+        "use": {
+          "heading": "How we use it",
+          "body": "To answer you, arrange delivery or collection, carry out your repair and keep you updated, keep the records the law requires (such as receipts), and prevent fraud, for example by checking that a guitar offered to us isn’t stolen.\n\nWe never sell your details or use them for advertising."
+        },
+        "whatsapp": {
+          "heading": "WhatsApp",
+          "body": "We talk to customers on WhatsApp. When you give us your number on one of our forms, you agree that we can message you about that request, and we record when you agreed. WhatsApp is run by Meta, and its own privacy policy covers messages sent through it. Tell us any time if you’d like us to stop messaging you."
+        },
+        "photos": {
+          "heading": "Photos",
+          "body": "Photos of your instrument for a repair or an offer are private: only we see them. The one exception is a repair photo we choose to show on your ticket page, which only someone with your link who passes the phone check can see. We remove location data from every photo uploaded to the site."
+        },
+        "tickets": {
+          "heading": "Repair ticket pages",
+          "body": "Each repair has a private link. It shows nothing about you until the last 4 digits of your phone number are entered, and it locks for a while after repeated wrong tries. If you think your link was shared, ask us and we’ll replace it."
+        },
+        "cookies": {
+          "heading": "Cookies",
+          "body": "We use only the cookies the site needs to work: one remembers your language, and one remembers that you passed the phone check on a repair ticket page. There are no advertising or tracking cookies, and no analytics.\n\nOur forms use Cloudflare Turnstile to block spam. It checks your browser without tracking you across other sites."
+        },
+        "hosting": {
+          "heading": "Where your data is stored",
+          "body": "The site and its data are hosted by service providers outside the UAE: Vercel runs the website, Neon the database and Cloudflare stores photos and blocks spam. They keep data for us under contract and may not use it for anything else."
+        },
+        "keep": {
+          "heading": "How long we keep it",
+          "body": "Records of sales, repairs and payments are kept for as long as UAE law requires businesses to keep their records. Offers and repair bookings that didn’t go ahead are deleted once we no longer need them."
+        },
+        "rights": {
+          "heading": "Your rights",
+          "body": "You can ask for a copy of the details we hold about you, ask us to correct them, or ask us to delete them, except records the law requires us to keep. Message us on WhatsApp from the number we have for you, so we know it’s you."
+        }
+      }
+    },
+    "returns": {
+      "title": "Returns",
+      "description": "How to return an item, what can be returned and how refunds work.",
+      "intro": "You can’t try a used instrument in a shop before buying it from us, so you get time to check it. This policy comes on top of your rights under UAE consumer protection law, not instead of them.",
+      "sections": {
+        "window": {
+          "heading": "{returnDays} days to check it",
+          "body": "You have {returnDays} days from receiving an item to check it. If it isn’t as described, or you’re not happy with it, message us on WhatsApp within that time and we’ll arrange the return."
+        },
+        "condition": {
+          "heading": "What can be returned",
+          "body": "Items must come back in the condition you received them, with everything that came with them (case, tools, papers) and, for gear, in their packaging.\n\nWe can’t take back:\n\n- strings, picks and other consumables once opened\n- items that have been modified or worked on since you received them\n- items damaged after you received them"
+        },
+        "costs": {
+          "heading": "Return costs",
+          "body": "If the item isn’t as described or arrived faulty, we pay for the return. If you’re returning it because you changed your mind, you pay for the return delivery, and the original delivery fee isn’t refunded."
+        },
+        "refund": {
+          "heading": "Refunds",
+          "body": "Once the item is back and we’ve checked it, we refund you within {refundDays} days, the way you paid: in cash, or by bank transfer to an account in your name. If it comes back damaged, we show you photos and agree a deduction with you before refunding."
+        },
+        "damaged": {
+          "heading": "Damaged in delivery",
+          "body": "Check the box and the item when the courier delivers. If anything is damaged, photograph the item and the packaging, and message us within {damageHours} hours. We take it up with the courier, and you get a repair, a replacement or a full refund."
+        },
+        "repairs": {
+          "heading": "Repairs",
+          "body": "Repair work can’t be returned, but it is guaranteed: see the repair terms."
+        }
+      }
+    },
+    "delivery": {
+      "title": "Delivery",
+      "description": "Courier delivery across the UAE, collection by appointment, fees and times.",
+      "intro": "We’re a home-based shop in {location}. You can collect by appointment, or we send your order by courier anywhere in the UAE.",
+      "sections": {
+        "collection": {
+          "heading": "Collection by appointment",
+          "body": "Collection is free. We agree a time on WhatsApp and send you the location then: our address isn’t published, because we work from home."
+        },
+        "courier": {
+          "heading": "Courier delivery",
+          "body": "We use a courier that handles fragile items and takes cash on delivery. Guitars travel in a hard case or a box that supports the neck, insured for their price."
+        },
+        "times": {
+          "heading": "Delivery times",
+          "body": "We send orders within 2 working days of confirming them, and most arrive 1 to 3 working days after that. We send you the tracking details on WhatsApp."
+        },
+        "fees": {
+          "heading": "Delivery fees",
+          "body": "The fee depends on the emirate and is added to your order. We confirm it before you pay. The current fees are:"
+        },
+        "cod": {
+          "heading": "Cash on delivery",
+          "body": "You can pay the courier in cash when the item arrives. Please have the exact amount ready if you can."
+        },
+        "damage": {
+          "heading": "If something arrives damaged",
+          "body": "Check the item when it arrives. If anything is damaged, photograph it and the packaging, and message us within {damageHours} hours. The returns policy explains what happens next."
+        },
+        "outside": {
+          "heading": "Outside the UAE",
+          "body": "We don’t ship outside the UAE at the moment."
+        }
+      }
+    },
+    "repair-terms": {
+      "title": "Repair terms",
+      "description": "Quotes, approval, diagnosis fees, collection and our guarantee on repair work.",
+      "intro": "These terms apply to every repair. You accept them when you drop your instrument off, or when you approve a quote on your ticket page, and we record the time.",
+      "sections": {
+        "quotes": {
+          "heading": "Quotes and approval",
+          "body": "We check the instrument first and send a quote to your ticket page. Work starts only after you approve it: on the page, on WhatsApp or in person. If we find more to fix, we send a new quote and wait for your approval again.\n\nA simple fixed-price job, such as a setup, can be approved when you drop the instrument off."
+        },
+        "diagnosis": {
+          "heading": "Diagnosis fee",
+          "body": "If you decline a quote, a diagnosis fee may apply for the time spent checking the instrument. We tell you the amount, and it’s due when you collect."
+        },
+        "parts": {
+          "heading": "Parts and deposits",
+          "body": "Special-order parts may need a deposit before we order them. The deposit counts towards the repair."
+        },
+        "intake": {
+          "heading": "When we receive your instrument",
+          "body": "We photograph it, note its condition and list what came with it (case, strap, tools), so we both have a record."
+        },
+        "payment": {
+          "heading": "Payment",
+          "body": "You pay when you collect: in cash, by bank transfer, or in cash on delivery if we send it back by courier. Your ticket page shows what’s due."
+        },
+        "collection": {
+          "heading": "Collecting your instrument",
+          "body": "We message you when it’s ready. Please collect it, or arrange delivery, within {abandonDays} days. After that, and once we’ve tried to reach you, it may be treated as abandoned, and we may sell it to cover what’s owed."
+        },
+        "warranty": {
+          "heading": "Our guarantee",
+          "body": "We guarantee our work for {repairWarrantyDays} days from collection. If a problem we fixed comes back in that time, we fix it again at no charge.\n\nThe guarantee doesn’t cover wear from playing, accidents, changes in heat or humidity, or work by someone else."
+        },
+        "liability": {
+          "heading": "Our responsibility",
+          "body": "We take care with every instrument while we have it. We aren’t responsible for faults it already had, for wear in parts we didn’t work on, or for old finishes and electronics that fail despite normal care. If a job puts them at risk, we tell you before we start."
+        },
+        "courier": {
+          "heading": "Courier pickup and return",
+          "body": "If a courier carries your instrument, pack it in a hard case or a well-padded box. We arrange an insured courier and tell you the fee first."
+        }
+      }
+    }
   }
 }

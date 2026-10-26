@@ -4,9 +4,11 @@ import { Link, usePathname } from "@/i18n/navigation";
 
 type Props = {
   label: string;
-  /** `wide` links show only from the sm breakpoint: phones have room for two. */
-  links: { href: string; label: string; wide?: boolean }[];
+  /** Links marked `from` show only from that breakpoint: phones have room for two. */
+  links: { href: string; label: string; from?: "sm" | "md" }[];
 };
+
+const hiddenBelow = { sm: "max-sm:hidden", md: "max-md:hidden" } as const;
 
 /** The header's page links; the current section is marked for screen readers and in gold. */
 export function SiteNav({ label, links }: Props) {
@@ -18,7 +20,7 @@ export function SiteNav({ label, links }: Props) {
         {links.map((link) => {
           const inSection = pathname === link.href || pathname.startsWith(`${link.href}/`);
           return (
-            <li key={link.href} className={link.wide ? "max-sm:hidden" : undefined}>
+            <li key={link.href} className={link.from && hiddenBelow[link.from]}>
               <Link
                 href={link.href}
                 aria-current={inSection ? (pathname === link.href ? "page" : "true") : undefined}

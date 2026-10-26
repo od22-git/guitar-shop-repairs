@@ -8,6 +8,8 @@ import { Bdi, Ltr } from "@/components/bdi";
 import { formCard } from "@/components/form-parts";
 import { WhatsAppIcon } from "@/components/whatsapp-icon";
 import { brand } from "@/config/brand";
+import { policyNumbers } from "@/config/policies";
+import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { endOfDubaiDay, formatDate } from "@/lib/datetime";
 import { db } from "@/lib/db/client";
@@ -326,9 +328,16 @@ async function QuoteSection({
               <h3 className="font-bold">{t("termsHeading")}</h3>
               <ul className="mt-2 list-disc space-y-1 ps-5 text-ink-muted">
                 {termKeys.map((key) => (
-                  <li key={key}>{t(`terms.${key}`)}</li>
+                  <li key={key}>{t(`terms.${key}`, policyNumbers)}</li>
                 ))}
               </ul>
+              <Link
+                href="/policies/repair-terms"
+                target="_blank"
+                className="mt-2 inline-flex min-h-11 items-center underline underline-offset-4"
+              >
+                {t("fullTerms")}
+              </Link>
             </div>
           )}
           <QuoteDecision

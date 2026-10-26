@@ -18,6 +18,13 @@ const pages = [
   "/ar/repairs",
   "/en/sell",
   "/ar/sell",
+  "/en/about",
+  "/ar/about",
+  "/en/contact",
+  "/ar/contact",
+  "/en/policies/privacy",
+  "/ar/policies/delivery",
+  "/ar/policies/repair-terms",
 ];
 
 for (const path of pages) {
