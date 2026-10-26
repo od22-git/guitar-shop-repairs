@@ -4,8 +4,8 @@ Everything the site needs from you (the partners) before or around launch. Each 
 
 ## Brand and accounts
 
-- [ ] **Instagram handle.** Default: none, so the link is hidden. Needed by M9.
-- [ ] **TikTok handle.** Default: none, so the link is hidden. Needed by M9.
+- [ ] **Instagram handle.** Default: none, so the link is hidden. Needed by M9a.
+- [ ] **TikTok handle.** Default: none, so the link is hidden. Needed by M9a.
 - [ ] **Custom domain.** Default: `guitar-shop-repairs.vercel.app`. Needed by M18 (buy it any time; switching is a settings change).
 - [ ] **Trade licence**, under the name "Midtown Gears". Stripe, Tabby and public selling all need it. Needed by M18. **Apply now.**
 - [ ] **Stripe account.** Needs the licence. Test mode is used until then. Needed by M13 (test) and M18 (live).
@@ -16,7 +16,7 @@ Everything the site needs from you (the partners) before or around launch. Each 
 
 - [ ] **NANOCORE photos (your own).** Default: Unsplash stand-ins flagged `placeholder_photos`; the launch check refuses them. Shot list: [`photo-shot-list.md`](photo-shot-list.md). Needed by M18.
 - [ ] **Footswitch and parts/knobs photos (your own).** Default: Unsplash stand-ins, flagged the same way. Needed by M18.
-- [ ] **Approve the new atmosphere photos** (Unsplash contact sheet). Needed by M9.
+- [ ] **Approve the redesign mockups** (home + product page, bold editorial) **and the atmosphere photos** (Unsplash contact sheet). Needed by M9a.
 - [ ] **Tone demo recordings** for Signature Packs and product pages. Default: placeholder audio. Needed by M16.
 
 ## Services and delivery
