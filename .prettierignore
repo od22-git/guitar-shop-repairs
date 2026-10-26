@@ -1,0 +1,11 @@
+.next
+node_modules
+pnpm-lock.yaml
+coverage
+test-results
+playwright-report
+blob-report
+next-env.d.ts
+.claude/skills
+# Hand-written docs; Prettier would pad every table.
+*.md

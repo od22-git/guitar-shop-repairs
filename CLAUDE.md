@@ -15,12 +15,30 @@ Bilingual (EN/AR, RTL) site for a home-based electric guitar shop in Ras Al Khai
 
 Follow the skills in `.claude/skills/`: `frontend-design` for UI, `vercel-react-best-practices` for React/Next.js code, `web-design-guidelines` for UI reviews, `insecure-defaults` for security audits. Their sources are listed in `.claude/skills/SOURCES.md`.
 
+## Commands
+
+pnpm 10 and Node 22 (`.nvmrc`). Copy `.env.example` to `.env.local` first: `dev`, `build`, `start` and `typecheck` refuse to run without it.
+
+- `pnpm dev` — dev server
+- `pnpm lint` — ESLint (zero warnings) + Prettier check; `pnpm format` fixes formatting
+- `pnpm typecheck` — `next typegen` + `tsc`
+- `pnpm test` — Vitest unit tests (`src/**/*.test.ts`)
+- `pnpm build && pnpm test:e2e` — Playwright against the production build (`e2e/`, desktop + mobile)
+
+CI (`.github/workflows/ci.yml`) runs all of these, with a Postgres 16 service for e2e.
+
+## Stack notes
+
+- Next.js 16 (App Router, Turbopack, `cacheComponents`). Its APIs differ from older versions: read `node_modules/next/dist/docs/` before using one (see `AGENTS.md`, which `next dev` keeps rewriting; leave it in place).
+- Tailwind CSS v4, configured in `src/app/globals.css` (no `tailwind.config`).
+- `@playwright/test` is pinned to the version matching the browser pre-installed in Claude's cloud sessions. Bump it only together with that browser.
+
 ## Conventions
 
-These are the plan's rules; M0 expands this section as code lands.
-
+- Read configuration only through `env` from `@/lib/env` (Zod-validated in `src/lib/env-schema.ts`; `next.config.ts` validates at startup). ESLint blocks `process.env` elsewhere in `src/`. A new variable goes in the schema, `.env.example` and the CI workflow's `env`. No fallback values for secrets.
+- Brand name, tagline and location come from `src/config/brand.ts`; never hard-code them.
 - Money is stored as integer fils (1 AED = 100 fils). Show times in Asia/Dubai, with Western digits in Arabic.
-- Use CSS logical properties only (`ms-/me-/ps-/pe-`, `start/end`), never left/right.
+- Use CSS logical properties only (`ms-/me-/ps-/pe-`, `start/end`), never left/right. ESLint rejects physical Tailwind classes (`ml-`, `pr-`, `left-`, `text-right`, `rounded-l`, …) in `src/`.
 - Call `requireAdmin()` in every admin server action and route. Public pages read only the shapes in `lib/public-dto.ts`.
 - Every admin change to products, stock or settings revalidates the affected pages.
 - Never use images from other websites. Use only the owner's photos, or free-licence stock logged in `docs/IMAGE_CREDITS.md`.
