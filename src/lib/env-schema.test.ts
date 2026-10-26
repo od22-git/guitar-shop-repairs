@@ -1,6 +1,8 @@
+import { readFileSync } from "node:fs";
+
 import { describe, expect, it } from "vitest";
 
-import { EnvError, parseEnv } from "./env-schema";
+import { EnvError, parseEnv, publishedSecrets } from "./env-schema";
 
 const valid = {
   DATABASE_URL: "postgresql://user:pass@db.example.com:5432/shop",
@@ -105,6 +107,19 @@ describe("parseEnv", () => {
       turnstileTestKeys.TURNSTILE_SITE_KEY,
     );
     expect(parseEnv({ ...valid, ...turnstileTestKeys }).NODE_ENV).toBe("development");
+  });
+
+  it("refuses the repository's CI secret in production, except on localhost", () => {
+    const ci = /BETTER_AUTH_SECRET: (\S+)/.exec(
+      readFileSync(".github/workflows/ci.yml", "utf8"),
+    )?.[1];
+    expect(publishedSecrets).toContain(ci);
+    const published = { ...valid, BETTER_AUTH_SECRET: ci, NODE_ENV: "production" };
+    expect(errorOf(published).message).toContain("BETTER_AUTH_SECRET: is the CI value");
+    expect(errorOf(published).message).not.toContain(ci);
+    expect(parseEnv({ ...published, SITE_URL: "http://localhost:3000" }).BETTER_AUTH_SECRET).toBe(
+      ci,
+    );
   });
 
   it("rejects a short BETTER_AUTH_SECRET", () => {
