@@ -21,7 +21,8 @@
     "shop": "Browse the shop",
     "faq": "Questions and condition guide",
     "contactHeading": "Contact",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "repairs": "Repairs and booking"
   },
   "Home": {
     "intro": "Hand-picked used electric guitars and gear, and repairs from a basic setup to a full refret, from a home workshop in {location}.",
@@ -54,7 +55,7 @@
       "electronics": "Pickups, wiring and noisy pots",
       "hardware": "Nuts, bridges and tuners"
     },
-    "repairsCta": "Ask about a repair",
+    "repairsCta": "Book a repair",
     "visitHeading": "Drop-off by appointment",
     "visitBody": "We work from a home workshop in {location}, so there’s no walk-in shop. Message us to arrange a drop-off or collection, or we’ll send a courier anywhere in the UAE."
   },
@@ -78,7 +79,8 @@
   },
   "Nav": {
     "label": "Main",
-    "shop": "Shop"
+    "shop": "Shop",
+    "repairs": "Repairs"
   },
   "Shop": {
     "title": "Shop",
@@ -256,5 +258,177 @@
     "eta": "Expected to be ready by {date}.",
     "approve": "Please review and approve the quote here: {url}",
     "track": "Follow your repair here: {url}"
+  },
+  "Emirate": {
+    "abu_dhabi": "Abu Dhabi",
+    "dubai": "Dubai",
+    "sharjah": "Sharjah",
+    "ajman": "Ajman",
+    "umm_al_quwain": "Umm Al Quwain",
+    "ras_al_khaimah": "Ras Al Khaimah",
+    "fujairah": "Fujairah"
+  },
+  "Repairs": {
+    "title": "Guitar repairs",
+    "description": "Setups, fretwork, electronics and hardware repairs from a home workshop in {location}. We quote first; work starts only when you approve.",
+    "intro": "Setups, fretwork, electronics and hardware, from a home workshop in {location}. We check the instrument and quote first, and work starts only when you approve the price.",
+    "bookCta": "Book a repair",
+    "servicesHeading": "Services and starting prices",
+    "servicesNote": "Prices are where a job starts. Every instrument is checked and quoted before any work, and you follow it all on your own ticket page.",
+    "from": "from <bdi>{price}</bdi>",
+    "services": {
+      "setup": {
+        "name": "Full setup",
+        "detail": "Neck relief, action, intonation and pickup height, with fresh strings"
+      },
+      "strings": {
+        "name": "String change and clean",
+        "detail": "Strings of your choice, fretboard cleaned and conditioned"
+      },
+      "frets": {
+        "name": "Fret level and crown",
+        "detail": "For buzzing, dead spots and worn frets"
+      },
+      "refret": {
+        "name": "Refret",
+        "detail": "New frets, stainless or nickel silver"
+      },
+      "electronics": {
+        "name": "Electronics",
+        "detail": "Pickup swaps, wiring, noisy pots and switches"
+      },
+      "nut": {
+        "name": "Nut and bridge work",
+        "detail": "New bone or graphite nut, saddles and bridge adjustments"
+      }
+    },
+    "howHeading": "How it works",
+    "steps": {
+      "book": {
+        "title": "Book",
+        "body": "Tell us about the instrument with the form below. We reply on WhatsApp."
+      },
+      "arrive": {
+        "title": "Drop off or send it",
+        "body": "Bring it by appointment, or we arrange a courier pickup anywhere in the UAE."
+      },
+      "quote": {
+        "title": "Approve the quote",
+        "body": "We check it and send a quote to your ticket page. Nothing starts until you approve it."
+      },
+      "track": {
+        "title": "Follow it",
+        "body": "Your private ticket link shows each step, and we message you on WhatsApp when it changes."
+      }
+    },
+    "dropOffHeading": "Drop-off by appointment",
+    "dropOffBody": "We work from a home workshop in {location}, so drop-off and collection are by appointment. We’ll send the details on WhatsApp.",
+    "courierHeading": "Courier pickup and delivery",
+    "courierBody": "Anywhere in the UAE. Pack the guitar in a hard case or a well-padded box; we’ll tell you the courier fee for your area before booking it.",
+    "bookHeading": "Book a repair",
+    "bookIntro": "Tell us about the instrument and what it needs. We’ll reply on WhatsApp to arrange drop-off or a courier pickup.",
+    "form": {
+      "name": "Your name",
+      "phone": "Mobile number (WhatsApp)",
+      "phoneHint": "Local, like 050 123 4567, or with a country code.",
+      "instrumentBrand": "Brand",
+      "instrumentModel": "Model",
+      "optional": "optional",
+      "instrumentHeading": "The instrument",
+      "issue": "What needs doing?",
+      "issueHint": "Buzzing, crackling pots, a setup before a gig: whatever you’ve noticed.",
+      "intakeMethod": "How will it reach us?",
+      "drop_off": "I’ll drop it off",
+      "courier": "Courier pickup",
+      "emirate": "Emirate for pickup",
+      "chooseEmirate": "Choose an emirate",
+      "consent": "You can reply and send repair updates to this number on WhatsApp.",
+      "honeypot": "Leave this field empty",
+      "submit": "Send booking",
+      "sending": "Sending…",
+      "errors": {
+        "required": "Please fill this in.",
+        "too_long": "That’s too long. Please shorten it.",
+        "phone": "Enter a mobile number, like 050 123 4567.",
+        "consent": "We reply on WhatsApp, so we need your OK to message you."
+      },
+      "fixErrors": "Please check the fields marked below.",
+      "spam": "We couldn’t confirm you’re a person. Please try again.",
+      "rateLimited": "Too many bookings from your connection. Please try again later, or message us on WhatsApp.",
+      "sentHeading": "Thank you, we’ve got your booking",
+      "sentBody": "We’ll message you on WhatsApp soon to arrange the next step."
+    }
+  },
+  "Ticket": {
+    "title": "Repair ticket",
+    "checkHeading": "Your repair ticket",
+    "checkIntro": "To see this ticket, enter the last 4 digits of the mobile number you gave us.",
+    "digits": "Last 4 digits of your mobile number",
+    "show": "Show my ticket",
+    "checking": "Checking…",
+    "invalidDigits": "Enter the 4 digits.",
+    "wrong": "Those digits don’t match. {left, plural, one {# try left} other {# tries left}} before a 15-minute pause.",
+    "locked": "Too many wrong tries. Please try again after {time}, or message us on WhatsApp.",
+    "heading": "Ticket <ltr>{number}</ltr>",
+    "issueLabel": "What we’re working on",
+    "statusHeading": "Progress",
+    "now": "Now: {status}",
+    "closed": {
+      "collected": "Collected",
+      "delivered": "Delivered",
+      "abandoned": "Closed under the repair terms",
+      "cancelled": "Cancelled"
+    },
+    "eta": "Expected ready by {date}",
+    "waiting": "Waiting for your approval",
+    "quoteHeading": "Your quote",
+    "quoteVersion": "Version {version}",
+    "item": "Work",
+    "amount": "Amount",
+    "total": "Total",
+    "approve": "Approve the quote",
+    "decline": "Decline",
+    "declineConfirm": "Decline this quote? We’ll get the instrument ready to collect, unrepaired. A diagnosis fee may apply under the repair terms.",
+    "sending": "Sending…",
+    "approved": "You approved this quote on {date}.",
+    "declined": "You declined this quote on {date}.",
+    "approvedNow": "Thank you, the quote is approved. We’ll start the work and keep you posted.",
+    "declinedNow": "Noted, you’ve declined the quote. We’ll message you on WhatsApp about collection.",
+    "stale": "This quote changed while the page was open. Please reload to see the latest version.",
+    "reload": "Reload",
+    "needsTerms": "Please tick to accept the repair terms.",
+    "acceptTerms": "I accept the repair terms below.",
+    "termsHeading": "Repair terms",
+    "terms": {
+      "quote": "Work starts only after you approve the quote. If we find more to fix, we send a new quote and wait for your approval again.",
+      "fee": "If you decline a quote, a diagnosis fee may apply for the time spent checking the instrument.",
+      "parts": "Special-order parts may need a deposit before we order them.",
+      "collection": "Please collect within 90 days of the instrument being ready; after that it may be treated as abandoned.",
+      "liability": "We take care with every instrument, but aren’t liable for existing faults or for wear in parts we didn’t work on."
+    },
+    "termsAccepted": "Repair terms accepted.",
+    "payHeading": "To pay",
+    "amountDue": "On collection or delivery: <bdi>{amount}</bdi>",
+    "payNote": "Pay in cash at collection, cash on delivery through the courier, or by bank transfer. Message us on WhatsApp to arrange it.",
+    "photosHeading": "Photos",
+    "photoStage": {
+      "intake": "At drop-off",
+      "progress": "During the work",
+      "done": "Finished"
+    },
+    "photoAlt": "{stage}, photo {n}",
+    "historyHeading": "Updates",
+    "event": {
+      "opened": "Received",
+      "status": "{status}",
+      "correction": "Status corrected to “{status}”",
+      "quote": "Quote revised (version {version})",
+      "update": "Update"
+    },
+    "newEta": "New expected date: {date}",
+    "help": "Questions about your repair? Message us on WhatsApp."
+  },
+  "InboxWhatsApp": {
+    "repairReply": "Hello {name}, thanks for booking a repair with {brand}."
   }
 }

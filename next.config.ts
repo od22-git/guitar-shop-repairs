@@ -7,7 +7,8 @@ import { parseEnv } from "./src/lib/env-schema";
 // missing or invalid variables, instead of erroring later on first use.
 const env = parseEnv(process.env);
 
-// Admin pages and auth: never cached, never indexed, and no referrer to leak their URLs.
+// Admin pages, auth and customers' repair tickets (/<locale>/r/<token>): never cached,
+// never indexed, and no referrer to leak their URLs.
 const privateHeaders = [
   { key: "Cache-Control", value: "private, no-store" },
   { key: "X-Robots-Tag", value: "noindex, nofollow" },
@@ -31,6 +32,7 @@ const nextConfig: NextConfig = {
       { source: "/admin", headers: privateHeaders },
       { source: "/admin/:path*", headers: privateHeaders },
       { source: "/api/:path*", headers: privateHeaders },
+      { source: "/:locale(en|ar)/r/:token", headers: privateHeaders },
     ];
   },
   async rewrites() {

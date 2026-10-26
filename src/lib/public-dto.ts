@@ -1,4 +1,18 @@
-import type { Category, Product, ProductImage } from "./db/schema";
+import type {
+  Category,
+  Customer,
+  Product,
+  ProductImage,
+  RepairCloseReason,
+  RepairEvent,
+  RepairEventKind,
+  RepairPhoto,
+  RepairPhotoStage,
+  RepairQuote,
+  RepairQuoteItem,
+  RepairStatus,
+  RepairTicket,
+} from "./db/schema";
 import { productImageSrc, productOgImageSrc } from "./product-images";
 import type { ProductSpecs } from "./product-specs";
 
@@ -139,5 +153,127 @@ export function toPublicProduct(
     publishedAt,
     soldAt: product.soldAt,
     updatedAt: product.updatedAt,
+  };
+}
+
+/** A repair photo the customer may see, through short-lived signed links. */
+export type PublicRepairPhoto = {
+  stage: RepairPhotoStage;
+  width: number;
+  height: number;
+  /** Signed links to the 640 and 1280 px files. */
+  src: string;
+  srcLarge: string;
+};
+
+export type PublicRepairEvent = {
+  kind: RepairEventKind;
+  toStatus: RepairStatus | null;
+  closeReason: RepairCloseReason | null;
+  note: string | null;
+  /** "YYYY-MM-DD", a day in Dubai. */
+  etaDate: string | null;
+  quoteVersion: number | null;
+  at: Date;
+};
+
+export type PublicRepairQuote = {
+  id: number;
+  version: number;
+  status: "pending" | "approved" | "declined";
+  items: { label: string; amountFils: number }[];
+  totalFils: number;
+  notes: string | null;
+  decidedAt: Date | null;
+};
+
+/**
+ * The tracking page's view of a ticket, shown only after the phone check. No customer
+ * details, serial, intake notes, internal notes, hidden photos or older quote versions.
+ */
+export type PublicTicket = {
+  number: string;
+  instrument: string | null;
+  issue: string;
+  status: RepairStatus;
+  closeReason: RepairCloseReason | null;
+  etaDate: string | null;
+  /** Whether the repair terms are accepted; if not, approving a quote accepts them. */
+  termsAccepted: boolean;
+  quote: PublicRepairQuote | null;
+  /** What's owed on collection once it's Ready: the approved total, or the diagnosis fee. */
+  amountDueFils: number | null;
+  /** Oldest first. */
+  events: PublicRepairEvent[];
+  photos: PublicRepairPhoto[];
+};
+
+type TicketSource = {
+  ticket: RepairTicket;
+  customer: Customer;
+  quotes: (RepairQuote & { items: RepairQuoteItem[] })[];
+  events: RepairEvent[];
+  photos: RepairPhoto[];
+};
+
+/** Builds the tracking page's ticket; `photoUrl` signs a link to one stored file. */
+export function toPublicTicket(
+  { ticket, quotes, events, photos }: TicketSource,
+  photoUrl: (file: string) => string,
+): PublicTicket {
+  const live = quotes.find((quote) => quote.status !== "superseded");
+  const quote: PublicRepairQuote | null =
+    live && live.status !== "superseded"
+      ? {
+          id: live.id,
+          version: live.version,
+          status: live.status,
+          items: live.items.map((item) => ({ label: item.label, amountFils: item.amountFils })),
+          totalFils: live.totalFils,
+          notes: live.notes,
+          decidedAt: live.decidedAt,
+        }
+      : null;
+
+  let amountDueFils: number | null = null;
+  if (ticket.status === "ready") {
+    if (quote?.status === "approved") amountDueFils = quote.totalFils;
+    else if (quote?.status === "declined") amountDueFils = ticket.diagnosisFeeFils;
+  }
+
+  const versionOf = (quoteId: number | null) =>
+    quotes.find((q) => q.id === quoteId)?.version ?? null;
+
+  return {
+    number: ticket.number,
+    instrument: [ticket.instrumentBrand, ticket.instrumentModel].filter(Boolean).join(" ") || null,
+    issue: ticket.issue,
+    status: ticket.status,
+    closeReason: ticket.closeReason,
+    etaDate: ticket.etaDate,
+    termsAccepted: ticket.termsAcceptedAt !== null,
+    quote,
+    amountDueFils,
+    events: events
+      // A note only for the admin isn't the customer's news.
+      .filter((event) => event.kind !== "update" || event.publicNote || event.etaDate)
+      .map((event) => ({
+        kind: event.kind,
+        toStatus: event.toStatus,
+        closeReason: event.closeReason,
+        note: event.publicNote,
+        etaDate: event.etaDate,
+        quoteVersion: event.kind === "quote" ? versionOf(event.quoteId) : null,
+        at: event.createdAt,
+      })),
+    photos: photos
+      .filter((photo) => photo.customerVisible)
+      .map((photo) => ({
+        stage: photo.stage,
+        width: photo.width,
+        height: photo.height,
+        src: photoUrl(`${photo.key}-640.webp`),
+        srcLarge: photoUrl(`${photo.key}-1280.webp`),
+      })),
   };
 }

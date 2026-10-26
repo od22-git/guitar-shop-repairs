@@ -20,7 +20,7 @@ import {
   parseUpdateForm,
 } from "@/lib/repairs/forms";
 import { deleteRepairPhoto, setRepairPhotoVisible } from "@/lib/repairs/photos";
-import { createQuote, decideQuote } from "@/lib/repairs/quotes";
+import { createQuote, decideQuote, setDiagnosisFee } from "@/lib/repairs/quotes";
 import {
   createTicket,
   markNotified,
@@ -54,6 +54,9 @@ const messages: Record<RepairProblem, string> = {
   cannot_quote: "Quotes can't change once the instrument is ready.",
   stale_quote: "This quote has changed or was already decided. Reload the page.",
   empty_update: "Write a note or set a new ETA.",
+  needs_terms: "The customer needs to accept the repair terms.",
+  not_declined: "The diagnosis fee applies only to a declined quote.",
+  already_converted: "That booking already has a ticket. Open it from the inbox.",
 };
 
 function failure(error: unknown): ActionState {
@@ -84,7 +87,16 @@ export async function createTicketAction(_: ActionState, form: FormData): Promis
   await requireAdmin();
   const parsed = parseTicketForm(form);
   if (!parsed.ok) return { ...invalid, errors: parsed.errors };
-  const { id } = await createTicket(db, parsed.data);
+  // Converting an online booking from the inbox.
+  const from = form.get("fromInboxId");
+  let id: number;
+  try {
+    ({ id } = await createTicket(db, parsed.data, {
+      fromInboxId: from ? toId(from) : undefined,
+    }));
+  } catch (error) {
+    return failure(error);
+  }
   revalidatePath("/admin", "layout");
   redirect(`/admin/repairs/${id}?created=1`);
 }
@@ -208,6 +220,25 @@ export async function decideQuoteAction(
     return failure(error);
   }
   return done(decision === "approved" ? "Approval recorded." : "Decline recorded.");
+}
+
+/** The fee after a decline, e.g. one the customer made on the tracking page. */
+export async function setDiagnosisFeeAction(
+  ticketId: number,
+  _: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+  const fee = optionalAmount.safeParse(form.get("diagnosisFee") ?? undefined);
+  if (!fee.success) {
+    return { ...invalid, errors: { diagnosisFee: fee.error.issues[0].message } };
+  }
+  try {
+    await setDiagnosisFee(db, toId(ticketId), fee.data ?? null);
+  } catch (error) {
+    return failure(error);
+  }
+  return done("Diagnosis fee saved.");
 }
 
 export async function markNotifiedAction(eventId: number): Promise<ActionState> {

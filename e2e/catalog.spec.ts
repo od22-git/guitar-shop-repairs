@@ -30,6 +30,7 @@ const productLinks = (page: Page) =>
 
 const journeys = {
   en: {
+    shop: "Shop",
     category: "Electric guitars",
     filters: "Filters",
     twoItems: "2 items",
@@ -38,6 +39,7 @@ const journeys = {
     title: "Fender Stratocaster, sunburst",
   },
   ar: {
+    shop: "المتجر",
     category: "جيتارات كهربائية",
     filters: "الفلاتر",
     twoItems: "منتجان",
@@ -52,7 +54,7 @@ for (const [locale, j] of Object.entries(journeys)) {
     await page.goto(`/${locale}`);
     await page
       .getByRole("navigation", { name: /Main|القائمة/ })
-      .getByRole("link")
+      .getByRole("link", { name: j.shop })
       .click();
     await expect(page).toHaveURL(`/${locale}/shop`);
 

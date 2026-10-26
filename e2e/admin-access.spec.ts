@@ -42,6 +42,8 @@ test("every admin page sends a signed-out visitor to sign in", async ({ page }) 
       "/admin/repairs",
       "/admin/repairs/new",
       "/admin/repairs/1",
+      "/admin/inbox",
+      "/admin/inbox/1",
     ]),
   );
   for (const path of pages) {

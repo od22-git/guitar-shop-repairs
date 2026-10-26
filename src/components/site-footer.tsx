@@ -33,6 +33,11 @@ export async function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link href="/repairs" className={linkClass}>
+                {t("repairs")}
+              </Link>
+            </li>
+            <li>
               <Link href="/faq" className={linkClass}>
                 {t("faq")}
               </Link>

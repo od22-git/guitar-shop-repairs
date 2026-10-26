@@ -16,6 +16,8 @@ import {
   type RepairTicket,
 } from "../db/schema";
 
+import { markConverted } from "../inbox";
+
 import { RepairError } from "./errors";
 import type { TicketDetailsInput, TicketInput, UpdateInput } from "./forms";
 import { moveProblem, undoTarget, type CurrentQuote } from "./state-machine";
@@ -72,10 +74,12 @@ function detailColumns(input: TicketDetailsInput) {
 /**
  * Opens a ticket. A returning customer is matched on their phone number and their name
  * and language are updated to what was entered; WhatsApp consent, once given, is kept.
+ * `fromInboxId` is the online booking it was converted from, marked converted with it.
  */
 export async function createTicket(
   db: Database,
   input: TicketInput,
+  { fromInboxId }: { fromInboxId?: number } = {},
 ): Promise<{ id: number; number: string }> {
   return db.transaction(async (tx) => {
     const now = new Date();
@@ -117,6 +121,9 @@ export async function createTicket(
       toStatus: "received",
       etaDate: nullable(input.etaDate),
     });
+    if (fromInboxId !== undefined && !(await markConverted(tx, fromInboxId, ticket.id))) {
+      throw new RepairError("already_converted");
+    }
     return ticket;
   });
 }

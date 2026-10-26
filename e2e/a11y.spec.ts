@@ -14,6 +14,8 @@ const pages = [
   "/ar/product/marshall-ms-2-micro-amp",
   "/en/faq",
   "/ar/faq",
+  "/en/repairs",
+  "/ar/repairs",
 ];
 
 for (const path of pages) {

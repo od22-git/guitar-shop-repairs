@@ -9,8 +9,8 @@ import { Link } from "@/i18n/navigation";
 import { pageAlternates } from "@/lib/seo";
 import { shopWhatsAppUrl } from "@/lib/whatsapp/shop-link";
 
-// The home page shows what the shop sells and repairs. Until the repairs pages (M6) exist,
-// repair questions go to WhatsApp. The final copy comes in M8.
+// The home page shows what the shop sells and repairs; repairs lead to /repairs, where
+// the booking form is. The final copy comes in M8.
 
 // Each home category, with its shop category (slugs from src/lib/db/seed.ts).
 const categories = {
@@ -34,12 +34,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function HomePage() {
   const locale = await getLocale();
-  const [t, tPhoto, tWhatsApp, whatsappUrl, repairUrl] = await Promise.all([
+  const [t, tPhoto, tWhatsApp, whatsappUrl] = await Promise.all([
     getTranslations("Home"),
     getTranslations("Photos"),
     getTranslations("WhatsApp"),
     shopWhatsAppUrl(locale),
-    shopWhatsAppUrl(locale, "repairGreeting"),
   ]);
 
   return (
@@ -134,15 +133,9 @@ export default async function HomePage() {
                 </li>
               ))}
             </ul>
-            <a
-              href={repairUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`mt-8 ${buttonClass}`}
-            >
-              <WhatsAppIcon className="size-5" />
+            <Link href="/repairs" className={`mt-8 ${buttonClass}`}>
               {t("repairsCta")}
-            </a>
+            </Link>
           </div>
         </div>
       </section>

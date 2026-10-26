@@ -7,6 +7,13 @@ const valid = {
   SITE_URL: "https://shop.example.com",
   BETTER_AUTH_SECRET: "a".repeat(32),
   STORAGE_DRIVER: "fs",
+  TURNSTILE_SITE_KEY: "0x4AAAAAAAreal-site-key",
+  TURNSTILE_SECRET_KEY: "0x4AAAAAAAreal-secret-key",
+};
+
+const turnstileTestKeys = {
+  TURNSTILE_SITE_KEY: "1x00000000000000000000AA",
+  TURNSTILE_SECRET_KEY: "1x0000000000000000000000000000000AA",
 };
 
 const r2 = {
@@ -48,6 +55,8 @@ describe("parseEnv", () => {
     expect(message).toContain("SITE_URL: is missing (required)");
     expect(message).toContain("BETTER_AUTH_SECRET: is missing (required)");
     expect(message).toContain("STORAGE_DRIVER: is missing (required)");
+    expect(message).toContain("TURNSTILE_SITE_KEY: is missing (required)");
+    expect(message).toContain("TURNSTILE_SECRET_KEY: is missing (required)");
     expect(message).toContain(".env.example");
   });
 
@@ -85,6 +94,17 @@ describe("parseEnv", () => {
     const secret = "postgresql://user:s3cret-password@db.example.com";
     const { message } = errorOf({ DATABASE_URL: secret, SITE_URL: "nope" });
     expect(message).not.toContain("s3cret-password");
+  });
+
+  it("refuses Turnstile test keys in production, except on localhost", () => {
+    const message = errorOf({ ...valid, ...turnstileTestKeys, NODE_ENV: "production" }).message;
+    expect(message).toContain("TURNSTILE_SITE_KEY: is a Cloudflare test key");
+    expect(message).toContain("TURNSTILE_SECRET_KEY: is a Cloudflare test key");
+    const local = { ...valid, ...turnstileTestKeys, SITE_URL: "http://localhost:3000" };
+    expect(parseEnv({ ...local, NODE_ENV: "production" }).TURNSTILE_SITE_KEY).toBe(
+      turnstileTestKeys.TURNSTILE_SITE_KEY,
+    );
+    expect(parseEnv({ ...valid, ...turnstileTestKeys }).NODE_ENV).toBe("development");
   });
 
   it("rejects a short BETTER_AUTH_SECRET", () => {
