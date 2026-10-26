@@ -37,6 +37,9 @@ CI (`.github/workflows/ci.yml`) runs all of these, with a Postgres 16 service fo
 
 - Read configuration only through `env` from `@/lib/env` (Zod-validated in `src/lib/env-schema.ts`; `next.config.ts` validates at startup). ESLint blocks `process.env` elsewhere in `src/`. A new variable goes in the schema, `.env.example` and the CI workflow's `env`. No fallback values for secrets.
 - Brand name, tagline and location come from `src/config/brand.ts`; never hard-code them.
+- UI text lives in `messages/{en,ar}.json` (same keys; a unit test checks). Pages are under `src/app/[locale]/`; read the locale with next-intl (`getLocale`/`getTranslations`), link with `Link` from `@/i18n/navigation`, not `next/link`. Client components get strings as props (the provider passes them no messages).
+- Format money, dates and times only with `formatMoney`/`formatDate`/`formatDateTime` (`src/lib/money.ts`, `src/lib/datetime.ts`), not next-intl's ICU number/date arguments. Wrap phone numbers, serials, SKUs and ticket numbers in `<Ltr>`, and prices or Latin names inside Arabic text in `<Bdi>` (`src/components/bdi.tsx`).
+- Colours: only the tokens in `src/app/globals.css` (Tailwind's default palette is off). A new text/background pair goes in `src/app/design-tokens.test.ts` and the table in `docs/design.md`. Never letter-space Arabic: pair `tracking-*` with `rtl:tracking-normal`.
 - Money is stored as integer fils (1 AED = 100 fils). Show times in Asia/Dubai, with Western digits in Arabic.
 - Use CSS logical properties only (`ms-/me-/ps-/pe-`, `start/end`), never left/right. ESLint rejects physical Tailwind classes (`ml-`, `pr-`, `left-`, `text-right`, `rounded-l`, …) in `src/`.
 - Call `requireAdmin()` in every admin server action and route. Public pages read only the shapes in `lib/public-dto.ts`.
