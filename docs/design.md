@@ -1,40 +1,39 @@
 # Design system
 
-Set up in M1. Tokens live in `src/app/globals.css`; this file explains them and records the checks.
+**Midtown Gears, bold editorial** (M9a, October 2026). Tokens live in `src/app/globals.css`, components in `src/components/ui/` and `src/components/wordmark.tsx`, and every token and component is shown in both languages at `/en/design-system` and `/ar/design-system` (not linked, not in the sitemap, `noindex`). This file explains them and records the checks.
+
+M9a built the system; **M9b moves every public page onto it** and then deletes the M1–M8 tokens, fonts and components listed under "Until M9b" at the end.
 
 ## Direction
 
-**M1b: a photo-led shop, dark and warm like a guitar shop at night.** The owner rejected M1's colour-chart concept and layout (October 2026) but kept the tokens and fonts. The site is now dark: `ink` is the page and `rosewood` carries the warm sections and the footer, so photos of guitars, amps and the bench sit on surfaces close to their own shadows. The one bold element is the photography's scale: the hero guitar runs off the inline-end edge of the screen, and the four category photos hang at staggered heights like guitars on a shop wall. Everything else is quiet: one sans-serif family per script, gold for headings and link underlines, Fiesta Red only for the main buttons. The colour-chart card, the footer finish strip and the chip brand mark are gone; the brand is plain text until the owner has a logo.
+The owners rejected the whole M1b look in October 2026 (generic, template-like, wrong spacing and type), not just its colours. The new direction is **bold editorial**, like the business-plan cover and music-tech brands such as Teenage Engineering and Nothing:
 
-Photos are never mirrored for Arabic: the layout flips (the hero photo sits on the left), the pictures don't. Text never sits directly on a photo; where a photo is a background (the "Drop-off by appointment" band), the text is on a solid `ink` panel.
+- **Huge black type on white**, lots of white space, big photos. Headings are Archivo Black, set extra wide; the biggest ones are uppercase in Latin.
+- **Blue `#1F5BFF` only for highlights**: one word in a heading ("big‑brand", "not Amazon"), the highlight badge, link underlines and the focus ring. Never a button fill, never a background.
+- **Structure from rules and numbers, not boxes**: sections are separated by space and 1px black rules; columns open with a black rule and a mono label ("01 / Gear"); prices sit in lists with dotted leaders, like a spec sheet.
+- **Photos are big and mostly black and white** (a CSS `grayscale` filter on the atmosphere photos), so the page stays black, white and blue. Product photos sit on `grey-100`.
+- One black band per page at most, for a statement ("For players who’d rather spend on the gig than the logo") and the footer.
+- Arabic mirrors the layout; photos are never mirrored; the wordmark stays Latin.
 
-Screenshots (en/ar, desktop and mobile): [`design/m1b/`](design/m1b/).
-
-**M3: the catalog.** Product photos are the shop window, so the shop grid and product pages are quiet: photos at 4:5, title, condition, nothing else on the card. The one bold element is the **swing tag**, a `paper` price tag like the ones hung on guitars in a shop: notched at the inline start with a string hole, hung at a slight angle over the photo's corner. It carries the price, a struck-through old price after a price drop, and the state ("On hold" in `fiesta-deep`; "Sold" or "Sold out" instead of a price). Sold items stay in the grid, last, with their photo greyed, as proof that things sell. The tag flips for Arabic (notch and hole on the right); photos never do. Filters sit in a sidebar on wide screens and fold behind a "Filters" button on phones. Screenshots: [`design/m3/`](design/m3/).
-
-**M4: the admin.** A workbench tool for a phone, not a second shop: the light surfaces (`mist` page, `paper` panels, `ink` text) that the public site keeps for forms, a `rosewood` top bar with the current section in `gold`, and `fiesta` only on the main action of a screen (Create draft, Save changes, Publish). One column, 44px controls, 16px inputs so phones don't zoom, prices in tabular figures, statuses written out in words. The product page puts what changes most first: status and stock, then photos, then the details form with a sticky Save bar. No new colour pairs. Screenshots: [`design/m4/`](design/m4/).
-
-*M1 (superseded):* a 1960s factory colour-chart card, a finish strip on the footer and a three-chip brand mark on a light `mist` page. Screenshots in [`design/m1/`](design/m1/).
+The approved mockups (home and product page, en/ar, desktop and mobile) are in [`design/m9a/mockups/`](design/m9a/mockups/). The product photos there are grey frames: the owners' own NANOCORE photos go there. Screenshots of the design-system page: [`design/m9a/`](design/m9a/).
 
 ## Colour tokens
 
 Tailwind's default palette is switched off (`--color-*: initial`), so only these exist.
 
-| Token | Hex | Finish | Use |
-|---|---|---|---|
-| `mist` | `#E6EEF1` | Sonic Blue (mist) | Text on dark surfaces; light surfaces (forms, later) |
-| `paper` | `#F7FAFB` | — | The swing price tag; raised light surfaces |
-| `ink` | `#13294B` | Lake Placid Blue (deep) | The page; text on light surfaces |
-| `ink-muted` | `#46597A` | — | Secondary text on mist/paper |
-| `ink-subtle` | `#B7C6D3` | — | Secondary text on ink and rosewood |
-| `fiesta` | `#D2383A` | Fiesta Red | Primary button fill (white text) |
-| `fiesta-deep` | `#B3262A` | Fiesta Red (deep) | Small red text; button hover |
-| `gold` | `#C8A55A` | Shoreline Gold | Headings, link underlines and the focus ring on dark; **never text on light** |
-| `rosewood` | `#4A2F27` | Rosewood | Warm dark surfaces: sections, footer |
-| `sherwood` | `#1E6B4F` | Sherwood Green | The WhatsApp button |
-| `white` | `#FFFFFF` | — | Text on fiesta and sherwood |
+| Token | Hex | Use |
+|---|---|---|
+| `black` | `#0A0A0A` | Text, dark sections, primary buttons |
+| `white` | `#FFFFFF` | The page; text on black and blue |
+| `blue` | `#1F5BFF` | Highlights only (see Direction) |
+| `grey-100` | `#F2F2F2` | Product photo backgrounds, raised surfaces |
+| `grey-300` | `#D4D4D4` | Hairlines and the dotted price leaders. Decorative only: 1.48:1, so never the edge of a control |
+| `grey-400` | `#A3A3A3` | Muted text on black |
+| `grey-600` | `#5C5C5C` | Muted text on white and `grey-100`; the edge of an unselected option card |
+| `grey-800` | `#262626` | Primary button hover |
+| `red` | `#C8102E` | Errors only: the message under a field and the field's edge. Errors are always written out too, never shown by colour alone |
 
-**Tuning done in M1.** The five plan colours are kept as given. Fiesta Red reaches only 4.09:1 on mist, so it's used for fills, large text and graphics, and `fiesta-deep` was added for small red text. Shoreline Gold is 1.99:1 on mist, so it never carries text on light backgrounds. Sherwood Green, another period finish, was added for the WhatsApp button: customers expect a green WhatsApp button, and WhatsApp's own green fails with white text (about 2:1).
+Black and blue are the owners' values from the business plan and are pinned by a test. Red isn't in the brief: forms need an error colour, and it is used for nothing else.
 
 ## Contrast (WCAG 2.2 AA)
 
@@ -42,80 +41,113 @@ Every text/background pair in use. `src/app/design-tokens.test.ts` reads the hex
 
 | Pair | Ratio | AA minimum | Used for |
 |---|---|---|---|
-| `mist` on `ink` | 12.35:1 | 4.5:1 | body text |
-| `ink-subtle` on `ink` | 8.32:1 | 4.5:1 | secondary text |
-| `gold` on `ink` | 6.21:1 | 4.5:1 | headings, link underlines, focus ring |
-| `mist` on `rosewood` | 10.34:1 | 4.5:1 | text on rosewood |
-| `ink-subtle` on `rosewood` | 6.97:1 | 4.5:1 | secondary text on rosewood |
-| `gold` on `rosewood` | 5.20:1 | 4.5:1 | headings and focus ring on rosewood |
-| `white` on `fiesta` | 4.81:1 | 4.5:1 | primary button |
-| `white` on `fiesta-deep` | 6.51:1 | 4.5:1 | primary button, hover |
-| `fiesta` on `ink` | 3.02:1 | 3:1 | primary button edge on the page |
-| `white` on `sherwood` | 6.42:1 | 4.5:1 | WhatsApp button |
-| `mist` on `rosewood` | 10.34:1 | 3:1 | WhatsApp button ring (and on ink, 12.35:1) |
-| `ink` on `mist` | 12.35:1 | 4.5:1 | skip link |
-| `ink` on `paper` | 13.84:1 | 4.5:1 | swing tag price; light surfaces |
-| `ink-muted` on `mist` | 6.01:1 | 4.5:1 | secondary text on light surfaces (admin) |
-| `ink-muted` on `paper` | 6.74:1 | 4.5:1 | swing tag: struck-through old price |
-| `fiesta-deep` on `mist` | 5.54:1 | 4.5:1 | small red text on light surfaces (admin errors) |
-| `fiesta-deep` on `paper` | 6.20:1 | 4.5:1 | swing tag: On hold, Sold, Sold out |
-| `ink` on `white` | 14.52:1 | 4.5:1 | admin form inputs |
-| `ink-muted` on `white` | 7.07:1 | 3:1 | admin input borders |
+| `black` on `white` | 19.80:1 | 4.5:1 | body text and headings |
+| `black` on `grey-100` | 17.68:1 | 4.5:1 | text on raised surfaces |
+| `grey-600` on `white` | 6.69:1 | 4.5:1 | muted text |
+| `grey-600` on `grey-100` | 5.97:1 | 4.5:1 | muted text on raised surfaces |
+| `blue` on `white` | 5.25:1 | 4.5:1 | highlighted words |
+| `white` on `blue` | 5.25:1 | 4.5:1 | highlight badge |
+| `white` on `black` | 19.80:1 | 4.5:1 | primary button; black sections; solid badge |
+| `grey-400` on `black` | 7.85:1 | 4.5:1 | muted text on black |
+| `white` on `grey-800` | 15.13:1 | 4.5:1 | primary button, hover |
+| `black` on `grey-300` | 13.36:1 | 4.5:1 | inverse button, hover |
+| `red` on `white` | 5.88:1 | 4.5:1 | error messages |
+| `blue` on `white` | 5.25:1 | 3:1 | focus ring |
+| `blue` on `black` | 3.77:1 | 3:1 | focus ring on black sections |
+| `black` on `white` | 19.80:1 | 3:1 | input and button edges |
+| `grey-600` on `white` | 6.69:1 | 3:1 | unselected option card edge |
+| `red` on `white` | 5.88:1 | 3:1 | edge of a field with an error |
 
-Not allowed (fails AA): `gold` text on `mist` (1.99:1) or `paper` (2.23:1); `fiesta` small text on anything; `fiesta` buttons on `rosewood` (edge 2.53:1). The green WhatsApp button has only 2.26:1 against `ink`, so it carries a 2px `mist` ring.
+Not allowed: `blue` text on `black` (3.77:1, large text only, and blue stays off black anyway); `grey-300` for anything that has to be seen (1.48:1); `blue` on `grey-100` for small text (4.69:1 passes, but keep highlights on white).
 
-The focus ring is a 3px `gold` outline with a 3px offset, switching to `ink` inside `.surface-light` containers (for the light forms and cards of later milestones).
+The focus ring is a 3px `blue` outline with a 3px offset inside `.theme-midtown` (the class that sets the light page; M9b puts it on `<body>`).
 
 ## Type
 
-**Outfit** (Latin, Google Fonts, variable) + **Tajawal** (Arabic), in one stack: `Outfit, Tajawal, system-ui`. Outfit has no Arabic glyphs, so Arabic characters fall through to Tajawal and Latin words inside Arabic text (brand and model names, prices) stay in Outfit.
+Three families, all from Google Fonts through `next/font` (`src/app/fonts.ts`), in two stacks:
 
-- **Why Outfit.** Picked from a side-by-side render of the three candidates with Tajawal ([`design/font-pairing.png`](design/font-pairing.png)). Outfit's geometric, round construction and single-storey forms match Tajawal's Kufi-like Arabic best. Albert Sans set wider and looser next to it. Figtree was close but softer, and its heavy weights looked lighter than Tajawal's.
-- **Tajawal is scaled to 112%** (`size-adjust`) because at the same font size it reads about 12% smaller than Outfit, which shows on every mixed line ([`design/font-size-adjust.png`](design/font-size-adjust.png)). That needs `next/font/local`, so the Arabic subset of Tajawal (4 weights, about 36 KB) is self-hosted in `src/fonts/tajawal/` under its OFL licence.
-- Neither font gets a metric-matched local fallback: on Windows that fallback is Arial, which has Arabic glyphs and would take Arabic text before Tajawal loaded.
-- Weights: 400 body, 500/600 UI, 700–800 headings.
-- **Arabic rules:** never letter-space Arabic (it breaks joining): pair `tracking-*` with `rtl:tracking-normal`. Give Arabic headings more line height (`rtl:leading-[1.3]`) and a step smaller size, since Arabic words run longer.
-- Copy is sentence case, per `frontend-design`. This deliberately differs from the `web-design-guidelines` "Title Case" rule.
+- `font-grotesk`: **Archivo** (Latin, variable weight and width), then **Alexandria** (Arabic).
+- `font-mono`: **JetBrains Mono** 500 (Latin), then Alexandria.
+
+Characters a font lacks fall through to the next, so Arabic text is Alexandria and Latin words and digits inside it (NANOCORE, prices) stay in Archivo.
+
+- **Why Archivo.** Picked from a render of five heavy grotesks with the wordmark and tagline ([`design/m9a/fonts-latin.jpg`](design/m9a/fonts-latin.jpg)). Its width axis goes to 125%, so the wordmark and display headings can be extra wide and heavy (the hardware-label look of the references), while body text uses the normal width of the same file.
+- **Why Alexandria.** The owners asked for an Arabic font closer to the English one than Tajawal. Of six Arabic fonts rendered next to Archivo ([`design/m9a/fonts-arabic.jpg`](design/m9a/fonts-arabic.jpg)), Alexandria is the closest match: wide, geometric, flat stroke ends, a true Black weight, and readable body text. It replaces Tajawal from M9b.
+- **JetBrains Mono** sets the small labels only (section numbers, categories, badges, notes under prices), uppercase and letter-spaced in Latin.
+- The three new fonts aren't preloaded until M9b moves the pages onto them.
+
+**Scale** (`--text-*` in `globals.css`; the big sizes scale with the viewport):
+
+| Token | Size | Line height | Font | Use |
+|---|---|---|---|---|
+| `text-display` | 48–128px | 0.88 (Arabic 1.2) | Archivo Black, 125% wide, uppercase (100% wide on phones) | One statement per page |
+| `text-headline` | 36–64px | 0.95 (Arabic 1.3) | Archivo Black, 112.5% wide | Section headings |
+| `text-title` | 24–28px | 1.1 (Arabic 1.4) | Archivo ExtraBold, 112.5% wide | Column and card headings |
+| `text-lead` | 19–22px | 1.4 | Archivo Regular | Intro under a big heading, max 34 characters a line |
+| `text-lg` | 18px | 1.55 | Archivo Regular | Body text, max 60 characters a line |
+| `text-label` | 13px (Arabic 14px) | 1.3 | JetBrains Mono 500, uppercase, 0.08em tracking | Labels |
+
+Rules:
+
+- **Never letter-space Arabic** (it breaks joining): every `tracking-*` has `rtl:tracking-normal`, built into the components.
+- Arabic headings get more line height (built into `Heading`); Arabic display text isn't uppercase (it has no case).
+- Prices and numbers use tabular figures; money only through `formatMoney`, in `<Price>`.
+- Sentence case for headings and buttons in English; the uppercase display and labels are a style (`uppercase`), not typed in capitals, so screen readers read words, not letters.
+
+## Grid and spacing
+
+- **Grid**: 12 columns on wide screens, 4 on phones (`Grid`), with 24px gutters (16px on phones).
+- **Page margins**: 48px (`--spacing-gutter`), 20px on phones, up to a 1600px-wide page (`Container`).
+- **Sections**: 120px apart (`--spacing-section`), 80px on phones (`Section`). Inside a section: label to heading 16–24px, heading to content 48–64px.
+- **Rhythm**: everything on a 4px grid; components use Tailwind's spacing scale.
+- **Layouts** used by the mockups:
+  - *Hero*: the display heading across the full width, then a 4-column intro (lead + two buttons) next to a 7-column photo.
+  - *Index*: three 4-column `RuledColumn`s, each "01 / Name", a title, a line, a link.
+  - *Feature*: a 7-column product photo on `grey-100` next to a 5-column column of name, line and `PriceList`.
+  - *Split*: a 5-column photo next to a 6-column heading and `PriceList`.
+  - *Statement*: a black `Section` with a mono label, a display heading of at most 15 characters a line, and a full-width photo.
+  - On phones every layout is one column; the hero photo comes before the intro.
 
 ## Components
 
+M9a components, in `src/components/ui/` unless noted. All are server components, use logical properties only, and work in both directions.
+
 | Component | File | Notes |
 |---|---|---|
-| Header | `src/components/site-header.tsx` | Brand name and location as text, language switch. Each page milestone adds its nav link, so none point at a 404 |
-| Footer | `src/components/site-footer.tsx` | Rosewood surface, service area, WhatsApp link. Bottom padding keeps the WhatsApp button clear |
-| Language switch | `src/components/locale-switch.tsx` | Same path in the other locale; link text in the target language with `lang`/`hreflang`; updates the `NEXT_LOCALE` cookie |
-| WhatsApp button | `src/components/whatsapp-button.tsx` | Fixed at the inline end (right in English, left in Arabic). Icon-only on phones. `scroll-padding-block-end` keeps focused elements clear of it (tested) |
-| `FillPhoto` | `src/components/fill-photo.tsx` | `next/image` filling a sized parent, used by `StockPhoto` and the product photos |
-| `PriceTag` | `src/components/price-tag.tsx` | The swing tag: price, old price (struck, with "Was …" for screen readers), hold/sold state |
-| `ProductCard` | `src/components/product-card.tsx` | One link per product; photo `alt=""` because the title names it; title comes first in the DOM so the link reads title, condition, price |
-| `CatalogControls` | `src/components/catalog-controls.tsx` | Filter and sort form around the server-rendered results. Changes replace the URL and the server re-renders; a plain GET form without JavaScript. Results count is a live region |
-| `ProductGallery` | `src/components/product-gallery.tsx` | Scroll-snap strip: swipe, arrow keys once focused, buttons and thumbnails. Follows the page direction, so the next photo comes from the left in Arabic; only the chevrons are mirrored |
-| `SiteNav` | `src/components/site-nav.tsx` | Header links with `aria-current` |
-| `StockPhoto` | `src/components/stock-photo.tsx` | `next/image` filling a sized parent (no layout shift), lazy unless `eager`. Files are pre-sized at 640/1280/1920px; the custom loader (`src/lib/image-loader.ts`) picks one, so there's no runtime image optimisation |
-| `PhotoCredits` | `src/components/photo-credits.tsx` | "Photos by … on Unsplash" for the photos on a page, from `src/config/stock-photos.ts` |
-| `<Bdi>` / `<Ltr>` | `src/components/bdi.tsx` | Isolate prices and names (`Bdi`); force LTR for phone numbers, serials, SKUs, ticket numbers (`Ltr`) |
-| `formatMoney` | `src/lib/money.ts` | Integer fils → `AED 12,500` / `12,500 د.إ.`; decimals only when there are fils |
-| `formatDate`, `formatDateTime` | `src/lib/datetime.ts` | Asia/Dubai, Gregorian, Western digits |
-| `waMeUrl` | `src/lib/whatsapp/wa-me.ts` | E.164 → `https://wa.me/<digits>?text=…` (`%20`-encoded) |
+| `Wordmark` | `src/components/wordmark.tsx` | "MIDTOWN GEARS" from `brand.wordmark`: Archivo Black at 125% width. Always `dir="ltr"` and `translate="no"`; takes the text colour; size it with a `text-*` class |
+| `Heading` | `text.tsx` | `level` (`display`, `headline`, `title`) sets the look, `as` the element, so the outline stays right |
+| `Lead`, `Highlight`, `Label`, `Eyebrow` | `text.tsx` | Intro paragraph; a blue word in a heading; the mono label; "01 / Gear" above a heading |
+| `buttonClass`, `Arrow` | `button.tsx` | `primary` (black), `secondary` (outlined), `inverse` (white on black sections); 56px tall (52px on phones), square, 2px edge. `{ block: true }` for full width with the arrow at the far end. The arrow flips in Arabic |
+| `Badge` | `badge.tsx` | `highlight` (white on blue), `outline`, `solid` (white on black). Mono, uppercase. The text must make sense without the colour |
+| `Price` | `price.tsx` | AED via `formatMoney`, tabular, isolated with `<Bdi>`; sizes `sm`, `md`, `lg`; struck-through old price with "Was …" for screen readers; a `prefix` for add-ons ("+AED 50", and "+50 د.إ." kept together in Arabic) |
+| `ProductCard` | `product-card.tsx` | A 4:5 photo on `grey-100` (zooms slightly on hover, not with reduced motion), title, one detail line, price; a badge on the photo's top inline-start corner; `muted` greys a sold item's photo. Presentational: M9b maps the catalog DTOs onto it |
+| `Field`, `inputClass`, `selectClass`, `fieldProps` | `field.tsx` | Square fields, 1px black edge, 52px tall, 16px text. Label above, hint and error below, tied with `aria-describedby`; an error sets `aria-invalid`, a 2px red edge and a written message |
+| `Checkbox` | `field.tsx` | A native tick box with its label and an optional detail line |
+| `OptionCard` | `field.tsx` | A radio (or tick box) as a card with a name, detail and price: the bundle picker and add-ons. The chosen card gets a 2px black edge via CSS `:has(:checked)`, no script; the focus ring goes round the card |
+| `Container`, `Grid`, `Section`, `RuledColumn` | `layout.tsx` | Page margins, the column grid, a section's spacing (`tone="dark"` for the black band), a column opening with a black rule |
+| `PriceList`, `PriceRow` | `layout.tsx` | Name … price rows with a dotted leader: bundles, service prices, specs |
+| `SocialLinks` | `src/components/social-links.tsx` | Instagram and TikTok from `brand.social`; each shows only once its handle is set (in the footer now; M9b adds Contact) |
+
+Kept from M1–M8 and restyled in M9b: `Bdi`/`Ltr`, `FillPhoto`/`StockPhoto` (photos never mirrored), `PhotoCredits` (now with a `light` tone), `LocaleSwitch`, `ProductGallery`, `CatalogControls`, `WhatsAppButton`, `fieldProps`.
 
 ## Photos
 
-Atmosphere photos are free-licence Unsplash stock chosen by the owner from a contact sheet ([`design/m1b/contact-sheet.jpg`](design/m1b/contact-sheet.jpg)); sources and authors are in [`IMAGE_CREDITS.md`](IMAGE_CREDITS.md). To add one: save it under `public/images/stock/<key>-<width>.webp` at each width in `stockPhotoWidths`, cropped to one aspect ratio; add the key to `src/config/stock-photos.ts`, alt text to `messages/*.json` (`Photos.<key>`) and a row to `IMAGE_CREDITS.md`. `src/config/stock-photos.test.ts` fails if any of these is missing or a file's size doesn't match. Alt text is written per photo (Unsplash's own descriptions are often wrong) and translated.
+Atmosphere photos are free-licence Unsplash stock picked from contact sheets; sources and authors are in [`IMAGE_CREDITS.md`](IMAGE_CREDITS.md). The M9a set (`bend`, `player`, `gig`, `knobs`, `workbench`, `jam`) was chosen from [`design/m9a/contact-sheet.jpg`](design/m9a/contact-sheet.jpg); the owners left the pick to Claude. Two candidates were dropped because another brand's logo was their subject. Pages show them in black and white with Tailwind's `grayscale`, except `gig`, whose blue light already fits.
 
-Use these formatters rather than next-intl's `{value, number}` message arguments: next-intl formats with the bare `ar` locale, which browsers render with Arabic-Indic digits.
+To add one: save it under `public/images/stock/<key>-<width>.webp` at each width in `stockPhotoWidths`, cropped to one aspect ratio; add the key to `src/config/stock-photos.ts`, alt text to `messages/*.json` (`Photos.<key>`) and a row to `IMAGE_CREDITS.md`. `src/config/stock-photos.test.ts` fails if any of these is missing or a file's size doesn't match. Alt text is written per photo (Unsplash's own descriptions are often wrong) and translated.
+
+Product photos are always the owners' own. Until they exist, product pages use Unsplash stand-ins flagged `placeholder_photos` (M10); the launch check refuses them.
+
+## Brand
+
+`src/config/brand.ts`: the name ("Midtown Gears", Arabic ميدتاون جيرز for Arabic running text), the wordmark, the tagline ("Big tone, no big-brand tax." / "صوت كبير، بلا ضريبة الماركات."), the location ("UAE"; the workshop address is never published) and the Instagram and TikTok handles, which are unset until the owners create the accounts (`docs/OWNER-TODO.md`), so their links stay hidden.
+
+## Until M9b: the M1–M8 look
+
+The pages still use the M1b dark look until M9b moves them: `ink`, `rosewood`, `mist`, `paper`, `fiesta`, `gold`, `sherwood` and the `ink-*` tokens, the Outfit + Tajawal stack (`font-sans`), and the M1–M8 components (`PriceTag`'s swing tag, the old `ProductCard`, `form-parts.tsx`'s classes). Their contrast pairs are still checked (`legacyPairs` in `design-tokens.test.ts`). M9b deletes all of them with their tests, switches `<body>` to `.theme-midtown`, preloads the new fonts and gives the admin the new tokens and wordmark. Screenshots of the old look: [`design/m1b/`](design/m1b/), [`design/m3/`](design/m3/) to [`design/m8a/`](design/m8a/).
 
 ## Reviews
 
-**axe** (`e2e/a11y.spec.ts`): WCAG 2.0–2.2 A/AA plus best practices on `/en`, `/ar` and both 404 pages, desktop and mobile. No serious or critical issues (re-run in M1b).
+**M9a.** axe (`e2e/a11y.spec.ts`) runs on `/en/design-system` and `/ar/design-system`, desktop and mobile: no serious or critical issues. `e2e/design-system.spec.ts` checks the wordmark stays LTR and untranslated in Arabic, option cards behave as radios, the error field's `aria-invalid` and description, no horizontal overflow on phones, the page's `noindex` and its absence from the sitemap, and that no social links show while the handles are unset. A `web-design-guidelines` pass over the new components: labels on every field, `fieldset`/`legend` round the option cards, errors in words, 44px+ targets, visible focus on the option cards (`:has(:focus-visible)`), reduced motion respected on the card hover, `translate="no"` on the wordmark and brand names, tabular figures on prices, no letter-spacing in Arabic.
 
-**`web-design-guidelines`** review of M1b's UI (`src/app/[locale]/**`, `src/components/**`, `globals.css`, `messages/en.json`), October 2026. Fixed in M1b: straight apostrophes in English copy changed to ’; `text-balance` on every heading. Passes: alt text on every photo, `fetchpriority="high"` on the hero and lazy loading below the fold, `color-scheme: dark` and `theme-color` matching the page, hover states on every link and button, `translate="no"` on brand and photographer names, the fixed button never covering focus (tested).
-
-**`web-design-guidelines`** review of M3's UI (shop, product and FAQ pages, the new components, `messages/*.json`), October 2026. Fixed in M3: loading text ends with "…"; a no-break space before "kg"; the price selects shrink to the sidebar instead of overflowing. Passes: labelled icon buttons (gallery arrows, thumbnails); every filter in a `<label>`, groups in `<fieldset>`; filters and sort reflected in the URL; real links for all navigation; native selects styled for the dark theme; `translate="no"` on brand names; reduced motion respected by the gallery; `overscroll-x-contain` on the photo strip; prices in `tabular-nums`. axe runs on the shop, a filtered and an empty result, three product pages and the FAQ in both languages.
-
-Deliberate exceptions:
-
-- Photos use `next/image` with `fill`, so the `<img>` has no `width`/`height` attributes; each sits in a parent with a fixed aspect ratio, so nothing shifts as they load.
-- `<main tabIndex={-1}>` and the shop's results count use `focus:outline-none`. They are focus targets (the skip link; "Show results" on phones), not controls, and a ring around them would mislead.
-- Sentence case rather than Title Case (see Type), and "we" in copy: it's a one-person shop talking to customers.
-
-*M1 review (superseded layout):* hover states, `translate="no"`, `touch-action: manipulation`, tap-highlight colour and `min-w-0` on the header link were added then; all still apply.
+*Earlier reviews (M1–M8 look)* are in the git history of this file (M1b, M3).

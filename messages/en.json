@@ -70,7 +70,13 @@
     "amps": "Gain, treble, middle, bass and master knobs on a guitar amp",
     "parts": "Tone knobs and the pickguard of a black electric guitar",
     "bench": "A repairer at a workbench crowded with tools",
-    "strings": "Guitar strings over the frets in warm light, out of focus"
+    "strings": "Guitar strings over the frets in warm light, out of focus",
+    "bend": "Black and white close-up of a hand bending a string on an electric guitar’s fretboard",
+    "player": "Black and white photo of a guitarist playing a single-cut electric guitar on stage",
+    "gig": "A guitarist on stage under blue lights, playing a sunburst electric guitar to a crowd",
+    "knobs": "Black volume and tone knobs on a white electric guitar body",
+    "workbench": "An acoustic guitar body on a workbench among clamps, chisels and offcuts",
+    "jam": "Musicians playing guitar and bass together on a small stage"
   },
   "PhotoCredits": {
     "line": "Photos by <names></names> on <unsplash>Unsplash</unsplash>.",
@@ -874,5 +880,128 @@
         }
       }
     }
+  },
+  "DesignSystem": {
+    "metaTitle": "Design system",
+    "eyebrow": "Design system",
+    "title": "Big tone. No <hl>big‑brand</hl> tax.",
+    "lead": "The building blocks of the Midtown Gears site: type, colour, buttons, cards, fields and section layouts. Every page is built from these.",
+    "wordmarkHeading": "Wordmark",
+    "wordmarkNote": "Letters only, Archivo at its widest and heaviest. Latin in both languages; Arabic text uses ميدتاون جيرز.",
+    "typeHeading": "Type",
+    "typeNote": "Archivo for Latin, Alexandria for Arabic, JetBrains Mono for small labels.",
+    "levels": {
+      "display": "Display",
+      "headline": "Headline",
+      "title": "Title",
+      "lead": "Lead",
+      "body": "Body",
+      "label": "Label"
+    },
+    "samples": {
+      "display": "Big tone.",
+      "headline": "Guitar care, priced in public",
+      "title": "Tones built for your rig",
+      "lead": "Gear, custom tones and guitar care from three players in the UAE.",
+      "body": "Tell us the song, your guitar and your pickups. We build the tones and send demo clips until you approve them.",
+      "label": "Starting prices. Repairs are quoted."
+    },
+    "colourHeading": "Colour",
+    "colourNote": "Black on white, greys for surfaces and quiet text, blue only for highlights. Red marks errors and nothing else.",
+    "colours": {
+      "black": "Text, dark sections, primary buttons",
+      "white": "The page",
+      "blue": "Highlights only: a word, a badge, link underlines, focus",
+      "grey-100": "Photo backgrounds and raised surfaces",
+      "grey-300": "Hairlines",
+      "grey-400": "Quiet text on black",
+      "grey-600": "Quiet text on white",
+      "grey-800": "Button hover",
+      "red": "Errors"
+    },
+    "buttonsHeading": "Buttons",
+    "primary": "Shop NANOCORE",
+    "secondary": "Book a setup",
+    "inverse": "Choose your bundle",
+    "badgesHeading": "Badges and prices",
+    "badgeHighlight": "Most picked",
+    "badgeOutline": "On hold",
+    "badgeSolid": "Sold",
+    "cardsHeading": "Product cards",
+    "cardsNote": "Sample photos from development; real products use the owners’ photos.",
+    "cards": {
+      "strat": {
+        "title": "Fender Stratocaster, sunburst",
+        "detail": "Excellent condition"
+      },
+      "pedal": {
+        "title": "Distortion pedal",
+        "detail": "Very good condition"
+      },
+      "amp": {
+        "title": "Micro amp",
+        "detail": "Good condition"
+      },
+      "picks": {
+        "title": "Strings and picks bundle",
+        "detail": "New"
+      }
+    },
+    "soldOut": "Sold out",
+    "formsHeading": "Form fields",
+    "nameLabel": "Your name",
+    "phoneLabel": "WhatsApp number",
+    "phoneHint": "We’ll send updates here.",
+    "phoneError": "Enter a UAE or international mobile number.",
+    "emirateLabel": "Emirate",
+    "emirates": ["Dubai", "Abu Dhabi", "Sharjah", "Ras Al Khaimah"],
+    "consent": "Message me on WhatsApp about this order",
+    "consentDetail": "Only about this order. No marketing.",
+    "bundleLegend": "Choose a bundle",
+    "bundles": {
+      "device": {
+        "name": "Device only",
+        "detail": "The NANOCORE, a cable and the local warranty."
+      },
+      "starter": {
+        "name": "Starter Bundle",
+        "detail": "Plus a ready-made Signature Pack of 3 tones."
+      },
+      "custom": {
+        "name": "Custom Tone Bundle",
+        "detail": "Up to 3 tones built for you, approved before it ships."
+      }
+    },
+    "addon": "Extra custom tone",
+    "addonDetail": "One more tone, on either bundle.",
+    "layoutsHeading": "Section layouts",
+    "layoutsNote": "A 12-column grid (4 on phones), black rules instead of boxes, and plenty of space between sections.",
+    "index": {
+      "gear": {
+        "name": "Gear",
+        "title": "Gear that earns its place",
+        "body": "Every unit tested before it ships, with a 6-month local warranty."
+      },
+      "tones": {
+        "name": "Tones",
+        "title": "Tones built for your rig",
+        "body": "Tell us the song and your gear. We build the tones and send demos until you approve."
+      },
+      "care": {
+        "name": "Care",
+        "title": "Setups that make it play right",
+        "body": "Fresh strings to a full Gig Ready service, at published prices."
+      }
+    },
+    "servicesHeading": "Guitar care, priced in public",
+    "services": {
+      "strings": "Fresh Strings",
+      "basic": "Basic setup",
+      "full": "Full setup"
+    },
+    "statementLabel": "Who it’s for",
+    "statement": "For players who’d rather spend on the gig than the logo.",
+    "photosHeading": "Atmosphere photos",
+    "photosNote": "Shown in black and white, except the blue-lit gig. They make way for the owners’ own photos over time."
   }
 }

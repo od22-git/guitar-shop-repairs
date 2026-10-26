@@ -1,4 +1,4 @@
-import { Outfit } from "next/font/google";
+import { Alexandria, Archivo, JetBrains_Mono, Outfit } from "next/font/google";
 import localFont from "next/font/local";
 
 // Font pairing chosen in M1 from a side-by-side render (docs/design.md): Outfit's
@@ -36,4 +36,40 @@ export const tajawal = localFont({
         "U+0600-06FF, U+0750-077F, U+0870-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC",
     },
   ],
+});
+
+// The M9a type system (docs/design.md): Archivo for Latin, with its width axis so the
+// wordmark and headings can be set extra wide; Alexandria for Arabic, picked by the owner
+// as the closest match to Archivo's wide, heavy shapes; JetBrains Mono for small labels.
+// Arabic characters fall through Archivo and JetBrains Mono to Alexandria.
+// Not preloaded until M9b moves the pages onto them, so the current pages don't download
+// fonts they don't use.
+
+export const archivo = Archivo({
+  subsets: ["latin"],
+  axes: ["wdth"],
+  variable: "--font-archivo",
+  display: "swap",
+  preload: false,
+  adjustFontFallback: false,
+  fallback: [],
+});
+
+export const alexandria = Alexandria({
+  subsets: ["arabic"],
+  variable: "--font-alexandria",
+  display: "swap",
+  preload: false,
+  adjustFontFallback: false,
+  fallback: [],
+});
+
+export const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: "500",
+  variable: "--font-jetbrains-mono",
+  display: "swap",
+  preload: false,
+  adjustFontFallback: false,
+  fallback: [],
 });

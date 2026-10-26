@@ -7,8 +7,30 @@ import { describe, expect, it } from "vitest";
 const TEXT = 4.5;
 const LARGE_OR_UI = 3;
 
-const pairs: [foreground: string, background: string, minimum: number, use: string][] = [
-  // Dark surfaces: the page (ink) and warm sections and the footer (rosewood).
+type Pair = [foreground: string, background: string, minimum: number, use: string];
+
+// M9a, Midtown Gears: black on white, greys, blue for highlights, red for errors.
+const pairs: Pair[] = [
+  ["black", "white", TEXT, "body text and headings"],
+  ["black", "grey-100", TEXT, "text on raised surfaces"],
+  ["grey-600", "white", TEXT, "muted text"],
+  ["grey-600", "grey-100", TEXT, "muted text on raised surfaces"],
+  ["blue", "white", TEXT, "highlighted words in headings and text"],
+  ["white", "blue", TEXT, "highlight badge"],
+  ["white", "black", TEXT, "primary button; text on black sections; solid badge"],
+  ["grey-400", "black", TEXT, "muted text on black sections"],
+  ["white", "grey-800", TEXT, "primary button, hover"],
+  ["black", "grey-300", TEXT, "inverse button, hover"],
+  ["red", "white", TEXT, "error messages"],
+  ["blue", "white", LARGE_OR_UI, "focus ring on white"],
+  ["blue", "black", LARGE_OR_UI, "focus ring on black"],
+  ["black", "white", LARGE_OR_UI, "input and button edges"],
+  ["grey-600", "white", LARGE_OR_UI, "unselected option card edge"],
+  ["red", "white", LARGE_OR_UI, "edge of a field with an error"],
+];
+
+// M1–M8: the dark look the pages still use until M9b, which deletes these with the tokens.
+const legacyPairs: Pair[] = [
   ["mist", "ink", TEXT, "body text"],
   ["ink-subtle", "ink", TEXT, "secondary text"],
   ["gold", "ink", TEXT, "headings, link underlines, focus ring"],
@@ -21,7 +43,6 @@ const pairs: [foreground: string, background: string, minimum: number, use: stri
   ["white", "sherwood", TEXT, "WhatsApp button"],
   ["mist", "rosewood", LARGE_OR_UI, "WhatsApp button ring over rosewood"],
   ["ink", "mist", TEXT, "skip link"],
-  // Light surfaces, kept for forms and cards in later milestones.
   ["ink", "paper", TEXT, "text on light cards"],
   ["ink-muted", "mist", TEXT, "secondary text on mist"],
   ["ink-muted", "paper", TEXT, "secondary text on light cards"],
@@ -60,5 +81,14 @@ describe("colour tokens meet WCAG AA", () => {
 
   it.each(pairs)("%s on %s ≥ %s:1 (%s)", (foreground, background, minimum) => {
     expect(contrast(token(foreground), token(background))).toBeGreaterThanOrEqual(minimum);
+  });
+
+  it.each(legacyPairs)("M1 tokens: %s on %s ≥ %s:1 (%s)", (foreground, background, minimum) => {
+    expect(contrast(token(foreground), token(background))).toBeGreaterThanOrEqual(minimum);
+  });
+
+  it("keeps the brand colours as the owners gave them", () => {
+    expect(token("black")).toBe("#0a0a0a");
+    expect(token("blue")).toBe("#1f5bff");
   });
 });

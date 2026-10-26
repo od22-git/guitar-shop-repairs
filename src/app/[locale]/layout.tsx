@@ -12,7 +12,7 @@ import { brand } from "@/config/brand";
 import { localeDirection, routing, type Locale } from "@/i18n/routing";
 import { env } from "@/lib/env";
 
-import { outfit, tajawal } from "../fonts";
+import { alexandria, archivo, jetbrainsMono, outfit, tajawal } from "../fonts";
 
 import "../globals.css";
 
@@ -56,7 +56,7 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
     <html
       lang={locale}
       dir={localeDirection(locale)}
-      className={`${outfit.variable} ${tajawal.variable} h-full antialiased`}
+      className={`${outfit.variable} ${tajawal.variable} ${archivo.variable} ${alexandria.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
         <a

@@ -20,6 +20,21 @@ Files are in `public/images/stock/` as `<key>-<width>.webp`, at widths 640, 1280
 | `bench` | Home, repairs section | https://unsplash.com/photos/j69zgeO8IlI | [Michel Stockman](https://unsplash.com/@michelstock) | 3:2 |
 | `strings` | Home, "Drop-off by appointment" band | https://unsplash.com/photos/1Pzhr6XPl6k | [Derek Story](https://unsplash.com/@derekstory) | 2:1 |
 
+### M9a set (Midtown Gears)
+
+Picked in October 2026 for the bold editorial redesign from [`design/m9a/contact-sheet.jpg`](design/m9a/contact-sheet.jpg); the owner asked Claude to choose. Same licence, files and process as above. Shown in black and white with a CSS filter where a page calls for it (the files are the photographers' originals), except `gig`, whose blue light suits the palette.
+
+| Key | Contact sheet | Used for | Source | Author | Aspect |
+|---|---|---|---|---|---|
+| `bend` | 01 | Home hero (M9b) | https://unsplash.com/photos/C7RFkKvThG4 | [Caio Silva](https://unsplash.com/@caaaaaaaaaio) | 3:2 |
+| `player` | 03 | "Who it’s for" band | https://unsplash.com/photos/KN6fiY-nCIM | [Daniel Tafjord](https://unsplash.com/@danieltafjord) | 3:2 |
+| `gig` | 05 | Gigs and handover points | https://unsplash.com/photos/gioH4gHo0-g | [Marcus Neto](https://unsplash.com/@marcusneto) | 3:2 |
+| `knobs` | 06 | Tones | https://unsplash.com/photos/BX5LN7QmqvM | [Isak Photography](https://unsplash.com/@isak_photography) | 2:3 |
+| `workbench` | 09 | Care and services | https://unsplash.com/photos/ii9TaOZhHwU | [Juan Pablo Ramirez](https://unsplash.com/@jpablorato) | 3:2 |
+| `jam` | 10 | Community, jams | https://unsplash.com/photos/JK4BYBb5HnQ | [Jackie Alexander](https://unsplash.com/@jac_kie_co) | 3:2 |
+
+The M1b set above stays until M9b moves the pages to this one.
+
 To replace one with your own photo, save it at the same three widths and aspect ratio under the same key, and move its row to an "Owner's photos" section.
 
 ## Sample product photos (development only)
@@ -47,3 +62,4 @@ Files are in `public/images/samples/` as `<name>-<width>.webp`, at widths 640, 1
 - `docs/design/*.png`, `docs/design/m1/*.png`: renders of the site's own fonts and M1 screenshots. Not shown on the site.
 - `docs/design/m1b/`: the contact sheet the owner chose from (made from Unsplash previews) and the M1b screenshots. Not shown on the site.
 - `docs/design/m3/`: screenshots of the catalog with the sample products. Not shown on the site.
+- `docs/design/m9a/`: the approved redesign mockups (made from Unsplash previews of the photos above, with grey frames where the owners' product photos will go), the font comparisons, the contact sheet the photos were picked from, and screenshots of the design-system page. Not shown on the site.
