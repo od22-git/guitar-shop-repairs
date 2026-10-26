@@ -4,6 +4,8 @@ Set up in M1. Tokens live in `src/app/globals.css`; this file explains them and 
 
 ## Direction
 
+> **Superseded.** The owner rejected the colour-chart concept and this layout after M1. The tokens and fonts below stay. M1b replaces the direction with a photo-led, dark and warm shop look (see `PLAN.md`), and removes the colour-chart card, footer strip and chip brand mark.
+
 The palette is a **1960s factory custom colour chart**: the printed card of finish chips that guitar makers handed to dealers. That card is the one memorable element. It appears as the colour chart on the home page, the strip on top of the footer and the three-chip brand mark. Everything around it stays quiet: one sans-serif family per script, flat surfaces, square-ish corners like a printed card.
 
 ## Colour tokens
