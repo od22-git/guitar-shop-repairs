@@ -1,18 +1,55 @@
 @import "tailwindcss";
 
-/* Placeholder tokens. M1 replaces them with the contrast-checked Custom Colour Chart palette. */
-:root {
-  --background: #e6eef1;
-  --foreground: #13294b;
+/*
+ * Custom Colour Chart: 1960s factory guitar finishes, tuned for WCAG AA.
+ * Every text/background pair in use is listed, with its contrast ratio, in docs/design.md
+ * and checked by src/app/design-tokens.test.ts. Add a pair there before using a new one.
+ */
+@theme {
+  /* Only these colours exist; Tailwind's default palette is switched off. */
+  --color-*: initial;
+  --color-white: #ffffff;
+  --color-mist: #e6eef1; /* Sonic Blue mist: page background */
+  --color-paper: #f7fafb; /* raised surfaces on mist */
+  --color-ink: #13294b; /* Lake Placid Blue, deep: text, dark surfaces */
+  --color-ink-muted: #46597a; /* secondary text on mist/paper */
+  --color-ink-subtle: #b7c6d3; /* secondary text on ink */
+  --color-fiesta: #d2383a; /* Fiesta Red: fills with white text, large text, graphics */
+  --color-fiesta-deep: #b3262a; /* Fiesta Red for small text on mist/paper */
+  --color-gold: #c8a55a; /* Shoreline Gold: graphics on mist; text only on ink or rosewood */
+  --color-rosewood: #4a2f27; /* Rosewood: text and dark surfaces */
+  --color-sherwood: #1e6b4f; /* Sherwood Green: the WhatsApp button */
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  /* Outfit carries Latin text and digits; characters it lacks (Arabic) fall through to Tajawal. */
+  --font-sans: var(--font-outfit), var(--font-tajawal), ui-sans-serif, system-ui, sans-serif;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: system-ui, sans-serif;
+@layer base {
+  html {
+    color-scheme: light;
+    /* Focused elements scroll clear of the fixed WhatsApp button. */
+    scroll-padding-block-end: 6rem;
+  }
+
+  body {
+    @apply bg-mist font-sans text-ink;
+    -webkit-tap-highlight-color: color-mix(in srgb, var(--color-ink) 15%, transparent);
+  }
+
+  a,
+  button {
+    touch-action: manipulation;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-ink);
+    outline-offset: 3px;
+  }
+
+  /* On dark surfaces the ring switches to gold so it stays visible. */
+  .surface-dark :focus-visible {
+    outline-color: var(--color-gold);
+  }
 }

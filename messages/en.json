@@ -1,0 +1,36 @@
+{
+  "Layout": {
+    "skipToContent": "Skip to content"
+  },
+  "LocaleSwitch": {
+    "other": "العربية"
+  },
+  "WhatsApp": {
+    "cta": "Message us on WhatsApp",
+    "short": "WhatsApp",
+    "greeting": "Hello {brand}, I have a question."
+  },
+  "Footer": {
+    "serviceArea": "Home-based workshop in {location}. Drop-off by appointment; courier pickup and delivery across the UAE.",
+    "contactHeading": "Contact",
+    "whatsapp": "WhatsApp"
+  },
+  "Home": {
+    "intro": "Hand-picked used electric guitars and gear, and repairs from a basic setup to a full refret. The online shop opens soon. Until then, message us on WhatsApp.",
+    "chartTitle": "Custom colour chart",
+    "chartNote": "Our colours come from the factory finishes guitar makers offered in the 1960s."
+  },
+  "Finishes": {
+    "sonicBlue": "Sonic Blue",
+    "lakePlacidBlue": "Lake Placid Blue",
+    "fiestaRed": "Fiesta Red",
+    "shorelineGold": "Shoreline Gold",
+    "sherwoodGreen": "Sherwood Green",
+    "rosewood": "Rosewood"
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "body": "This page doesn't exist, or it has moved.",
+    "home": "Go to the home page"
+  }
+}

@@ -1,0 +1,60 @@
+import { readFileSync } from "node:fs";
+
+import { describe, expect, it } from "vitest";
+
+// WCAG 2.2 AA: 4.5:1 for body text, 3:1 for large text (24px, or 18.66px bold) and for
+// UI parts and focus rings against what's next to them. Mirror any change in docs/design.md.
+const TEXT = 4.5;
+const LARGE_OR_UI = 3;
+
+const pairs: [foreground: string, background: string, minimum: number, use: string][] = [
+  ["ink", "mist", TEXT, "body text"],
+  ["ink", "paper", TEXT, "text on cards"],
+  ["ink-muted", "mist", TEXT, "secondary text"],
+  ["ink-muted", "paper", TEXT, "secondary text on cards"],
+  ["rosewood", "mist", TEXT, "text"],
+  ["fiesta-deep", "mist", TEXT, "small red text, button hover"],
+  ["fiesta-deep", "paper", TEXT, "small red text on cards"],
+  ["fiesta", "mist", LARGE_OR_UI, "large red text, red graphics"],
+  ["white", "fiesta", TEXT, "primary button"],
+  ["white", "fiesta-deep", TEXT, "primary button, hover"],
+  ["white", "sherwood", TEXT, "WhatsApp button"],
+  ["sherwood", "mist", LARGE_OR_UI, "WhatsApp button edge"],
+  ["mist", "ink", TEXT, "footer text"],
+  ["ink-subtle", "ink", TEXT, "footer secondary text"],
+  ["gold", "ink", TEXT, "footer headings, focus ring on dark"],
+  ["gold", "rosewood", TEXT, "text on rosewood"],
+  ["ink", "fiesta", LARGE_OR_UI, "focus ring next to a red button"],
+];
+
+const css = readFileSync(new URL("./globals.css", import.meta.url), "utf8");
+
+function token(name: string): string {
+  const match = css.match(new RegExp(`--color-${name}:\\s*(#[0-9a-f]{6})\\b`, "i"));
+  if (!match) throw new Error(`--color-${name} is not defined as a hex colour in globals.css`);
+  return match[1];
+}
+
+function luminance(hex: string): number {
+  const [r, g, b] = [1, 3, 5].map((i) => {
+    const c = parseInt(hex.slice(i, i + 2), 16) / 255;
+    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+function contrast(a: string, b: string): number {
+  const [light, dark] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (light + 0.05) / (dark + 0.05);
+}
+
+describe("colour tokens meet WCAG AA", () => {
+  it("computes contrast like the WCAG formula", () => {
+    expect(contrast("#000000", "#ffffff")).toBeCloseTo(21, 5);
+    expect(contrast("#777777", "#ffffff")).toBeCloseTo(4.48, 2);
+  });
+
+  it.each(pairs)("%s on %s ≥ %s:1 (%s)", (foreground, background, minimum) => {
+    expect(contrast(token(foreground), token(background))).toBeGreaterThanOrEqual(minimum);
+  });
+});
