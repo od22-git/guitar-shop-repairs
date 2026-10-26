@@ -1,11 +1,13 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 
-// Keyed hashes for the customer side of repairs: the tracking-page access cookie,
-// signed photo URLs and the hashed IP kept with a link approval. Each use names its
+// Keyed hashes for the public side of the site: the tracking-page access cookie, signed
+// photo URLs, tokens for photos sent with the /sell form and the hashed IP kept with a
+// link approval. Each use names its
 // purpose, so a value made for one can't be replayed as another; the key is the app's
 // secret (BETTER_AUTH_SECRET), passed in by the caller.
 
-export type SigningPurpose = "repair-access" | "repair-photo" | "ip-hash" | "rate-limit";
+export type SigningPurpose =
+  "repair-access" | "repair-photo" | "sell-photo" | "ip-hash" | "rate-limit";
 
 /** HMAC-SHA256 of `data` under `secret`, separated by purpose; base64url. */
 export function sign(secret: string, purpose: SigningPurpose, data: string): string {

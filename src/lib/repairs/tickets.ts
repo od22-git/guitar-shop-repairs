@@ -5,6 +5,7 @@ import { and, asc, desc, eq, inArray, isNull, ne, sql } from "drizzle-orm";
 import type { Database } from "../db/connect";
 import {
   customers,
+  payments,
   repairEvents,
   repairPhotos,
   repairQuoteItems,
@@ -264,7 +265,7 @@ export async function loadTicket(db: Database, id: number) {
     .where(eq(repairTickets.id, id));
   if (!row) throw new RepairError("not_found");
 
-  const [quotes, events, photos] = await Promise.all([
+  const [quotes, events, photos, ledger] = await Promise.all([
     db
       .select()
       .from(repairQuotes)
@@ -280,6 +281,11 @@ export async function loadTicket(db: Database, id: number) {
       .from(repairPhotos)
       .where(eq(repairPhotos.ticketId, id))
       .orderBy(asc(repairPhotos.id)),
+    db
+      .select()
+      .from(payments)
+      .where(eq(payments.ticketId, id))
+      .orderBy(asc(payments.receivedAt), asc(payments.id)),
   ]);
   const items =
     quotes.length === 0
@@ -303,6 +309,7 @@ export async function loadTicket(db: Database, id: number) {
     })),
     events,
     photos,
+    payments: ledger,
   };
 }
 

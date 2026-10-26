@@ -58,6 +58,8 @@ for (const locale of locales) {
       await page.goto(`/${locale}`);
       const focusable = await page
         .locator("a[href], button, input, select, textarea, [tabindex]:not([tabindex='-1'])")
+        // Hidden ones (a header link on phones) take no focus.
+        .filter({ visible: true })
         .count();
       for (let i = 0; i < focusable; i++) {
         await page.keyboard.press("Tab");

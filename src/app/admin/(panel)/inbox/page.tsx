@@ -5,7 +5,7 @@ import { requireAdmin } from "@/lib/auth";
 import { formatDateTime } from "@/lib/datetime";
 import { db } from "@/lib/db/client";
 import { inboxStatus } from "@/lib/db/schema";
-import { listSubmissions, repairRequestOf, type InboxFilter } from "@/lib/inbox";
+import { listSubmissions, repairRequestOf, sellOfferOf, type InboxFilter } from "@/lib/inbox";
 import { formatPhone } from "@/lib/phone";
 
 import { inboxStatusLabels, kindLabels } from "./labels";
@@ -17,7 +17,7 @@ const isFilter = (value: unknown): value is InboxFilter =>
   value === "all" ||
   (typeof value === "string" && (inboxStatus.enumValues as readonly string[]).includes(value));
 
-// What the public forms sent: repair bookings now, guitars offered on /sell in M7.
+// What the public forms sent: repair bookings and guitars offered on /sell.
 export default async function InboxPage({ searchParams }: PageProps<"/admin/inbox">) {
   await requireAdmin();
   const params = await searchParams;
@@ -56,9 +56,15 @@ export default async function InboxPage({ searchParams }: PageProps<"/admin/inbo
         <ul className="flex flex-col divide-y divide-mist overflow-hidden rounded-lg bg-paper">
           {rows.map((item) => {
             const request = repairRequestOf(item);
-            const instrument = [request?.instrumentBrand, request?.instrumentModel]
+            const offer = sellOfferOf(item);
+            const instrument = (
+              offer
+                ? [offer.brand, offer.model]
+                : [request?.instrumentBrand, request?.instrumentModel]
+            )
               .filter(Boolean)
               .join(" ");
+            const summary = request?.issue ?? offer?.description;
             return (
               <li key={item.id}>
                 <Link
@@ -73,9 +79,10 @@ export default async function InboxPage({ searchParams }: PageProps<"/admin/inbo
                       {instrument && `${instrument} · `}
                       <span dir="ltr">{formatPhone(item.phoneE164)}</span>
                     </p>
-                    {request && (
+                    {summary && (
                       <p dir="auto" className="truncate text-sm text-ink-muted">
-                        {request.issue}
+                        {offer && item.photoKeys.length > 0 && `${item.photoKeys.length} photos · `}
+                        {summary}
                       </p>
                     )}
                   </div>

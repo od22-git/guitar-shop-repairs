@@ -3,11 +3,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { requireAdmin } from "@/lib/auth";
-import { endOfDubaiDay, formatDate, formatDateTime } from "@/lib/datetime";
+import { dubaiDateInputValue, endOfDubaiDay, formatDate, formatDateTime } from "@/lib/datetime";
 import { db } from "@/lib/db/client";
 import { env } from "@/lib/env";
 import { filsToDecimalString, formatMoney } from "@/lib/money";
 import { formatPhone } from "@/lib/phone";
+import { ticketBalance, ticketChargeFils } from "@/lib/repairs/balance";
 import { RepairError } from "@/lib/repairs/errors";
 import { eventMessage, instrumentName, trackingUrl } from "@/lib/repairs/notify";
 import { canQuote, closeReasonsFrom, nextMoves, undoTarget } from "@/lib/repairs/state-machine";
@@ -15,7 +16,13 @@ import { loadTicket, quoteState, type TicketBundle } from "@/lib/repairs/tickets
 import { waMeUrl } from "@/lib/whatsapp/wa-me";
 
 import { Panel } from "../../../_components/form";
-import { updateTicketAction } from "../actions";
+import { PaymentsPanel } from "../../../_components/payments-panel";
+import { paymentKindLabels, paymentMethodLabels } from "../../orders/labels";
+import {
+  deleteTicketPaymentAction,
+  recordTicketPaymentAction,
+  updateTicketAction,
+} from "../actions";
 import {
   closeReasonLabels,
   decisionMethodLabels,
@@ -82,6 +89,8 @@ export default async function TicketPage({
   const state = { status: ticket.status, quote: quoteState(current) };
   const undo = undoTarget(events);
   const instrument = instrumentName(ticket);
+  const balance = ticketBalance(ticketChargeFils(ticket, current), bundle.payments);
+  const aed = (fils: number) => formatMoney(fils, "en");
 
   const unsent = events
     .filter((event) => event.notifiedAt === null)
@@ -170,6 +179,32 @@ export default async function TicketPage({
               (item) => `${item.label}: ${formatMoney(item.amountFils, "en")}`,
             ),
           }))}
+      />
+
+      <PaymentsPanel
+        record={recordTicketPaymentAction.bind(null, ticket.id)}
+        remove={deleteTicketPaymentAction}
+        canPay={balance.chargeFils !== null}
+        blocked={
+          balance.chargeFils === null && balance.paidFils <= 0
+            ? "Payments can be recorded once a quote is approved, or a diagnosis fee is set after a decline."
+            : undefined
+        }
+        today={dubaiDateInputValue(new Date())}
+        balance={{
+          paid: aed(balance.paidFils),
+          due: balance.dueFils > 0 ? aed(balance.dueFils) : null,
+          dueValue: filsToDecimalString(balance.dueFils).replace(/\.00$/, ""),
+          toRefund: null,
+          settled: balance.chargeFils === null ? "No price agreed yet" : undefined,
+        }}
+        payments={bundle.payments.map((payment) => ({
+          id: payment.id,
+          label: `${paymentKindLabels[payment.kind]}, ${paymentMethodLabels[payment.method].toLowerCase()}`,
+          amount: `${payment.kind === "refund" ? "−" : ""}${aed(payment.amountFils)}`,
+          at: formatDate(payment.receivedAt, "en"),
+          detail: [payment.providerRef, payment.note].filter(Boolean).join(" · "),
+        }))}
       />
 
       {ticket.status !== "closed" && <UpdateForm ticketId={ticket.id} />}

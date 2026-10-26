@@ -16,6 +16,8 @@ const pages = [
   "/ar/faq",
   "/en/repairs",
   "/ar/repairs",
+  "/en/sell",
+  "/ar/sell",
 ];
 
 for (const path of pages) {
