@@ -7,11 +7,12 @@ Bilingual (English/Arabic) site for a home-based electric guitar shop and repair
 
 ## Run it locally
 
-Needs Node 22 and pnpm 10.
+Needs Node 22, pnpm 10 and a Postgres 16 database (local, or a Neon branch).
 
 ```sh
 pnpm install
 cp .env.example .env.local   # then edit; startup fails with a list of anything missing
+pnpm db:migrate && pnpm db:seed   # needs the Postgres in DATABASE_URL
 pnpm dev
 ```
 

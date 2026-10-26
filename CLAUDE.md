@@ -24,8 +24,12 @@ pnpm 10 and Node 22 (`.nvmrc`). Copy `.env.example` to `.env.local` first: `dev`
 - `pnpm typecheck` — `next typegen` + `tsc`
 - `pnpm test` — Vitest unit tests (`src/**/*.test.ts`)
 - `pnpm build && pnpm test:e2e` — Playwright against the production build (`e2e/`, desktop + mobile)
+- `pnpm db:migrate` — apply migrations in `drizzle/` to `DATABASE_URL`; `pnpm db:seed` — categories, delivery zones and sample products (idempotent; `--no-samples` skips the samples). `build` reads settings from the database, so migrate first.
+- `pnpm db:generate` — after changing `src/lib/db/schema.ts`, writes the next SQL migration; commit it. Never edit an applied migration.
 
-CI (`.github/workflows/ci.yml`) runs all of these, with a Postgres 16 service for e2e.
+Database unit tests run on PGlite (`src/test/db.ts`). With `TEST_DATABASE_URL` set to a Postgres server URL (any database; the tests create and drop their own), the inventory race tests also run there on real connections, e.g. `TEST_DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres pnpm test`.
+
+CI (`.github/workflows/ci.yml`) runs all of these, with a Postgres 16 service for unit tests and e2e.
 
 ## Stack notes
 
@@ -40,7 +44,10 @@ CI (`.github/workflows/ci.yml`) runs all of these, with a Postgres 16 service fo
 - UI text lives in `messages/{en,ar}.json` (same keys; a unit test checks). Pages are under `src/app/[locale]/`; read the locale with next-intl (`getLocale`/`getTranslations`), link with `Link` from `@/i18n/navigation`, not `next/link`. Client components get strings as props (the provider passes them no messages).
 - Format money, dates and times only with `formatMoney`/`formatDate`/`formatDateTime` (`src/lib/money.ts`, `src/lib/datetime.ts`), not next-intl's ICU number/date arguments. Wrap phone numbers, serials, SKUs and ticket numbers in `<Ltr>`, and prices or Latin names inside Arabic text in `<Bdi>` (`src/components/bdi.tsx`).
 - Colours: only the tokens in `src/app/globals.css` (Tailwind's default palette is off). A new text/background pair goes in `src/app/design-tokens.test.ts` and the table in `docs/design.md`. Never letter-space Arabic: pair `tracking-*` with `rtl:tracking-normal`.
-- Money is stored as integer fils (1 AED = 100 fils). Show times in Asia/Dubai, with Western digits in Arabic.
+- Money is stored as integer fils (1 AED = 100 fils). Parse typed amounts with `parseAedToFils` and VAT with `vatIncludedFils` (per line) from `src/lib/money.ts`; never multiply floats. Show times in Asia/Dubai, with Western digits in Arabic.
+- Phone numbers are stored in E.164: normalise input with `normalizePhone` (`src/lib/phone.ts`; it takes Arabic-Indic digits), show them with `formatPhone`.
+- Change stock only through `src/lib/inventory.ts` (`reserve`, `release`, `sell`, `restock`): conditional updates that are safe under concurrent orders. Library code takes a `Database` (`src/lib/db/connect.ts`) so it runs on Neon, node-postgres and PGlite alike; app code imports `db` from `@/lib/db/client`.
+- Admin-editable shop settings (WhatsApp number, VAT, TRN) are read with `getSettings()` from `@/lib/settings`; their schema and defaults are in `src/lib/settings/schema.ts`. Changes revalidate `SETTINGS_TAG`.
 - Use CSS logical properties only (`ms-/me-/ps-/pe-`, `start/end`), never left/right. ESLint rejects physical Tailwind classes (`ml-`, `pr-`, `left-`, `text-right`, `rounded-l`, …) in `src/`.
 - Call `requireAdmin()` in every admin server action and route. Public pages read only the shapes in `lib/public-dto.ts`.
 - Every admin change to products, stock or settings revalidates the affected pages.

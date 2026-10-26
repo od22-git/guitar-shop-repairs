@@ -5,26 +5,11 @@ import { describe, expect, it } from "vitest";
 import ar from "../../messages/ar.json";
 import en from "../../messages/en.json";
 import imageLoader from "../lib/image-loader";
+import { webpSize } from "../test/webp";
 import { stockPhotos, stockPhotoSrc, stockPhotoWidths, type StockPhotoKey } from "./stock-photos";
 
 const dir = new URL("../../public/images/stock/", import.meta.url);
 const keys = Object.keys(stockPhotos) as StockPhotoKey[];
-
-/** Pixel size from a WebP file header (lossy VP8, lossless VP8L or extended VP8X). */
-function webpSize(file: Buffer): { width: number; height: number } {
-  expect(file.toString("ascii", 0, 4)).toBe("RIFF");
-  expect(file.toString("ascii", 8, 12)).toBe("WEBP");
-  const chunk = file.toString("ascii", 12, 16);
-  if (chunk === "VP8X") {
-    return { width: file.readUIntLE(24, 3) + 1, height: file.readUIntLE(27, 3) + 1 };
-  }
-  if (chunk === "VP8L") {
-    const bits = file.readUInt32LE(21);
-    return { width: (bits & 0x3fff) + 1, height: ((bits >> 14) & 0x3fff) + 1 };
-  }
-  expect(chunk).toBe("VP8 ");
-  return { width: file.readUInt16LE(26) & 0x3fff, height: file.readUInt16LE(28) & 0x3fff };
-}
 
 describe("stock photos", () => {
   // Heights are rounded down, so a 3:4 photo 640 wide is 853 high.
