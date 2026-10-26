@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
 /*
- * Custom Colour Chart: 1960s factory guitar finishes, tuned for WCAG AA.
+ * Colour tokens from 1960s factory guitar finishes, tuned for WCAG AA in M1. Since M1b the
+ * site is dark, like a guitar shop at night: ink and rosewood surfaces carry the photos.
  * Every text/background pair in use is listed, with its contrast ratio, in docs/design.md
  * and checked by src/app/design-tokens.test.ts. Add a pair there before using a new one.
  */
@@ -9,15 +10,15 @@
   /* Only these colours exist; Tailwind's default palette is switched off. */
   --color-*: initial;
   --color-white: #ffffff;
-  --color-mist: #e6eef1; /* Sonic Blue mist: page background */
-  --color-paper: #f7fafb; /* raised surfaces on mist */
-  --color-ink: #13294b; /* Lake Placid Blue, deep: text, dark surfaces */
+  --color-mist: #e6eef1; /* Sonic Blue mist: text on dark surfaces; light surfaces */
+  --color-paper: #f7fafb; /* raised light surfaces */
+  --color-ink: #13294b; /* Lake Placid Blue, deep: the page; text on light surfaces */
   --color-ink-muted: #46597a; /* secondary text on mist/paper */
-  --color-ink-subtle: #b7c6d3; /* secondary text on ink */
-  --color-fiesta: #d2383a; /* Fiesta Red: fills with white text, large text, graphics */
-  --color-fiesta-deep: #b3262a; /* Fiesta Red for small text on mist/paper */
-  --color-gold: #c8a55a; /* Shoreline Gold: graphics on mist; text only on ink or rosewood */
-  --color-rosewood: #4a2f27; /* Rosewood: text and dark surfaces */
+  --color-ink-subtle: #b7c6d3; /* secondary text on ink and rosewood */
+  --color-fiesta: #d2383a; /* Fiesta Red: button fills with white text */
+  --color-fiesta-deep: #b3262a; /* Fiesta Red: button hover; small red text on light */
+  --color-gold: #c8a55a; /* Shoreline Gold: headings and links on dark; focus ring */
+  --color-rosewood: #4a2f27; /* Rosewood: warm dark surfaces */
   --color-sherwood: #1e6b4f; /* Sherwood Green: the WhatsApp button */
 }
 
@@ -28,14 +29,14 @@
 
 @layer base {
   html {
-    color-scheme: light;
+    color-scheme: dark;
     /* Focused elements scroll clear of the fixed WhatsApp button. */
     scroll-padding-block-end: 6rem;
   }
 
   body {
-    @apply bg-mist font-sans text-ink;
-    -webkit-tap-highlight-color: color-mix(in srgb, var(--color-ink) 15%, transparent);
+    @apply bg-ink font-sans text-mist;
+    -webkit-tap-highlight-color: color-mix(in srgb, var(--color-gold) 25%, transparent);
   }
 
   a,
@@ -44,12 +45,12 @@
   }
 
   :focus-visible {
-    outline: 3px solid var(--color-ink);
+    outline: 3px solid var(--color-gold);
     outline-offset: 3px;
   }
 
-  /* On dark surfaces the ring switches to gold so it stays visible. */
-  .surface-dark :focus-visible {
-    outline-color: var(--color-gold);
+  /* On light surfaces (mist, paper) the ring switches to ink so it stays visible. */
+  .surface-light :focus-visible {
+    outline-color: var(--color-ink);
   }
 }

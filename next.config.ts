@@ -11,6 +11,14 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   poweredByHeader: false,
+  // Images are stored pre-sized (see src/lib/image-loader.ts), so there is no runtime
+  // image optimisation. The sizes match `stockPhotoWidths` in src/config/stock-photos.ts.
+  images: {
+    loader: "custom",
+    loaderFile: "./src/lib/image-loader.ts",
+    deviceSizes: [640, 1280, 1920],
+    imageSizes: [],
+  },
   turbopack: {
     rules: {
       "*.css": {

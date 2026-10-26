@@ -4,9 +4,13 @@ Set up in M1. Tokens live in `src/app/globals.css`; this file explains them and 
 
 ## Direction
 
-> **Superseded.** The owner rejected the colour-chart concept and this layout after M1. The tokens and fonts below stay. M1b replaces the direction with a photo-led, dark and warm shop look (see `PLAN.md`), and removes the colour-chart card, footer strip and chip brand mark.
+**M1b: a photo-led shop, dark and warm like a guitar shop at night.** The owner rejected M1's colour-chart concept and layout (October 2026) but kept the tokens and fonts. The site is now dark: `ink` is the page and `rosewood` carries the warm sections and the footer, so photos of guitars, amps and the bench sit on surfaces close to their own shadows. The one bold element is the photography's scale: the hero guitar runs off the inline-end edge of the screen, and the four category photos hang at staggered heights like guitars on a shop wall. Everything else is quiet: one sans-serif family per script, gold for headings and link underlines, Fiesta Red only for the main buttons. The colour-chart card, the footer finish strip and the chip brand mark are gone; the brand is plain text until the owner has a logo.
 
-The palette is a **1960s factory custom colour chart**: the printed card of finish chips that guitar makers handed to dealers. That card is the one memorable element. It appears as the colour chart on the home page, the strip on top of the footer and the three-chip brand mark. Everything around it stays quiet: one sans-serif family per script, flat surfaces, square-ish corners like a printed card.
+Photos are never mirrored for Arabic: the layout flips (the hero photo sits on the left), the pictures don't. Text never sits directly on a photo; where a photo is a background (the "Drop-off by appointment" band), the text is on a solid `ink` panel.
+
+Screenshots (en/ar, desktop and mobile): [`design/m1b/`](design/m1b/).
+
+*M1 (superseded):* a 1960s factory colour-chart card, a finish strip on the footer and a three-chip brand mark on a light `mist` page. Screenshots in [`design/m1/`](design/m1/).
 
 ## Colour tokens
 
@@ -14,15 +18,15 @@ Tailwind's default palette is switched off (`--color-*: initial`), so only these
 
 | Token | Hex | Finish | Use |
 |---|---|---|---|
-| `mist` | `#E6EEF1` | Sonic Blue (mist) | Page background |
-| `paper` | `#F7FAFB` | — | Raised surfaces (cards) on mist |
-| `ink` | `#13294B` | Lake Placid Blue (deep) | Text; dark surfaces (footer) |
+| `mist` | `#E6EEF1` | Sonic Blue (mist) | Text on dark surfaces; light surfaces (forms, later) |
+| `paper` | `#F7FAFB` | — | Raised light surfaces (later) |
+| `ink` | `#13294B` | Lake Placid Blue (deep) | The page; text on light surfaces |
 | `ink-muted` | `#46597A` | — | Secondary text on mist/paper |
-| `ink-subtle` | `#B7C6D3` | — | Secondary text on ink |
-| `fiesta` | `#D2383A` | Fiesta Red | Primary button fill (white text), large text, graphics |
+| `ink-subtle` | `#B7C6D3` | — | Secondary text on ink and rosewood |
+| `fiesta` | `#D2383A` | Fiesta Red | Primary button fill (white text) |
 | `fiesta-deep` | `#B3262A` | Fiesta Red (deep) | Small red text; button hover |
-| `gold` | `#C8A55A` | Shoreline Gold | Graphics on light; **text only on ink or rosewood**; focus ring on dark |
-| `rosewood` | `#4A2F27` | Rosewood | Text; dark surfaces |
+| `gold` | `#C8A55A` | Shoreline Gold | Headings, link underlines and the focus ring on dark; **never text on light** |
+| `rosewood` | `#4A2F27` | Rosewood | Warm dark surfaces: sections, footer |
 | `sherwood` | `#1E6B4F` | Sherwood Green | The WhatsApp button |
 | `white` | `#FFFFFF` | — | Text on fiesta and sherwood |
 
@@ -34,27 +38,27 @@ Every text/background pair in use. `src/app/design-tokens.test.ts` reads the hex
 
 | Pair | Ratio | AA minimum | Used for |
 |---|---|---|---|
-| `ink` on `mist` | 12.35:1 | 4.5:1 | body text |
-| `ink` on `paper` | 13.84:1 | 4.5:1 | text on cards |
-| `ink-muted` on `mist` | 6.01:1 | 4.5:1 | secondary text |
-| `ink-muted` on `paper` | 6.74:1 | 4.5:1 | secondary text on cards |
-| `rosewood` on `mist` | 10.34:1 | 4.5:1 | text |
-| `fiesta-deep` on `mist` | 5.54:1 | 4.5:1 | small red text, button hover |
-| `fiesta-deep` on `paper` | 6.20:1 | 4.5:1 | small red text on cards |
-| `fiesta` on `mist` | 4.09:1 | 3:1 | large red text, red graphics |
+| `mist` on `ink` | 12.35:1 | 4.5:1 | body text |
+| `ink-subtle` on `ink` | 8.32:1 | 4.5:1 | secondary text |
+| `gold` on `ink` | 6.21:1 | 4.5:1 | headings, link underlines, focus ring |
+| `mist` on `rosewood` | 10.34:1 | 4.5:1 | text on rosewood |
+| `ink-subtle` on `rosewood` | 6.97:1 | 4.5:1 | secondary text on rosewood |
+| `gold` on `rosewood` | 5.20:1 | 4.5:1 | headings and focus ring on rosewood |
 | `white` on `fiesta` | 4.81:1 | 4.5:1 | primary button |
 | `white` on `fiesta-deep` | 6.51:1 | 4.5:1 | primary button, hover |
+| `fiesta` on `ink` | 3.02:1 | 3:1 | primary button edge on the page |
 | `white` on `sherwood` | 6.42:1 | 4.5:1 | WhatsApp button |
-| `sherwood` on `mist` | 5.46:1 | 3:1 | WhatsApp button edge |
-| `mist` on `ink` | 12.35:1 | 4.5:1 | footer text |
-| `ink-subtle` on `ink` | 8.32:1 | 4.5:1 | footer secondary text |
-| `gold` on `ink` | 6.21:1 | 4.5:1 | footer headings, focus ring on dark |
-| `gold` on `rosewood` | 5.20:1 | 4.5:1 | text on rosewood |
-| `ink` on `fiesta` | 3.02:1 | 3:1 | focus ring next to a red button |
+| `mist` on `rosewood` | 10.34:1 | 3:1 | WhatsApp button ring (and on ink, 12.35:1) |
+| `ink` on `mist` | 12.35:1 | 4.5:1 | skip link |
+| `ink` on `paper` | 13.84:1 | 4.5:1 | light surfaces (later) |
+| `ink-muted` on `mist` | 6.01:1 | 4.5:1 | secondary text on light surfaces (later) |
+| `ink-muted` on `paper` | 6.74:1 | 4.5:1 | secondary text on light cards (later) |
+| `fiesta-deep` on `mist` | 5.54:1 | 4.5:1 | small red text on light surfaces (later) |
+| `fiesta-deep` on `paper` | 6.20:1 | 4.5:1 | small red text on light cards (later) |
 
-Not allowed (fails AA): `gold` text on `mist` (1.99:1) or `paper` (2.23:1); `fiesta` small text on `mist` (4.09:1).
+Not allowed (fails AA): `gold` text on `mist` (1.99:1) or `paper` (2.23:1); `fiesta` small text on anything; `fiesta` buttons on `rosewood` (edge 2.53:1). The green WhatsApp button has only 2.26:1 against `ink`, so it carries a 2px `mist` ring.
 
-The focus ring is a 3px `ink` outline with a 3px offset (12.35:1 on mist), switching to `gold` inside `.surface-dark` containers.
+The focus ring is a 3px `gold` outline with a 3px offset, switching to `ink` inside `.surface-light` containers (for the light forms and cards of later milestones).
 
 ## Type
 
@@ -67,37 +71,37 @@ The focus ring is a 3px `ink` outline with a 3px offset (12.35:1 on mist), switc
 - **Arabic rules:** never letter-space Arabic (it breaks joining): pair `tracking-*` with `rtl:tracking-normal`. Give Arabic headings more line height (`rtl:leading-[1.3]`) and a step smaller size, since Arabic words run longer.
 - Copy is sentence case, per `frontend-design`. This deliberately differs from the `web-design-guidelines` "Title Case" rule.
 
-## Components (M1)
+## Components
 
 | Component | File | Notes |
 |---|---|---|
-| Header | `src/components/site-header.tsx` | Brand mark + name, language switch. Each page milestone adds its nav link, so none point at a 404 |
-| Footer | `src/components/site-footer.tsx` | Ink surface, finish strip, service area, WhatsApp link. Bottom padding keeps the WhatsApp button clear |
+| Header | `src/components/site-header.tsx` | Brand name and location as text, language switch. Each page milestone adds its nav link, so none point at a 404 |
+| Footer | `src/components/site-footer.tsx` | Rosewood surface, service area, WhatsApp link. Bottom padding keeps the WhatsApp button clear |
 | Language switch | `src/components/locale-switch.tsx` | Same path in the other locale; link text in the target language with `lang`/`hreflang`; updates the `NEXT_LOCALE` cookie |
 | WhatsApp button | `src/components/whatsapp-button.tsx` | Fixed at the inline end (right in English, left in Arabic). Icon-only on phones. `scroll-padding-block-end` keeps focused elements clear of it (tested) |
-| Colour chart | `src/components/colour-chart.tsx` | Finish chips; Arabic shows the English name under each |
+| `StockPhoto` | `src/components/stock-photo.tsx` | `next/image` filling a sized parent (no layout shift), lazy unless `eager`. Files are pre-sized at 640/1280/1920px; the custom loader (`src/lib/image-loader.ts`) picks one, so there's no runtime image optimisation |
+| `PhotoCredits` | `src/components/photo-credits.tsx` | "Photos by … on Unsplash" for the photos on a page, from `src/config/stock-photos.ts` |
 | `<Bdi>` / `<Ltr>` | `src/components/bdi.tsx` | Isolate prices and names (`Bdi`); force LTR for phone numbers, serials, SKUs, ticket numbers (`Ltr`) |
 | `formatMoney` | `src/lib/money.ts` | Integer fils → `AED 12,500` / `12,500 د.إ.`; decimals only when there are fils |
 | `formatDate`, `formatDateTime` | `src/lib/datetime.ts` | Asia/Dubai, Gregorian, Western digits |
 | `waMeUrl` | `src/lib/whatsapp/wa-me.ts` | E.164 → `https://wa.me/<digits>?text=…` (`%20`-encoded) |
 
+## Photos
+
+Atmosphere photos are free-licence Unsplash stock chosen by the owner from a contact sheet ([`design/m1b/contact-sheet.jpg`](design/m1b/contact-sheet.jpg)); sources and authors are in [`IMAGE_CREDITS.md`](IMAGE_CREDITS.md). To add one: save it under `public/images/stock/<key>-<width>.webp` at each width in `stockPhotoWidths`, cropped to one aspect ratio; add the key to `src/config/stock-photos.ts`, alt text to `messages/*.json` (`Photos.<key>`) and a row to `IMAGE_CREDITS.md`. `src/config/stock-photos.test.ts` fails if any of these is missing or a file's size doesn't match. Alt text is written per photo (Unsplash's own descriptions are often wrong) and translated.
+
 Use these formatters rather than next-intl's `{value, number}` message arguments: next-intl formats with the bare `ar` locale, which browsers render with Arabic-Indic digits.
 
 ## Reviews
 
-**axe** (`e2e/a11y.spec.ts`): WCAG 2.0–2.2 A/AA plus best practices on `/en`, `/ar` and both 404 pages, desktop and mobile. No serious or critical issues.
+**axe** (`e2e/a11y.spec.ts`): WCAG 2.0–2.2 A/AA plus best practices on `/en`, `/ar` and both 404 pages, desktop and mobile. No serious or critical issues (re-run in M1b).
 
-**`web-design-guidelines`** review of M1's UI (`src/app/[locale]/**`, `src/components/**`, `globals.css`), October 2026. Findings fixed in M1:
-
-- hover states added to the brand link, footer link and 404 link;
-- `translate="no"` on brand and finish names;
-- `touch-action: manipulation` on links and buttons, and an intentional tap-highlight colour;
-- `text-balance` on the 404 heading;
-- `min-w-0` on the header brand link so long brand names wrap.
+**`web-design-guidelines`** review of M1b's UI (`src/app/[locale]/**`, `src/components/**`, `globals.css`, `messages/en.json`), October 2026. Fixed in M1b: straight apostrophes in English copy changed to ’; `text-balance` on every heading. Passes: alt text on every photo, `fetchpriority="high"` on the hero and lazy loading below the fold, `color-scheme: dark` and `theme-color` matching the page, hover states on every link and button, `translate="no"` on brand and photographer names, the fixed button never covering focus (tested).
 
 Deliberate exceptions:
 
+- Photos use `next/image` with `fill`, so the `<img>` has no `width`/`height` attributes; each sits in a parent with a fixed aspect ratio, so nothing shifts as they load.
 - `<main tabIndex={-1}>` uses `focus:outline-none`. It is the skip link's target, not a control, and a ring around the whole page body would mislead.
-- Sentence case rather than Title Case (see Type).
+- Sentence case rather than Title Case (see Type), and "we" in copy: it's a one-person shop talking to customers.
 
-Everything else passes: skip link, heading order, `aria-hidden` icons, a labelled icon-only button, visible focus, the fixed button never covering focus (tested), `theme-color` matching the background, `color-scheme`, preloaded fonts with `font-display: swap`, `Intl` formatting, and `Accept-Language` detection.
+*M1 review (superseded layout):* hover states, `translate="no"`, `touch-action: manipulation`, tap-highlight colour and `min-w-0` on the header link were added then; all still apply.

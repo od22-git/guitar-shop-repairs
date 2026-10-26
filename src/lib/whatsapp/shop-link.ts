@@ -5,8 +5,14 @@ import { waMeUrl } from "./wa-me";
 
 import type { Locale } from "@/i18n/routing";
 
-/** wa.me link to the shop with a short greeting in the visitor's language. */
-export async function shopWhatsAppUrl(locale: Locale): Promise<string> {
+/** The opening messages the site can prefill, in the WhatsApp message namespace. */
+export type ShopGreeting = "greeting" | "repairGreeting";
+
+/** wa.me link to the shop with a short opening message in the visitor's language. */
+export async function shopWhatsAppUrl(
+  locale: Locale,
+  message: ShopGreeting = "greeting",
+): Promise<string> {
   const t = await getTranslations({ locale, namespace: "WhatsApp" });
-  return waMeUrl(brand.whatsappE164, t("greeting", { brand: brand.name[locale] }));
+  return waMeUrl(brand.whatsappE164, t(message, { brand: brand.name[locale] }));
 }
