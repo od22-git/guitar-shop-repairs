@@ -1,6 +1,80 @@
-# Plan: Electric guitar shop + repair tracking site (RAK, UAE)
+# Plan: Midtown Gears (music gear, custom tones and guitar care, UAE)
 
-## Context
+## Re-plan (Oct 2026): Midtown Gears
+
+After M8b the partners' business plan arrived (*Midtown Gears Business Plan 2026*). It changes the business, so everything from M9 on was re-planned. M0–M8b stay as built: the bilingual RTL base, admin sign-in with 2FA, the photo pipeline, race-safe stock, orders, the payments ledger, receipts, repair tickets with tracking links, the inbox and the security headers are all reused. The original plan below is kept for its reasoning; **where it conflicts with this section, this section wins.**
+
+**What changed:**
+- **Brand.** **Midtown Gears**, "Big tone, no big-brand tax." Online-first, UAE-wide; the home workshop is still never published. Three founders run it as business lead, technical lead and community lead. Launch: **December 2026** (10 NANOCOREs, Instagram promotion).
+- **Look.** It replaces the M1b dark look (owner decision, Oct 2026):
+  - white space with black `#0A0A0A` text;
+  - blue `#1F5BFF` for highlights only;
+  - a bold, letters-only wordmark "MIDTOWN GEARS".
+  - Tajawal stays for Arabic. A heavy grotesk is picked for the wordmark and headings.
+  - Arabic running text uses ميدتاون جيرز; the Latin wordmark is used everywhere else.
+- **What we sell.**
+  - **The NANOCORE device** leads, sold as bundles that are **variants of one product sharing its stock**. Every price below is editable in admin and marked "subject to change" in the business plan:
+
+    | Variant | Price | Includes |
+    |---|---|---|
+    | Device only | AED 200 | The device |
+    | Starter Bundle | AED 299 | A ready-made Signature Pack of 3 tones and the local warranty |
+    | Custom Tone Bundle | AED 349 | Up to 3 tones built for you, with demo approval before shipping |
+    | Extra custom tone (add-on) | AED 50 | One more tone, on either bundle |
+
+  - **Footswitches** follow in 3–6 months; **custom parts** (knobs) come later.
+  - **Used guitars stay as a side line**: condition grades, the guitar filters (only inside that category) and `/sell` are kept.
+- **Tone presets are in scope** (they were out of scope before). The flow:
+  1. The customer orders with tone details: band and album or song, use, guitar model, pickups, tuning, and what they play through.
+  2. They pay, in full or a deposit.
+  3. We build the tones.
+  4. We send demo clips; the customer approves or asks for a tweak. **2–3 rounds are included; extra rounds cost a small fee.**
+  5. We ship. **There are no revisions after delivery.**
+
+  Public tone names are **descriptive or "inspired by", never band names**. Every delivered tone goes into a **tone library**, and each customer's tones are backed up so they can be restored after a firmware update. Ready-made **Signature Packs** (e.g. Thrash, Prog Metal, Blues) ship the same day.
+- **Services.** Published, transparent prices, sold as tiers. All of these are starting prices:
+
+  | Service | AED |
+  |---|---|
+  | Fresh Strings (restring + clean) | 60–80 |
+  | Basic setup | 150 |
+  | Full setup | 250 |
+  | Gig Ready (setup + electronics + clean) | 300–350 |
+  | Repairs, mods and customizations | Quoted, plus parts |
+  | Care (deep clean, check-up, gig prep) | — |
+
+  How bookings work:
+  - **drop-off in fixed time slots**;
+  - **pickups priced by zone and grouped on set days**;
+  - **free handover points** at gigs and jams;
+  - a **weekly capacity cap** shared with tone builds, with a waitlist when full;
+  - a seasonal **Summer Check-up** campaign.
+- **Payments.**
+  - **Online checkout with Stripe (cards) and Tabby (pay in 4)**, through a cookie cart.
+  - The admin also records **cash taken in person** (gigs, drop-off, collection).
+  - **Bank transfer and COD are dropped.**
+  - Until the merchant accounts are live, the checkout switch stays off and product pages keep "Order on WhatsApp".
+- **Warranty.** A **6-month local warranty** on gear, alongside the 3-day returns and the 30-day repair guarantee.
+- **Team.** **Three admin accounts with the same access**; every change records who made it.
+- **Stock.** **Two stock locations** (the stock location and the technical lead's workbench), with weekly transfers, landed unit cost, a reorder point and a 2–3 unit float at the workbench.
+- **Reporting.**
+  - **Stats:** forms filled, paid orders, bundle mix, setups per week, repeat customers, Instagram-sourced orders.
+  - **A partners' contributions log.**
+- **Instagram is the storefront.** Orders start in DMs, which link to the site. Instagram and TikTok links go in the footer and on Contact.
+- **After launch, not planned yet:** referral codes ("give 25, get 25"), promo and promoter codes, lessons and the first-rig student package, gear matchmaking, selling outside the UAE.
+
+**Photos until the real ones exist.** The product photos for the NANOCORE, footswitches and parts are free-licence **stand-ins** from Unsplash. They are not pictures of the product, so:
+- each such product is flagged `placeholder_photos`;
+- every stand-in is credited in `docs/IMAGE_CREDITS.md`;
+- the launch check refuses to go public while any flag remains.
+
+Demo audio is a placeholder until the owners record their own.
+
+**Owner inputs** (domain, social handles, slots, capacity, prices still to set, accounts, reviews) are tracked with their current defaults in [`OWNER-TODO.md`](OWNER-TODO.md). Every milestone that adds a default or placeholder adds a line there.
+
+The new milestones are **M9–M18** in the Milestones table below. In the notes of the done milestones (M2–M8b), **"M9" means the go-live milestone, now M18**, and "M10" means Stripe checkout, now M13. The data model and pages sections describe what is built; each new milestone adds its own tables and pages as listed in its row.
+
+## Context (original plan, Oct 2026; see the re-plan above)
 
 A home-based business in Ras Al Khaimah that sells **used electric guitars and guitar gear** and does **guitar repairs** needs a bilingual (EN/AR) website. The site has to:
 - show a small catalog (fewer than 50 products);
@@ -38,13 +112,11 @@ The site **goes live without online payments**. Stripe checkout is added after l
   - a **RAKEZ freelancer permit** or e-commerce licence.
 
   Check fees and allowed activities directly; the online figures are from 2019–2021 and from consultants.
-- **Recommended path:**
-  1. Build M0–M9 now and deploy to a private preview URL.
-  2. Apply for the simplest licence **under the brand name you'll use**; the site and the licence must match.
-  3. Make the site public the day the licence arrives.
-  4. Apply for Stripe afterwards and add M10.
-
-  Launch day isn't blocked by Stripe at all.
+- **Recommended path (updated for the re-plan):**
+  1. Apply for the licence **now, under "Midtown Gears"**; the site and the licence must match. The business plan leaves licensing "to be added later", but **Stripe and Tabby both need it**, and online checkout is now the main way to pay.
+  2. Build M9–M17 against the preview URL (`guitar-shop-repairs.vercel.app`), with Stripe and Tabby in test mode.
+  3. Apply for Stripe and Tabby as soon as the licence arrives.
+  4. Make the site public the day the licence is issued. If the merchant accounts aren't live yet, it launches with the checkout switch off: "Order on WhatsApp" plus cash in person.
 
 ## Stack
 
@@ -60,7 +132,7 @@ The site **goes live without online payments**. Stripe checkout is added after l
 | Image pipeline | Browser resizes and compresses (max 2400 px, ≤ 2 MB, converts HEIC from iPhones) → server route re-encodes with **sharp** (checks it's a real image, **removes EXIF/GPS**, fixes orientation) → stores 3 WebP widths | **Photos taken at home carry GPS coordinates that would reveal your address.** No runtime image-optimisation costs |
 | Spam | Cloudflare **Turnstile** + honeypot field on public forms (Cloudflare's test keys in tests) | Free |
 | Phone numbers | `libphonenumber-js`, stored as E.164; accepts `05x…`, `+971…`, `00971…` and **Arabic-Indic digits** (٠٥٠…) | Arabic keyboards type Arabic digits |
-| Payments (post-launch) | `PaymentProvider` → `StripeProvider` (hosted Checkout Sessions) | Card data never touches our server |
+| Payments (M13–M14) | `PaymentProvider` → `StripeProvider` (hosted Checkout Sessions) and `TabbyProvider` (hosted Tabby checkout, pay in 4). Cash in person is recorded by hand; bank transfer and COD are dropped | Card data never touches our server |
 | Validation | Zod for env, forms and webhooks; `env.ts` **fails on missing required vars**. Stripe vars are optional, but the checkout switch refuses to turn on without them | `insecure-defaults` |
 | Tests/CI | Vitest, Playwright (Chromium pre-installed), GitHub Actions: lint, typecheck, unit, build, e2e | Every PR must be green |
 | Hosting | **Vercel Hobby (free)** while building and reviewing. Before the public launch with real sales, move to **Vercel Pro (~$20/mo)**, because Hobby's terms forbid commercial use. Nothing in the plan depends on Pro-only features: there are no Vercel cron jobs (backups run on GitHub Actions), and image sizes are made at upload, so Hobby's image-optimisation quota doesn't matter | You decide on Pro once you like the result |
@@ -266,19 +338,33 @@ Done milestones are marked ✅. Each milestone is **one session and one PR**, me
 | **M7b** ✅ | **Sell form + repair payments** (split from M7): `/sell` form (photos, serial, proof-of-ownership tick) with rate-limited public photo uploads to the private bucket → inbox (photos shown to the admin only); payments on repair tickets through the same ledger (`payments.ticket_id`, already in the schema) and the balance on the tracking page; repair payments in the overview's 12-month total (already counted) | e2e: sell submission lands in the inbox with private photos (refused signed out); a repair payment turns the tracking page's amount due into a balance *Done Oct 2026. Sell form: name, WhatsApp number, brand, model, year, serial, condition grade, asking price, a description, 1–8 photos, an ownership tick and WhatsApp consent. Decisions: the serial number is optional (some guitars have none; the page says we check serials and may ask for proof of ownership before paying); brand, grade, description and at least one photo are required. Each photo uploads as soon as it's picked to `/api/upload/sell` (same-origin only, 30 an hour per IP, re-encoded without EXIF/GPS like every photo) into the private bucket under `inbox-pending/`, and the browser gets back a signed token; sending the form (honeypot, Turnstile, 5 offers an hour per IP) claims the photos by token, which moves them to `inbox/`, so a token works once and can't name anyone else's file. Photos picked but never sent stay under `inbox-pending/`: **M9 adds an R2 lifecycle rule deleting `inbox-pending/` objects after a day.** The admin sees the photos only signed in, through `/api/inbox-photos`; the inbox item shows the details, the photos and a WhatsApp reply naming the guitar. On phones the header keeps two links (Shop, Repairs): Sell is in the footer there, and in the header from the `sm` width up. `/repairs` and `/sell` are now in the sitemap. Repair payments: recorded on the ticket page with the same panel as orders (now shared), against what the repair costs: the approved quote's total or, after a decline, the diagnosis fee. Before either exists only a refund can be recorded; nothing can take more than is due or refund more than was paid. A deposit carries over when a new quote version replaces the approved one. The tracking page shows the amount due once Ready as before, then Total / Paid / Balance once anything is paid, then "Paid in full"; a closed ticket with nothing recorded shows nothing owed (the shop may have been paid without recording it), and a cancelled one never shows a balance. Closing a ticket with money still due isn't blocked, as COD comes in after delivery. Screenshots: [`design/m7b/`](design/m7b/).* |
 | **M8a** ✅ | **Content and policies** (split from M8): Home, About, FAQ, Contact; policy drafts in en/ar (for you to review); 404/500 | All pages work in both locales; policies are drafts for you to review *Done Oct 2026. M8 was split because it was too large for one session: 8a is the content, 8b the hardening. New pages: `/about`, `/contact` (WhatsApp, a call link to the Settings number, visits by appointment, no address) and `/policies/{terms,privacy,returns,delivery,repair-terms}`, all in the footer and the sitemap; the header adds Contact from the `md` width. The FAQ now has the condition guide plus ordering, repairs, selling and shop questions. **The policies are drafts for you (and ideally a lawyer) to review before launch**; their text is in `messages/*.json` (`Policies`) and the numbers they quote are in `src/config/policies.ts`, shared with the FAQ and the ticket page. Decisions to check: returns within **3 days** for any reason, item in the condition received (you pay return delivery only when it isn't as described; opened consumables and modified items excluded); refunds within 7 days; damage in transit reported within 48 hours; deposits on holds are refunded if the customer cancels before the hold ends (change this if you want non-refundable deposits); repair work guaranteed for **30 days**; instruments uncollected **90 days** after Ready may be sold to cover what's owed; courier shipments insured; orders sent within 2 working days; we reply in Arabic and English; the privacy policy names Vercel, Neon and Cloudflare as hosts outside the UAE (confirm their regions in M9) and promises no analytics or tracking cookies. The delivery policy lists the active delivery zones and fees from Settings. Unknown policy slugs are real 404s. The ticket page's terms now link the full repair terms. 500 pages: `[locale]/error.tsx` (in the visitor's language, with Try again), `admin/error.tsx` and a bilingual `global-error.tsx`; checked by hand in dev with a throwing page, as the production build has no way to make a page fail on purpose (M8b may add one behind a test-only flag). The home page copy and its atmosphere photos stay as approved in M1b; About reuses the approved `guitars` photo, so there are no new stock images. Screenshots: [`design/m8a/`](design/m8a/).* |
 | **M8b** ✅ | **Hardening** (split from M8): security headers + CSP; **`insecure-defaults` audit**; **full regression e2e of the walkthrough above** | Audit has no open findings; every walkthrough case has a test or a manual-check note; all pages work in both locales *Done Oct 2026. Every response now has a Content-Security-Policy, HSTS (on https), `X-Frame-Options: DENY`, `nosniff`, a `Permissions-Policy` and `Cross-Origin-Opener-Policy`, from `src/lib/security-headers.ts`; the private pages keep `no-referrer`, public ones send `strict-origin-when-cross-origin`. Decision: the CSP has no nonces, because nonces need every page rendered per request, which would turn off the static catalog; scripts are limited to the site and Cloudflare Turnstile, with `'unsafe-inline'` for Next.js's own inline scripts, and nothing may connect to or frame from any other host. A new third-party script or host (Sentry in M9, Stripe in M10) must be added there. The audit ([`security-audit.md`](security-audit.md)) found and fixed two things (no headers; production would have accepted CI's published `BETTER_AUTH_SECRET`, now refused) and accepted two with reasons (`'unsafe-inline'`; the client IP from `x-forwarded-for`, safe on Vercel, so **M9 must deploy on Vercel** or behind a proxy that sets it). Walkthrough: [`walkthrough-tests.md`](walkthrough-tests.md) maps every row to its tests; new tests cover the ticket link's preview, a GCC customer's phone check, the booking honeypot and 2FA backup codes. Left for M9 as manual checks: wa.me opening the app on a real phone, a large iPhone photo over mobile data, backups and Sentry. The 500 pages stay a manual check: making a production page fail on purpose would need a new public endpoint. No UI changed, so there are no screenshots.* |
-| **M9** | **Go-live (no gateway)**: deploy on Vercel Hobby for your review, then Pro before public sales; domain; launch check fails while any `is_sample` product or uncredited image remains; production Neon + R2 (with a lifecycle rule deleting unsent `/sell` photos under `inbox-pending/` after a day), nightly backup Action (restore tested once), Sentry with scrubbing, launch checklist (WhatsApp Business app, Google Business Profile as a service-area business with your address hidden, real products and photos loaded) | Production smoke test passes: WhatsApp order, manual sale, full repair cycle; backup restore works; site public **once the licence is issued** |
-
-**After launch (needs the licence + an approved Stripe account)**
+**Midtown Gears re-plan (Oct 2026; see "Re-plan" at the top).** These replace the original M9 (go-live), M10 (Stripe) and M11 (online repair payments), which are folded into M13, M14 and M18. They are ordered by dependency. The critical path for the December launch is M9 → M10 → M13 → M14 → M15 → M18, with M11 and M12 alongside. **If time runs short, M16 and M17 move just after launch.**
 
 | # | Milestone | Done when |
 |---|---|---|
-| **M10** | **Stripe checkout behind the switch**: cookie cart, server-side prices, delivery fee, stock reserved when the session is created, Checkout Session, webhook (signature on the raw body, idempotency, release stock on `expired`), success page, guarded switch | Tests: tampered price ignored; bad signature returns 400; duplicate event processed once; two buyers → one succeeds; expiry releases stock; switch off = no cart anywhere |
-| **M11** | **Online repair payments**: Pay button on Ready tickets through the same adapter; a webhook records it in `payments` | e2e in test mode: pay → ticket shows paid; a second payment attempt is blocked |
+| **M9** | **Rebrand**. <ul><li>`src/config/brand.ts`: Midtown Gears, the tagline, "UAE", ميدتاون جيرز, Instagram and TikTok handles (links hidden while unset).</li><li>A `Wordmark` component.</li><li>New colour tokens in `globals.css`: black, white, blue `#1F5BFF` for highlights only, plus neutral greys for surfaces and muted text. Rewrite `design-tokens.test.ts` and `docs/design.md`.</li><li>A heavy grotesk for the wordmark and headings; Tajawal stays for Arabic.</li><li>Redo the header, footer and home page with the business plan's messaging (why Midtown instead of Amazon; who we serve; gear, tones and care).</li><li>Social links in the footer and on Contact.</li><li>Re-pick the atmosphere photos from an Unsplash contact sheet for approval, with credits.</li><li>Rewrite the copy across `messages/*.json` in the new voice.</li></ul> | You approved the photos and the en/ar screenshots on mobile and desktop; contrast and axe checks pass |
+| **M10** | **Catalog pivot**. <ul><li>`product_kind` gains `device`, `accessory`, `part` and `service_addon`.</li><li>A `product_variants` table: name en/ar, price, compare-at, custom-tone slots, includes-a-pack flag, sort, active. Stock stays on the product, so every bundle draws on the same units.</li><li>An add-on with no stock: "extra custom tone".</li><li>New categories: Devices & bundles, Footswitches, Parts & knobs, Used guitars.</li><li>Product page: bundle picker, what's in the box, 6-month warranty, "tested by us" (the five checks).</li><li>Guitar specs, filters and the condition guide only on guitars.</li><li>The WhatsApp message names the chosen variant.</li><li>Variants in the public DTOs and in JSON-LD (`AggregateOffer`).</li><li>Admin variant editor.</li><li>A `placeholder_photos` flag, with Unsplash stand-in samples.</li><li>A warranty policy page.</li><li>A draft footswitch with no price.</li></ul> | e2e: pick a bundle → exact wa.me text in en and ar; all variants show one stock state; guitar pages unchanged |
+| **M11** | **Team + two-location stock**. <ul><li>Up to three admins.</li><li>An `actor_user_id` on repair events, payments, orders and stock movements, shown in admin history.</li><li>`inventory.ts` rewritten over three new tables:<ul><li>`stock_locations` (Stock location, Workbench);</li><li>`stock_levels`;</li><li>`stock_movements`: receive (with landed unit cost), transfer, sell, return, adjust.</li></ul></li><li>`products.quantity` stays as the total, kept in the same transaction, so public pages don't change.</li><li>A reorder point and a workbench float target per product, with alerts on the overview.</li></ul> | Race tests still pass on PGlite and Postgres; receive and transfer are tested; every admin change shows who made it |
+| **M12** | **Services**. <ul><li>`/repairs` becomes `/services`, with permanent redirects; ticket links keep working.</li><li>Service tiers and prices from the re-plan, plus customizations and care.</li><li>The booking form gains the service tier and a drop-off slot, from weekly slots set in admin.</li><li>Pickup days.</li><li>A weekly capacity cap (shared with tone builds), with a waitlist message when full.</li><li>A Summer Check-up switch.</li><li>A care page ("Don't leave your guitar in the car").</li></ul> | e2e: book a slot; a full week shows the waitlist; old `/repairs` links redirect |
+| **M13** | **Cart + Stripe checkout** (the old M10, extended). <ul><li>A cookie cart of variants and add-ons; prices worked out on the server.</li><li>A tone-details step for each custom-tone slot.</li><li>Delivery options:<ul><li>courier by zone, with a free-delivery threshold setting;</li><li>handover at a gig or jam (points set in admin; hidden while there are none);</li><li>collection in a slot.</li></ul></li><li>Email asked at checkout, for payment receipts only; update the privacy policy.</li><li>`PaymentProvider` + `StripeProvider`:<ul><li>Checkout Session;</li><li>a webhook with the signature checked on the raw body;</li><li>idempotency;</li><li>stock reserved when the session is created and released on `expired`.</li></ul></li><li>A success page and a guarded switch.</li><li>Stripe hosts added to the CSP.</li></ul> | Tests: tampered price ignored; bad signature returns 400; duplicate event processed once; two buyers → one succeeds; expiry releases stock; switch off = no cart anywhere and the WhatsApp fallback shows |
+| **M14** | **Tabby + online repair payments** (the old M11). <ul><li>`TabbyProvider` through the same adapter: checkout session, webhook plus server-side verify, capture, refund.</li><li>The pay-in-4 promo on product and cart pages (CSP updated).</li><li>The payment method gains `tabby`. Bank transfer and COD are refused in validation and the UI; the enum keeps them, as Postgres can't drop enum values easily.</li><li>A Pay button on Ready repair tickets (Stripe or Tabby).</li><li>`insecure-defaults` re-audit.</li><li>Tabby stays hidden until its keys are set. **If Tabby test keys aren't available yet, Stripe ships alone and Tabby moves to its own milestone.**</li></ul> | In test mode: pay → webhook → order paid; a refund is recorded; a repair is paid online and can't be paid twice |
+| **M15** | **Tone builds**. <ul><li>Three new tables: `tone_builds` (one per custom tone, from a paid or admin-made order), `tone_build_rounds` and `tone_build_events`.</li><li>States: details needed → queued → building → demo sent → tweak requested (round n) → approved → delivered. An extra round adds a fee.</li><li>Demo clips are audio in the private bucket, played through signed links (`media-src`).</li><li>A private tracking link like `/r/[token]`: phone check, play the clips, approve or request a tweak with a note.</li><li>en/ar WhatsApp templates, an ETA (3–5 days) and the unsent-updates badge.</li><li>Builds count toward the M12 capacity cap.</li><li>Names the public or the customer sees are "inspired by", never band names; the admin form says so.</li></ul> | e2e: paid custom bundle → build → demo → tweak → approve → delivered, with exact wa.me texts; round limit and fee; a stale approval is rejected |
+| **M16** | **Tone library + Signature Packs + backups**. <ul><li>The `tones` library: descriptive name, genre, device and firmware version, preset file (private), a recipe sheet for a second builder, the source build.</li><li>`tone_packs` with public audio demos.</li><li>Pack pages; customers choose a pack for the Starter Bundle.</li><li>Per-customer tone backups, with a restore action for after firmware updates.</li></ul> | A pack page plays its demo in both locales; a delivered build lands in the library and in the customer's backups |
+| **M17** | **Stats + contributions**. <ul><li>A stats page:<ul><li>forms filled;</li><li>paid orders and conversion;</li><li>bundle mix (Starter vs Custom);</li><li>setups per week;</li><li>repeat customers;</li><li>Instagram-sourced orders (`?src=ig` links);</li><li>profit per order from cost.</li></ul></li><li>The partners' contributions log: who, amount, date, note, with totals per partner.</li></ul> | Unit tests match the figures on seeded fixtures |
+| **M18** | **Go-live** (the old M9). <ul><li>Deploy on Vercel, then move to Pro before public sales.</li><li>The domain, once bought.</li><li>Production Neon and R2, with a lifecycle rule deleting unsent `/sell` photos under `inbox-pending/` after a day.</li><li>A nightly backup Action, with the restore tested once.</li><li>Sentry with scrubbing.</li><li>Live Stripe and Tabby keys.</li><li>A launch check that fails while any of these remain: an `is_sample` product, a `placeholder_photos` product, an uncredited image, the placeholder WhatsApp number. It also lists the open items in `OWNER-TODO.md`.</li><li>Launch checklist: WhatsApp Business app, Google Business Profile as a service-area business with the address hidden, the Instagram bio link, real products and photos loaded.</li></ul> | Production smoke test passes: Stripe and Tabby checkout, a cash sale, a full repair cycle, a full tone build; backup restore works; site public **once the licence is issued** |
 
-**Later, not planned yet:** WhatsApp Business API notifier, tone packs, email.
+**After launch, not planned yet:**
+- referral codes (give AED 25, get AED 25), promo and promoter discount codes;
+- lessons and the first-rig student package (lesson + Starter Bundle + setup);
+- gear matchmaking;
+- selling outside the UAE;
+- WhatsApp Business API notifier.
+
+The December launch offer (a free extra tone or restring) can run without codes: temporarily add the extra tone to the bundle variants.
 
 **Budget ($100):** I can't see your balance, so these are estimates.
-- M0–M9 is about **$55–80**, and the post-launch milestones about **$10–15**.
+- M0–M9 is about **$55–80**, and the post-launch milestones about **$10–15**. (Original estimate.)
+- The re-plan's M9–M18 are about ten more sessions, roughly the M4–M8 effort again, since most of the base is reused. Large ones (M10, M13, M15) may split.
 - To keep costs down:
   - start a fresh session for each milestone;
   - keep each session to its milestone;
