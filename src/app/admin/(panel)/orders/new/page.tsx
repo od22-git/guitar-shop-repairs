@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { asc, inArray, isNotNull, and } from "drizzle-orm";
+import { and, asc, inArray, isNotNull, ne } from "drizzle-orm";
 
 import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db/client";
@@ -32,7 +32,12 @@ export default async function NewOrderPage({ searchParams }: PageProps<"/admin/o
       })
       .from(products)
       .where(
-        and(inArray(products.status, ["available", "reserved"]), isNotNull(products.priceFils)),
+        and(
+          inArray(products.status, ["available", "reserved"]),
+          isNotNull(products.priceFils),
+          // Add-ons come with the cart (M13); they have no stock to take.
+          ne(products.kind, "service_addon"),
+        ),
       )
       .orderBy(asc(products.titleEn)),
     listDeliveryZones(db),
@@ -59,7 +64,7 @@ export default async function NewOrderPage({ searchParams }: PageProps<"/admin/o
           const extra =
             p.status === "reserved"
               ? ` · on hold${p.reservedNote ? `: ${p.reservedNote}` : ""}`
-              : p.kind === "gear"
+              : p.kind !== "guitar"
                 ? ` · ${p.quantity} in stock`
                 : "";
           return {
@@ -67,7 +72,7 @@ export default async function NewOrderPage({ searchParams }: PageProps<"/admin/o
             label: `${p.title} (${p.sku}) · ${formatMoney(price, "en")}${extra}`,
             price: filsToDecimalString(price).replace(/\.00$/, ""),
             priceLabel: formatMoney(price, "en"),
-            gear: p.kind === "gear",
+            gear: p.kind !== "guitar",
           };
         })}
         emirates={emirate.enumValues.map((value) => {

@@ -44,7 +44,7 @@ test("add a product with photos, publish it, and see edits in the shop at once",
   const title = `E2E Jazzmaster ${suffix}`;
 
   await page.goto("/admin/products/new");
-  await page.getByLabel("Category").selectOption({ label: "Electric guitars" });
+  await page.getByLabel("Category").selectOption({ label: "Used guitars" });
   await page.getByLabel("Title in English").fill(title);
   await page.getByLabel("Price (AED)", { exact: true }).fill("3,450");
   await page.getByLabel("SKU").fill(`e2e-${suffix}`);
@@ -157,4 +157,82 @@ test.describe("signing in", () => {
     await expect(page).toHaveURL("/admin");
     await expect(page.getByRole("heading", { name: "Overview" })).toBeVisible();
   });
+});
+
+test("sell a device in variants: the shop prices it from the lowest and offers each one", async ({
+  page,
+  baseURL,
+}, testInfo) => {
+  test.setTimeout(90_000);
+  const suffix = `${testInfo.project.name.replace("admin-", "")}-${Date.now().toString(36)}`;
+  const title = `E2E Pocket amp ${suffix}`;
+
+  await page.goto("/admin/products/new");
+  await page.getByLabel("A device, like the NANOCORE").check();
+  await page.getByLabel("Category").selectOption({ label: "Devices & bundles" });
+  await page.getByLabel("Title in English").fill(title);
+  await page.getByLabel("Price (AED)", { exact: true }).fill("500");
+  await page.getByLabel("SKU").fill(`e2e-v-${suffix}`);
+  await page.getByLabel("How many in stock").fill("4");
+  await page.getByRole("button", { name: "Create draft" }).click();
+  await expect(page).toHaveURL(/\/admin\/products\/\d+\?created=1$/);
+  const productId = page.url().match(/products\/(\d+)/)?.[1] ?? "";
+  const slug = await page.getByLabel("Link (slug)").inputValue();
+
+  const variants = page.getByRole("region", { name: "Variants" });
+  for (const [name, price, slots] of [
+    ["Solo", "250", "0"],
+    ["With tones", "320", "2"],
+  ]) {
+    await variants.getByText("Add a variant").click();
+    await variants.getByLabel("Variant name in English").last().fill(name);
+    await variants.getByLabel("Variant price (AED)").last().fill(price);
+    await variants.getByLabel("Custom tones built for the customer").last().fill(slots);
+    await variants.getByRole("button", { name: "Add variant" }).click();
+    await expect(variants.getByText("Variant added.")).toBeVisible();
+    await page.reload();
+  }
+  // The product's price follows its lowest variant.
+  await expect(page.getByLabel("Price (AED)", { exact: true })).toHaveValue("250.00");
+
+  const upload = await page.request.post("/api/upload", {
+    headers: { origin: baseURL ?? "" },
+    multipart: {
+      productId,
+      file: {
+        name: "front.jpg",
+        mimeType: "image/jpeg",
+        buffer: await sharp({
+          create: { width: 1200, height: 1500, channels: 3, background: "#0a0a0a" },
+        })
+          .jpeg()
+          .toBuffer(),
+      },
+    },
+  });
+  expect(upload.status()).toBe(201);
+  await page.reload();
+  await page.getByRole("button", { name: "Publish" }).click();
+  await expect(page.getByText("Published. It's in the shop now.")).toBeVisible();
+
+  const shop = await page.context().newPage();
+  await shop.goto(`/en/product/${slug}`);
+  await expect(shop.getByRole("radio", { name: /Solo.*AED 250/ })).toBeVisible();
+  await expect(
+    shop.getByRole("radio", { name: /With tones.*Up to 2 tones.*AED 320/ }),
+  ).toBeVisible();
+  await expect(shop.getByTestId("stock-status")).toHaveText("Available");
+
+  // Switching a variant off takes it out of the shop.
+  await variants.getByText("Solo", { exact: true }).click();
+  await variants.getByLabel("Offered in the shop").first().uncheck();
+  await variants.getByRole("button", { name: "Save Solo" }).click();
+  await expect(variants.getByText("Variant saved.")).toBeVisible();
+  await shop.reload();
+  await expect(shop.getByRole("radio", { name: /Solo/ })).toHaveCount(0);
+  await expect(shop.locator("main")).toContainText("AED 320");
+
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByRole("button", { name: "Archive" }).click();
+  await expect(page.getByText("Archived. It's no longer in the shop.")).toBeVisible();
 });

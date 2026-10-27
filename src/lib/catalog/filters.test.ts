@@ -8,7 +8,9 @@ import {
   catalogSearchParams,
   emptyQuery,
   isFiltered,
+  offersGuitarFilters,
   parseCatalogQuery,
+  withoutGuitarFilters,
   type CatalogQuery,
 } from "./filters";
 
@@ -233,6 +235,35 @@ describe("catalogFacets", () => {
       conditions: [],
       pickupLayouts: [],
       bodyStyles: [],
+    });
+  });
+});
+
+describe("guitar filters", () => {
+  it("are offered only where everything listed is a guitar", () => {
+    const guitar = publicProduct({ kind: "guitar" });
+    const device = publicProduct({ kind: "device", condition: null });
+    expect(offersGuitarFilters([guitar, publicProduct({ kind: "guitar" })])).toBe(true);
+    expect(offersGuitarFilters([guitar, device])).toBe(false);
+    expect(offersGuitarFilters([device])).toBe(false);
+    expect(offersGuitarFilters([])).toBe(false);
+  });
+
+  it("are dropped from a query where they aren't offered, keeping price, stock and sort", () => {
+    const query = parseCatalogQuery({
+      brand: "Fender",
+      condition: "good",
+      pickups: "HH",
+      body: "s_style",
+      min: "100",
+      available: "1",
+      sort: "price-asc",
+    });
+    expect(withoutGuitarFilters(query)).toEqual({
+      ...emptyQuery,
+      minFils: 10_000,
+      availableOnly: true,
+      sort: "price-asc",
     });
   });
 });

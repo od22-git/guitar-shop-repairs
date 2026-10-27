@@ -15,6 +15,8 @@ Every row of the use-case walkthrough in [`PLAN.md`](PLAN.md#use-case-walkthroug
 | Order cancelled or returned | `e2e/admin/orders.spec.ts` "cancelling an order puts its stock back"; `src/lib/orders/orders.test.ts` cancel, refund with and without restock |
 | Customer wants several items | `src/lib/orders/orders.test.ts` "takes the stock, snapshots the lines…" (a guitar and two pedals in one order) |
 | COD, bank transfer or cash; receipt says "Receipt" until VAT | `e2e/admin/orders.spec.ts` "VAT on and off…"; `src/lib/orders/orders.test.ts` payments and refunds; `src/lib/orders/totals.test.ts` |
+| Choosing a NANOCORE bundle (M10) | `e2e/bundles.spec.ts` "pick a bundle and order it on WhatsApp with the exact message" (en and ar, with and without the extra tone), "every bundle shows the product's one stock state and price"; `src/lib/admin/variants.test.ts`; `src/lib/whatsapp/product-message.test.ts` |
+| Stand-in photos on a real product (M10) | `e2e/bundles.spec.ts` (labelled on the card and the page); `src/lib/db/seed.test.ts` (flagged and credited) |
 | Delivery address and fee | `src/lib/orders/orders.test.ts` zone fee, typed fee, address only for courier; `e2e/content.spec.ts` "the delivery policy lists the delivery zones' fees" |
 
 ## Repairs

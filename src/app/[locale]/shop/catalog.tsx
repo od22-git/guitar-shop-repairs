@@ -16,9 +16,11 @@ import {
   catalogFacets,
   catalogSearchParams,
   isFiltered,
+  offersGuitarFilters,
   parseCatalogQuery,
   priceStepsAed,
   queryParams,
+  withoutGuitarFilters,
   type SearchParams,
 } from "@/lib/catalog/filters";
 import { localized } from "@/lib/localized";
@@ -40,10 +42,15 @@ const shopHref = (slug: string | null) => (slug ? `/shop/${slug}` : "/shop");
 
 export async function ShopHeader({ category }: Props) {
   const locale = await getLocale();
-  const [t, { categories }] = await Promise.all([getTranslations("Shop"), getCatalog()]);
+  const [t, { categories, products }] = await Promise.all([getTranslations("Shop"), getCatalog()]);
+  // A category with nothing listed (footswitches before launch) stays out of the menu,
+  // though its page still works.
+  const listed = new Set(products.map((p) => p.category.slug));
   const links = [
     { slug: null, name: t("all") },
-    ...categories.map((c) => ({ slug: c.slug, name: locale === "ar" ? c.nameAr : c.nameEn })),
+    ...categories
+      .filter((c) => listed.has(c.slug) || c.slug === category?.slug)
+      .map((c) => ({ slug: c.slug, name: locale === "ar" ? c.nameAr : c.nameEn })),
   ];
 
   return (
@@ -127,44 +134,48 @@ export async function CatalogResults({
     ]);
 
   const inScope = category ? products.filter((p) => p.category.slug === category.slug) : products;
-  const query = parseCatalogQuery(params);
+  const guitarFilters = offersGuitarFilters(inScope);
+  const parsed = parseCatalogQuery(params);
+  const query = guitarFilters ? parsed : withoutGuitarFilters(parsed);
   const results = applyCatalogQuery(inScope, query);
   const facets = catalogFacets(inScope);
   const queryKey = catalogSearchParams(query);
   queryKey.sort();
 
   // A group with a single option filters nothing, so it isn't offered.
-  const groups: FilterGroup[] = [
-    {
-      name: queryParams.brands,
-      legend: tFilters("brand"),
-      options: facets.brands.map((b) => ({ value: b, label: b, translate: false })),
-      selected: facets.brands.filter((b) =>
-        query.brands.some((q) => q.toLowerCase() === b.toLowerCase()),
-      ),
-    },
-    {
-      name: queryParams.bodyStyles,
-      legend: tFilters("bodyStyle"),
-      options: facets.bodyStyles.map((s) => ({ value: s, label: tBody(s) })),
-      selected: query.bodyStyles,
-    },
-    {
-      name: queryParams.pickupLayouts,
-      legend: tFilters("pickupLayout"),
-      options: facets.pickupLayouts.map((l) => ({
-        value: l,
-        label: tPickups(l, { code: isolateLtr(l) }),
-      })),
-      selected: query.pickupLayouts,
-    },
-    {
-      name: queryParams.conditions,
-      legend: tFilters("condition"),
-      options: facets.conditions.map((c) => ({ value: c, label: tCondition(c) })),
-      selected: query.conditions,
-    },
-  ].filter((group) => group.options.length > 1);
+  const groups: FilterGroup[] = !guitarFilters
+    ? []
+    : [
+        {
+          name: queryParams.brands,
+          legend: tFilters("brand"),
+          options: facets.brands.map((b) => ({ value: b, label: b, translate: false })),
+          selected: facets.brands.filter((b) =>
+            query.brands.some((q) => q.toLowerCase() === b.toLowerCase()),
+          ),
+        },
+        {
+          name: queryParams.bodyStyles,
+          legend: tFilters("bodyStyle"),
+          options: facets.bodyStyles.map((s) => ({ value: s, label: tBody(s) })),
+          selected: query.bodyStyles,
+        },
+        {
+          name: queryParams.pickupLayouts,
+          legend: tFilters("pickupLayout"),
+          options: facets.pickupLayouts.map((l) => ({
+            value: l,
+            label: tPickups(l, { code: isolateLtr(l) }),
+          })),
+          selected: query.pickupLayouts,
+        },
+        {
+          name: queryParams.conditions,
+          legend: tFilters("condition"),
+          options: facets.conditions.map((c) => ({ value: c, label: tCondition(c) })),
+          selected: query.conditions,
+        },
+      ].filter((group) => group.options.length > 1);
 
   const aed = (fils: number | null) => (fils === null ? "" : String(fils / FILS_PER_AED));
   const steps = new Set<number>(priceStepsAed);
@@ -276,12 +287,25 @@ async function ShopCard({
       title={localized(locale, product.titleEn, product.titleAr)}
       locale={locale}
       photo={product.images[0]?.src}
-      detail={tCondition(product.condition ?? "new")}
+      detail={
+        product.variants.length > 1
+          ? t("waysToBuy", {
+              count: product.variants.length,
+              n: String(product.variants.length),
+            })
+          : tCondition(product.condition ?? "new")
+      }
       muted={sold}
       eager={eager}
+      photoNote={product.placeholderPhotos && product.images.length > 0 && t("standIn")}
       price={
         sold ? (
           <Label className="text-grey-600">{t(`status.${status}`)}</Label>
+        ) : product.variants.length > 1 ? (
+          <span className="inline-flex flex-wrap items-baseline gap-x-2">
+            <Label className="text-grey-600">{t("from")}</Label>
+            <Price fils={product.priceFils} size="md" />
+          </span>
         ) : (
           <Price fils={product.priceFils} compareAtFils={product.compareAtFils} size="md" />
         )

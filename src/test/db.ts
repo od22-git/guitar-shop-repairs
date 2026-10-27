@@ -31,7 +31,7 @@ async function truncateAll(db: Database) {
   await db.execute(sql`alter sequence repair_ticket_number_seq restart`);
   await db.execute(sql`alter sequence order_number_seq restart`);
   await db.execute(
-    sql`truncate table product_images, products, categories, settings, delivery_zones, auth_users, auth_sessions, auth_accounts, auth_verifications, auth_two_factors, auth_rate_limits, customers, repair_tickets, repair_quotes, repair_quote_items, repair_events, repair_photos, inbox_submissions, rate_limits, orders, order_items, payments restart identity cascade`,
+    sql`truncate table product_images, product_variants, products, categories, settings, delivery_zones, auth_users, auth_sessions, auth_accounts, auth_verifications, auth_two_factors, auth_rate_limits, customers, repair_tickets, repair_quotes, repair_quote_items, repair_events, repair_photos, inbox_submissions, rate_limits, orders, order_items, payments restart identity cascade`,
   );
 }
 

@@ -21,6 +21,8 @@ type Props = {
   price: ReactNode;
   /** A <Badge> at the photo's top inline-start corner. */
   badge?: ReactNode;
+  /** A short note at the photo's bottom inline-start corner, such as "Stand-in photo". */
+  photoNote?: ReactNode;
   /** Sold items: greyed photo. */
   muted?: boolean;
   eager?: boolean;
@@ -39,6 +41,7 @@ export function ProductCard({
   detail,
   price,
   badge,
+  photoNote,
   muted,
   eager,
 }: Props) {
@@ -63,6 +66,11 @@ export function ProductCard({
       </h3>
       {detail && <p className="col-start-1 row-start-3 mt-1 text-grey-600">{detail}</p>}
       <div className="col-start-1 row-start-4 mt-2">{price}</div>
+      {photoNote && (
+        <div className="relative z-10 col-start-1 row-start-1 m-3 self-end justify-self-start bg-white px-2 py-1 text-sm">
+          {photoNote}
+        </div>
+      )}
       {badge && (
         <div className="relative z-10 col-start-1 row-start-1 m-3 self-start justify-self-start">
           {badge}

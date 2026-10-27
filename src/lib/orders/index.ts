@@ -103,6 +103,7 @@ export async function createOrder(
         sku: products.sku,
         priceFils: products.priceFils,
         status: products.status,
+        kind: products.kind,
       })
       .from(products)
       .where(
@@ -117,6 +118,8 @@ export async function createOrder(
       const unitPriceFils = line.unitPriceFils ?? product?.priceFils ?? null;
       if (
         !product ||
+        // A service add-on has no stock to take; it's sold with the cart (M13).
+        product.kind === "service_addon" ||
         (product.status !== "available" && product.status !== "reserved") ||
         unitPriceFils === null
       ) {

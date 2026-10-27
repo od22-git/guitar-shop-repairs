@@ -7,24 +7,26 @@ import {
   deliveryZones,
   productImages,
   products,
+  productVariants,
   type Emirate,
   type NewProduct,
 } from "./schema";
 
 // Starting data, applied by `pnpm db:seed`. Running it again changes nothing that is
-// already there. Categories and delivery zones are the shop's real starting set; the
-// products are samples for development (is_sample), deleted before launch (M9).
+// already there. Categories, delivery zones and the shop's own products (the NANOCORE,
+// its extra-tone add-on and the draft footswitch) are the real starting set; the sample
+// products are for development (is_sample), deleted before launch (M18).
 
 export const seedCategories = [
-  { slug: "electric-guitars", nameEn: "Electric guitars", nameAr: "جيتارات كهربائية", sort: 10 },
-  { slug: "pedals", nameEn: "Pedals", nameAr: "دواسات المؤثرات", sort: 20 },
-  { slug: "amps", nameEn: "Amps", nameAr: "مضخمات الصوت", sort: 30 },
   {
-    slug: "parts-accessories",
-    nameEn: "Parts and accessories",
-    nameAr: "قطع غيار وإكسسوارات",
-    sort: 40,
+    slug: "devices-bundles",
+    nameEn: "Devices & bundles",
+    nameAr: "الأجهزة والباقات",
+    sort: 10,
   },
+  { slug: "footswitches", nameEn: "Footswitches", nameAr: "مفاتيح القدم", sort: 20 },
+  { slug: "parts-knobs", nameEn: "Parts & knobs", nameAr: "قطع ومقابض", sort: 30 },
+  { slug: "used-guitars", nameEn: "Used guitars", nameAr: "جيتارات مستعملة", sort: 40 },
 ] as const;
 
 type CategorySlug = (typeof seedCategories)[number]["slug"];
@@ -78,48 +80,151 @@ export const samplePhotos = {
   "tele-tidepool": { unsplashId: "ZIGI-0Br8Bg", author: "Krzysztof Hepner", username: "nsx_2000" },
   "sg-ebony-1": { unsplashId: "ZAEEO9OcZ7o", author: "Amirhossein Hasani", username: "ah1" },
   "sg-ebony-2": { unsplashId: "ct20-KBHHk4", author: "Amirhossein Hasani", username: "ah1" },
-  "distortion-pedal": {
-    unsplashId: "dxGObwcMJ0A",
-    author: "Oscar Ivan Esquivel Arteaga",
-    username: "oscaresquivel",
-  },
-  "micro-amp": {
-    unsplashId: "9-79QZ3eBZM",
-    author: "Morris Pinedo Michelsen",
-    username: "mpinedomichelsen",
-  },
+  knobs: { unsplashId: "awW9tmVhRhM", author: "byVlado", username: "vlado_" },
   picks: { unsplashId: "ZMMLYu-T_v4", author: "Rombo", username: "rombo_guitar_picks" },
   cable: { unsplashId: "GmfLeibJlS0", author: "Brett Jordan", username: "brett_jordan" },
 } as const;
 
 export type SamplePhotoName = keyof typeof samplePhotos;
 
-/** Sample photos are cropped to 4:5 and stored this wide at most. */
+/**
+ * Free-licence Unsplash stand-ins for the shop's own products until the owners photograph
+ * them, in public/images/stand-ins, stored like the sample photos. They are not the
+ * product: the products using them are flagged `placeholder_photos`, the shop labels
+ * them, and the launch check (M18) refuses them. Credited in docs/IMAGE_CREDITS.md.
+ */
+export const standInPhotos = {
+  "nanocore-player": {
+    unsplashId: "77xfQCFI2xI",
+    author: "Brooke Balentine",
+    username: "brookebalentine",
+  },
+} as const;
+
+export type StandInPhotoName = keyof typeof standInPhotos;
+
+/** Sample and stand-in photos are cropped to 4:5 and stored this wide at most. */
 export const SAMPLE_PHOTO_SIZE = { width: 1920, height: 2400 } as const;
 
-type SampleImage = { photo: SamplePhotoName; altEn: string; altAr: string };
+type SeedImage =
+  | { photo: SamplePhotoName; altEn: string; altAr: string }
+  | { standIn: StandInPhotoName; altEn: string; altAr: string };
 
-type SampleProduct = Omit<NewProduct, "categoryId" | "isSample" | "publishedAt" | "soldAt"> & {
+type SeedVariant = {
+  nameEn: string;
+  nameAr: string;
+  priceFils: number;
+  customToneSlots?: number;
+  includesPack?: boolean;
+  featured?: boolean;
+};
+
+type SeedProduct = Omit<NewProduct, "categoryId" | "isSample" | "publishedAt" | "soldAt"> & {
   category: CategorySlug;
   specs?: ProductSpecs;
   /** Days before the seed ran that it was listed; omitted for drafts. */
   listedDaysAgo?: number;
   soldDaysAgo?: number;
-  images: SampleImage[];
+  images: SeedImage[];
+  variants?: SeedVariant[];
 };
 
 const AED = (dirhams: number) => dirhams * 100;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 /**
- * Chosen to exercise every state the catalog shows: available guitars (one with a price
- * drop, one with two photos), a guitar on hold, a sold guitar, used and new gear, gear
- * with several units, sold-out gear, an item with no Arabic text, and a draft.
+ * The shop's own products, added on every database (also with `--no-samples`): the
+ * NANOCORE and its bundles at the business plan's launch prices, the extra custom tone
+ * sold with a bundle, and the footswitch as a draft until it has a price. Prices, stock
+ * and box contents are defaults for the owners to change in admin (docs/OWNER-TODO.md).
  */
-export const sampleProducts: SampleProduct[] = [
+export const shopProducts: SeedProduct[] = [
+  {
+    kind: "device",
+    category: "devices-bundles",
+    slug: "nanocore",
+    sku: "NANOCORE",
+    titleEn: "NANOCORE",
+    titleAr: "NANOCORE",
+    descriptionEn:
+      "A pocket amp-and-effects unit for practice, recording and the stage. Buy it on its own, with a ready-made Signature Pack of tones, or with tones built for your guitar and the songs you play.",
+    descriptionAr:
+      "وحدة أمب ومؤثرات بحجم الجيب للتمرين والتسجيل والمسرح. اشترِها وحدها، أو مع حزمة Signature جاهزة من النغمات، أو مع نغمات نبنيها لجيتارك والأغاني التي تعزفها.",
+    inTheBoxEn: "The NANOCORE\nA cable",
+    inTheBoxAr: "جهاز NANOCORE\nكابل",
+    condition: null,
+    // The lowest variant price, kept in step with the variants.
+    priceFils: AED(200),
+    quantity: 10,
+    status: "available",
+    placeholderPhotos: true,
+    listedDaysAgo: 0,
+    images: [
+      {
+        standIn: "nanocore-player",
+        altEn: "Stand-in photo: a guitarist practising with headphones",
+        altAr: "صورة مؤقتة: عازف جيتار يتمرّن بسماعات الرأس",
+      },
+    ],
+    variants: [
+      { nameEn: "Device only", nameAr: "الجهاز فقط", priceFils: AED(200) },
+      {
+        nameEn: "Starter Bundle",
+        nameAr: "باقة البداية",
+        priceFils: AED(299),
+        includesPack: true,
+        featured: true,
+      },
+      {
+        nameEn: "Custom Tone Bundle",
+        nameAr: "باقة النغمات المخصصة",
+        priceFils: AED(349),
+        customToneSlots: 3,
+      },
+    ],
+  },
+  {
+    kind: "service_addon",
+    category: "devices-bundles",
+    slug: "extra-custom-tone",
+    sku: "TONE-EXTRA",
+    titleEn: "Extra custom tone",
+    titleAr: "نغمة مخصصة إضافية",
+    descriptionEn: "One more tone built for you, on either bundle.",
+    descriptionAr: "نغمة أخرى نبنيها لك، مع أي باقة.",
+    condition: null,
+    priceFils: AED(50),
+    quantity: 0,
+    status: "available",
+    listedDaysAgo: 0,
+    images: [],
+  },
+  {
+    kind: "accessory",
+    category: "footswitches",
+    slug: "nanocore-footswitch",
+    sku: "NANOCORE-FS",
+    titleEn: "NANOCORE footswitch",
+    titleAr: "مفتاح قدم NANOCORE",
+    condition: null,
+    // No price until the owners set one, so it can't be published.
+    priceFils: null,
+    quantity: 0,
+    status: "draft",
+    images: [],
+  },
+];
+
+/**
+ * Chosen to exercise every state the catalog shows: available guitars (one with a price
+ * drop, one with two photos), a guitar on hold, a sold guitar, accessories and parts with
+ * several units, a sold-out accessory, a part with stand-in photos and no Arabic text,
+ * and a draft.
+ */
+export const sampleProducts: SeedProduct[] = [
   {
     kind: "guitar",
-    category: "electric-guitars",
+    category: "used-guitars",
     slug: "fender-stratocaster-sunburst",
     sku: "SAMPLE-G-001",
     brand: "Fender",
@@ -164,7 +269,7 @@ export const sampleProducts: SampleProduct[] = [
   },
   {
     kind: "guitar",
-    category: "electric-guitars",
+    category: "used-guitars",
     slug: "gibson-les-paul-standard-tobacco-burst",
     sku: "SAMPLE-G-002",
     brand: "Gibson",
@@ -206,7 +311,7 @@ export const sampleProducts: SampleProduct[] = [
   },
   {
     kind: "guitar",
-    category: "electric-guitars",
+    category: "used-guitars",
     slug: "epiphone-les-paul-standard-cherry",
     sku: "SAMPLE-G-003",
     brand: "Epiphone",
@@ -240,7 +345,7 @@ export const sampleProducts: SampleProduct[] = [
   },
   {
     kind: "guitar",
-    category: "electric-guitars",
+    category: "used-guitars",
     slug: "fender-player-telecaster-tidepool",
     sku: "SAMPLE-G-004",
     brand: "Fender",
@@ -280,7 +385,7 @@ export const sampleProducts: SampleProduct[] = [
   },
   {
     kind: "guitar",
-    category: "electric-guitars",
+    category: "used-guitars",
     slug: "epiphone-sg-standard-ebony",
     sku: "SAMPLE-G-005",
     brand: "Epiphone",
@@ -323,59 +428,32 @@ export const sampleProducts: SampleProduct[] = [
     ],
   },
   {
-    kind: "gear",
-    category: "pedals",
-    slug: "mxr-custom-badass-78-distortion",
-    sku: "SAMPLE-P-001",
-    brand: "MXR",
-    model: "M78 Custom Badass '78 Distortion",
-    titleEn: "MXR Custom Badass '78 Distortion",
-    titleAr: "دواسة إم إكس آر كاستم باداس 78 للتشويه",
-    descriptionEn:
-      "Classic distortion with a crunch switch. Works perfectly; light velcro residue on the base.",
-    descriptionAr:
-      "دواسة تشويه كلاسيكية مع مفتاح كرانش. تعمل بشكل ممتاز، مع بقايا لاصق خفيفة في القاعدة.",
-    condition: "very_good",
-    priceFils: AED(290),
-    costFils: AED(180),
-    quantity: 1,
-    status: "available",
-    listedDaysAgo: 5,
-    images: [
-      {
-        photo: "distortion-pedal",
-        altEn: "Red MXR distortion pedal on a white background",
-        altAr: "دواسة تشويه حمراء من إم إكس آر على خلفية بيضاء",
-      },
-    ],
-  },
-  {
     // No Arabic text on purpose: the public site falls back to English (M3 tests it).
-    kind: "gear",
-    category: "amps",
-    slug: "marshall-ms-2-micro-amp",
-    sku: "SAMPLE-A-001",
-    brand: "Marshall",
-    model: "MS-2",
-    titleEn: "Marshall MS-2 micro amp",
-    descriptionEn: "Battery-powered 1 W practice amp that clips to a belt. New in box.",
+    kind: "part",
+    category: "parts-knobs",
+    slug: "bell-knobs-white-set-of-3",
+    sku: "SAMPLE-K-001",
+    titleEn: "Bell knobs, white, set of 3",
+    descriptionEn:
+      "One volume and two tone knobs for knurled split-shaft pots, numbered 0 to 10. New.",
     condition: null,
-    priceFils: AED(120),
-    costFils: AED(80),
-    quantity: 3,
+    priceFils: AED(35),
+    costFils: AED(12),
+    quantity: 6,
     status: "available",
+    placeholderPhotos: true,
     listedDaysAgo: 12,
     images: [
       {
-        photo: "micro-amp",
-        altEn: "Small red Marshall micro amp on a wooden table",
-        altAr: "مضخم مارشال صغير أحمر على طاولة خشبية",
+        photo: "knobs",
+        altEn: "White volume and tone knobs on a black guitar",
+        altAr: "مقابض صوت ونغمة بيضاء على جيتار أسود",
       },
     ],
   },
   {
-    kind: "gear",
-    category: "parts-accessories",
+    kind: "accessory",
+    category: "parts-knobs",
     slug: "strings-and-picks-bundle",
     sku: "SAMPLE-X-001",
     titleEn: "Strings and picks bundle",
@@ -397,8 +475,8 @@ export const sampleProducts: SampleProduct[] = [
     ],
   },
   {
-    kind: "gear",
-    category: "parts-accessories",
+    kind: "accessory",
+    category: "parts-knobs",
     slug: "instrument-cable-3m",
     sku: "SAMPLE-X-002",
     titleEn: "Instrument cable, 3 m",
@@ -423,7 +501,7 @@ export const sampleProducts: SampleProduct[] = [
   {
     // A draft: not public, so its page must 404 (M3 tests it).
     kind: "guitar",
-    category: "electric-guitars",
+    category: "used-guitars",
     slug: "ibanez-rg550-draft",
     sku: "SAMPLE-G-006",
     brand: "Ibanez",
@@ -438,7 +516,7 @@ export const sampleProducts: SampleProduct[] = [
 ];
 
 export type SeedOptions = {
-  /** Also add the sample products (development and preview only). */
+  /** Also add the sample products (development and preview only). The shop's own products are always added. */
   samples?: boolean;
   now?: Date;
 };
@@ -453,8 +531,6 @@ export async function seed(db: Database, { samples = true, now = new Date() }: S
     const [{ zones }] = await tx.select({ zones: sql<number>`count(*)::int` }).from(deliveryZones);
     if (zones === 0) await tx.insert(deliveryZones).values(seedDeliveryZones);
 
-    if (!samples) return;
-
     const categoryRows = await tx
       .select({ id: categories.id, slug: categories.slug })
       .from(categories)
@@ -467,13 +543,18 @@ export async function seed(db: Database, { samples = true, now = new Date() }: S
     const categoryId = new Map(categoryRows.map((c) => [c.slug, c.id]));
     const daysAgo = (days: number) => new Date(now.getTime() - days * DAY_MS);
 
-    for (const { category, images, listedDaysAgo, soldDaysAgo, ...product } of sampleProducts) {
+    const list = samples
+      ? [
+          ...shopProducts.map((p) => ({ ...p, isSample: false })),
+          ...sampleProducts.map((p) => ({ ...p, isSample: true })),
+        ]
+      : shopProducts.map((p) => ({ ...p, isSample: false }));
+    for (const { category, images, variants, listedDaysAgo, soldDaysAgo, ...product } of list) {
       const [inserted] = await tx
         .insert(products)
         .values({
           ...product,
           categoryId: categoryId.get(category),
-          isSample: true,
           publishedAt: listedDaysAgo === undefined ? null : daysAgo(listedDaysAgo),
           soldAt: soldDaysAgo === undefined ? null : daysAgo(soldDaysAgo),
           // Holds end a few days after seeding, so the sample hold is current.
@@ -488,11 +569,20 @@ export async function seed(db: Database, { samples = true, now = new Date() }: S
         await tx.insert(productImages).values(
           images.map((image, sort) => ({
             productId: inserted.id,
-            key: `samples/${image.photo}`,
+            key: "standIn" in image ? `stand-ins/${image.standIn}` : `samples/${image.photo}`,
             ...SAMPLE_PHOTO_SIZE,
             altEn: image.altEn,
             altAr: image.altAr,
             sort,
+          })),
+        );
+      }
+      if (variants && variants.length > 0) {
+        await tx.insert(productVariants).values(
+          variants.map((variant, i) => ({
+            ...variant,
+            productId: inserted.id,
+            sort: (i + 1) * 10,
           })),
         );
       }

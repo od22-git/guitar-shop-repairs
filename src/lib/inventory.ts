@@ -106,8 +106,8 @@ export async function sell(
 
 /**
  * Puts units back, e.g. when an order is cancelled or an item comes back. A sold
- * product becomes available again. A guitar holds at most one unit, and a held item
- * can't be restocked (release the hold first).
+ * product becomes available again. A guitar holds at most one unit, a service add-on
+ * has no stock, and a held item can't be restocked (release the hold first).
  */
 export async function restock(db: Database, productId: number, quantity = 1): Promise<void> {
   assertQuantity(quantity);
@@ -123,7 +123,8 @@ export async function restock(db: Database, productId: number, quantity = 1): Pr
       and(
         eq(products.id, productId),
         inArray(products.status, ["draft", "available", "sold", "archived"]),
-        sql`(${products.kind} = 'gear' or ${total} <= 1)`,
+        // A guitar holds one unit; a service add-on has no stock.
+        sql`${products.kind} <> 'service_addon' and (${products.kind} <> 'guitar' or ${total} <= 1)`,
       ),
     )
     .returning({ id: products.id });

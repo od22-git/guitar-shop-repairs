@@ -56,7 +56,7 @@ function form(fields: Record<string, string>): FormData {
 async function category() {
   const [row] = await db
     .insert(categories)
-    .values({ slug: "electric-guitars", nameEn: "Electric guitars", nameAr: "جيتارات" })
+    .values({ slug: "used-guitars", nameEn: "Used guitars", nameAr: "جيتارات" })
     .returning();
   return row.id;
 }
@@ -68,6 +68,7 @@ function input(overrides: Partial<ProductInput> = {}): ProductInput {
     sku: "G-0001",
     titleEn: "Fender Jaguar",
     specs: {},
+    placeholderPhotos: false,
     ...overrides,
   };
 }
@@ -132,6 +133,24 @@ describe("parseProductForm", () => {
     expect(Object.keys(result.errors).sort()).toEqual(
       ["priceFils", "sku", "slug", "spec.bodyStyle", "titleEn"].sort(),
     );
+  });
+
+  it("reads the box contents and the stand-in photos tick", () => {
+    const parsed = parseProductForm(
+      form({
+        kind: "device",
+        sku: "nanocore",
+        titleEn: "NANOCORE",
+        inTheBoxEn: "The NANOCORE\nA cable",
+        placeholderPhotos: "on",
+      }),
+    );
+    expect(parsed).toMatchObject({
+      ok: true,
+      data: { kind: "device", inTheBoxEn: "The NANOCORE\nA cable", placeholderPhotos: true },
+    });
+    const unticked = parseProductForm(form({ kind: "part", sku: "K-1", titleEn: "Knobs" }));
+    expect(unticked).toMatchObject({ ok: true, data: { placeholderPhotos: false } });
   });
 
   it("keeps a guitar to one item", () => {
@@ -218,6 +237,32 @@ describe("products", () => {
     await expect(
       updateProduct(db, id, input({ slug: "something-else", sku: row.sku })),
     ).rejects.toMatchObject({ problem: "slug_locked" });
+  });
+
+  it("lists a service add-on with no stock and no photo, and keeps it stockless", async () => {
+    const categoryId = await category();
+    const id = await createProduct(
+      db,
+      input({ kind: "service_addon", categoryId, priceFils: 5_000, quantity: 4 }),
+    );
+    expect(await getProductRow(db, id)).toMatchObject({ quantity: 0 });
+    await publishProduct(db, id);
+    const { products: listed, addons } = await loadCatalog(db);
+    expect(listed).toEqual([]);
+    expect(addons.map((a) => a.slug)).toEqual(["fender-jaguar"]);
+
+    // A listed add-on can't turn into something that needs stock, and a product with
+    // stock can't become an add-on.
+    await expect(
+      updateProduct(db, id, input({ kind: "device", categoryId, priceFils: 5_000 })),
+    ).rejects.toMatchObject({ problem: "addon_kind" });
+    const stocked = await createProduct(
+      db,
+      input({ slug: "pedal", sku: "P-1", kind: "accessory", quantity: 2 }),
+    );
+    await expect(
+      updateProduct(db, stocked, input({ slug: "pedal", sku: "P-1", kind: "service_addon" })),
+    ).rejects.toMatchObject({ problem: "addon_kind" });
   });
 
   it("won't archive a held item", async () => {

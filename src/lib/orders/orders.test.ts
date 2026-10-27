@@ -153,6 +153,11 @@ describe("createOrder", () => {
     expect(
       (await orderError(createOrder(db, order([{ productId: draft, quantity: 1 }])))).problem,
     ).toBe("product_unavailable");
+    // A service add-on has no stock to take; it's sold with the cart (M13).
+    const addon = await insertProduct(db, { kind: "service_addon", quantity: 0 });
+    expect(
+      (await orderError(createOrder(db, order([{ productId: addon, quantity: 1 }])))).problem,
+    ).toBe("product_unavailable");
     const short = await orderError(
       createOrder(
         db,

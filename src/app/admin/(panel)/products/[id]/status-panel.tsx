@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import Link from "next/link";
 
-import type { ProductStatus } from "@/lib/db/schema";
+import type { ProductKind, ProductStatus } from "@/lib/db/schema";
 
 import { ActionForm } from "../../../_components/action-form";
 import type { ActionState } from "../../../_components/action-state";
@@ -23,7 +23,7 @@ import {
 type Props = {
   product: {
     id: number;
-    kind: "guitar" | "gear";
+    kind: ProductKind;
     status: ProductStatus;
     quantity: number;
     everPublished: boolean;
@@ -39,7 +39,9 @@ const row = "flex flex-wrap items-end gap-3";
 // What can happen next, by status. Stock changes go through src/lib/inventory.ts.
 export function StatusPanel({ product, publishProblems }: Props) {
   const { id, kind, status, quantity } = product;
-  const gear = kind === "gear";
+  // Anything but a guitar can have several units; a service add-on has no stock at all.
+  const addon = kind === "service_addon";
+  const gear = kind !== "guitar" && !addon;
   // One message for the panel: the form that sent it may be gone after the change.
   const [result, setResult] = useState<ActionState>({});
 
@@ -87,7 +89,13 @@ export function StatusPanel({ product, publishProblems }: Props) {
           Status and stock
         </h2>
         <p className="text-grey-600">
-          {gear ? `${quantity} in stock.` : quantity > 0 ? "One instrument." : "Sold."}
+          {addon
+            ? "No stock: it's a service sold with a bundle, and has no page of its own."
+            : gear
+              ? `${quantity} in stock.`
+              : quantity > 0
+                ? "One instrument."
+                : "Sold."}
         </p>
       </div>
 
@@ -120,7 +128,9 @@ export function StatusPanel({ product, publishProblems }: Props) {
         </>
       )}
 
-      {(status === "available" || status === "reserved") && (
+      {addon && status === "available" && archive}
+
+      {!addon && (status === "available" || status === "reserved") && (
         <p>
           <Link
             href={`/admin/orders/new?product=${id}`}
@@ -132,7 +142,7 @@ export function StatusPanel({ product, publishProblems }: Props) {
         </p>
       )}
 
-      {status === "available" && (
+      {!addon && status === "available" && (
         <>
           {quantity === 1 && (
             <ActionForm announce={setResult} action={holdAction.bind(null, id)} className={row}>
@@ -211,7 +221,7 @@ export function StatusPanel({ product, publishProblems }: Props) {
         </>
       )}
 
-      {(status === "sold" || (status === "archived" && (gear || quantity === 0))) && (
+      {!addon && (status === "sold" || (status === "archived" && (gear || quantity === 0))) && (
         <ActionForm announce={setResult} action={restockAction.bind(null, id)} className={row}>
           {(pending) => (
             <>

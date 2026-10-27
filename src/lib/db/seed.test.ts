@@ -10,7 +10,14 @@ import { productSpecsSchema } from "@/lib/product-specs";
 import { createPgliteDatabase, type TestDatabase } from "@/test/db";
 import { webpSize } from "@/test/webp";
 
-import { categories, deliveryZones, productImages, products, type Emirate } from "./schema";
+import {
+  categories,
+  deliveryZones,
+  productImages,
+  products,
+  productVariants,
+  type Emirate,
+} from "./schema";
 import {
   SAMPLE_PHOTO_SIZE,
   samplePhotos,
@@ -18,6 +25,8 @@ import {
   seed,
   seedCategories,
   seedDeliveryZones,
+  shopProducts,
+  standInPhotos,
 } from "./seed";
 
 const now = new Date("2026-10-26T08:00:00Z");
@@ -53,12 +62,65 @@ describe("seed", () => {
     expect([...emirates].sort()).toEqual([...all].sort());
   });
 
-  it("adds the sample products once, all marked as samples", async () => {
+  it("adds the shop's products and the samples once, only the samples marked as samples", async () => {
     const rows = await test.db.select().from(products);
-    expect(rows).toHaveLength(sampleProducts.length);
-    expect(rows.every((p) => p.isSample)).toBe(true);
-    expect(rows.length).toBeGreaterThanOrEqual(8);
+    expect(rows).toHaveLength(shopProducts.length + sampleProducts.length);
+    const sampleSlugs = new Set(sampleProducts.map((p) => p.slug));
+    for (const row of rows) expect(row.isSample, row.slug).toBe(sampleSlugs.has(row.slug));
+    expect(sampleProducts.length).toBeGreaterThanOrEqual(8);
   });
+
+  it("adds the NANOCORE with its three bundles at the launch prices, priced from the lowest", async () => {
+    const [nanocore] = await test.db.select().from(products).where(eq(products.slug, "nanocore"));
+    expect(nanocore).toMatchObject({
+      kind: "device",
+      status: "available",
+      priceFils: 20_000,
+      placeholderPhotos: true,
+      isSample: false,
+    });
+    const variants = await test.db
+      .select()
+      .from(productVariants)
+      .where(eq(productVariants.productId, nanocore.id))
+      .orderBy(asc(productVariants.sort));
+    expect(
+      variants.map((v) => [v.nameEn, v.priceFils, v.includesPack, v.customToneSlots, v.featured]),
+    ).toEqual([
+      ["Device only", 20_000, false, 0, false],
+      ["Starter Bundle", 29_900, true, 0, true],
+      ["Custom Tone Bundle", 34_900, false, 3, false],
+    ]);
+  });
+
+  it("adds the extra custom tone as a stockless add-on and the footswitch as a draft with no price", async () => {
+    const [tone] = await test.db
+      .select()
+      .from(products)
+      .where(eq(products.slug, "extra-custom-tone"));
+    expect(tone).toMatchObject({
+      kind: "service_addon",
+      quantity: 0,
+      status: "available",
+      priceFils: 5_000,
+    });
+    const [footswitch] = await test.db
+      .select()
+      .from(products)
+      .where(eq(products.slug, "nanocore-footswitch"));
+    expect(footswitch).toMatchObject({ kind: "accessory", status: "draft", priceFils: null });
+  });
+
+  it("adds the shop's own products without the samples", async () => {
+    const fresh = await createPgliteDatabase();
+    try {
+      await seed(fresh.db, { samples: false, now });
+      const rows = await fresh.db.select().from(products);
+      expect(rows.map((p) => p.slug).sort()).toEqual(shopProducts.map((p) => p.slug).sort());
+    } finally {
+      await fresh.close();
+    }
+  }, 30_000);
 
   it("dates samples from the first run", async () => {
     const [strat] = await test.db
@@ -69,27 +131,32 @@ describe("seed", () => {
   });
 
   it("covers every state the catalog has to show", async () => {
-    const rows = await test.db.select().from(products);
+    const rows = await test.db.select().from(products).where(eq(products.isSample, true));
     const has = (predicate: (p: (typeof rows)[number]) => boolean) => rows.some(predicate);
     expect(has((p) => p.kind === "guitar" && p.status === "available")).toBe(true);
     expect(has((p) => p.status === "reserved" && p.reservedUntil !== null)).toBe(true);
     expect(has((p) => p.kind === "guitar" && p.status === "sold" && p.soldAt !== null)).toBe(true);
-    expect(has((p) => p.kind === "gear" && p.status === "sold" && p.quantity === 0)).toBe(true);
-    expect(has((p) => p.kind === "gear" && p.status === "available" && p.quantity > 1)).toBe(true);
+    expect(has((p) => p.kind !== "guitar" && p.status === "sold" && p.quantity === 0)).toBe(true);
+    expect(has((p) => p.kind !== "guitar" && p.status === "available" && p.quantity > 1)).toBe(
+      true,
+    );
+    expect(has((p) => p.placeholderPhotos)).toBe(true);
     expect(has((p) => p.status === "draft")).toBe(true);
     expect(has((p) => p.status !== "draft" && p.titleAr === null)).toBe(true);
     expect(has((p) => p.compareAtFils !== null)).toBe(true);
-    for (const { slug } of seedCategories) {
+    // Footswitches have only the draft until they launch.
+    const all = await test.db.select().from(products);
+    for (const { slug } of seedCategories.filter((c) => c.slug !== "footswitches")) {
       const [category] = await test.db.select().from(categories).where(eq(categories.slug, slug));
       expect(
-        has((p) => p.categoryId === category.id && p.status === "available"),
+        all.some((p) => p.categoryId === category.id && p.status === "available"),
         slug,
       ).toBe(true);
     }
   });
 
-  it("gives every listed sample a photo, and one sample a gallery", async () => {
-    const rows = await test.db.select().from(products);
+  it("gives every listed product a photo (add-ons aside), and one sample a gallery", async () => {
+    const rows = (await test.db.select().from(products)).filter((p) => p.kind !== "service_addon");
     const images = await test.db.select().from(productImages);
     for (const product of rows.filter((p) => p.status !== "draft")) {
       expect(
@@ -105,19 +172,29 @@ describe("seed", () => {
   });
 
   it("has valid specs", () => {
-    for (const product of sampleProducts) {
+    for (const product of [...shopProducts, ...sampleProducts]) {
       expect(productSpecsSchema.safeParse(product.specs ?? {}).success, product.slug).toBe(true);
     }
   });
 });
 
-describe("sample photos", () => {
-  const dir = new URL("../../../public/images/samples/", import.meta.url);
-  const names = Object.keys(samplePhotos) as (keyof typeof samplePhotos)[];
+describe.each([
+  {
+    folder: "samples",
+    photos: samplePhotos as Record<string, { unsplashId: string; author: string }>,
+    used: sampleProducts.flatMap((p) => p.images.flatMap((i) => ("photo" in i ? [i.photo] : []))),
+  },
+  {
+    folder: "stand-ins",
+    photos: standInPhotos as Record<string, { unsplashId: string; author: string }>,
+    used: shopProducts.flatMap((p) => p.images.flatMap((i) => ("standIn" in i ? [i.standIn] : []))),
+  },
+])("$folder photos", ({ folder, photos, used }) => {
+  const dir = new URL(`../../../public/images/${folder}/`, import.meta.url);
+  const names = Object.keys(photos);
 
-  it("are each used by a sample product", () => {
-    const used = new Set(sampleProducts.flatMap((p) => p.images.map((i) => i.photo)));
-    expect([...used].sort()).toEqual([...names].sort());
+  it("are each used by a product", () => {
+    expect([...new Set(used)].sort()).toEqual([...names].sort());
   });
 
   it("are stored at every width, cropped to 4:5, and nothing else is in the folder", () => {
@@ -150,7 +227,7 @@ describe("sample photos", () => {
       "utf8",
     );
     for (const name of names) {
-      const { unsplashId, author } = samplePhotos[name];
+      const { unsplashId, author } = photos[name];
       expect(credits, name).toContain(`https://unsplash.com/photos/${unsplashId}`);
       expect(credits, name).toContain(author);
     }

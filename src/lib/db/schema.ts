@@ -20,10 +20,23 @@ import type { ProductSpecs } from "../product-specs";
 
 // Tables for the catalog and shop settings (M2), admin sign-in (M4), repairs (M5) and the
 // customer side of repairs (M6: tracking-link checks, the inbox, rate limits), and orders
-// and payments (M7). Money columns are integer fils (1 AED = 100 fils); times are
+// and payments (M7), and product variants (M10). Money columns are integer fils (1 AED = 100 fils); times are
 // timestamptz, stored in UTC and shown in Asia/Dubai.
 
-export const productKind = pgEnum("product_kind", ["guitar", "gear"]);
+/**
+ * guitar: a used guitar, always one item. gear: used gear from before M10 (pedals, amps).
+ * device: the NANOCORE and later devices. accessory: footswitches, cables, strings.
+ * part: knobs and other parts. service_addon: a service sold with a product, such as an
+ * extra custom tone; it has no stock and no page of its own.
+ */
+export const productKind = pgEnum("product_kind", [
+  "guitar",
+  "gear",
+  "device",
+  "accessory",
+  "part",
+  "service_addon",
+]);
 
 export const productCondition = pgEnum("product_condition", [
   "mint",
@@ -100,6 +113,8 @@ export const products = pgTable(
     compareAtFils: integer("compare_at_fils"),
     // Admin only, never sent to public pages (profit tracking, VAT margin scheme).
     costFils: integer("cost_fils"),
+    // Stock is on the product, so every variant draws on the same units. Always 0 for a
+    // service add-on, which has no stock.
     quantity: integer("quantity").notNull().default(1),
     status: productStatus("status").notNull().default("draft"),
     reservedNote: text("reserved_note"),
@@ -107,6 +122,12 @@ export const products = pgTable(
     specs: jsonb("specs").$type<ProductSpecs>().notNull().default({}),
     // Development stock with free-licence photos; the launch check (M9) fails while any remain.
     isSample: boolean("is_sample").notNull().default(false),
+    // Free-licence stand-in photos until the owners' own exist (M10); the shop labels them
+    // and the launch check (M18) fails while any product has this set.
+    placeholderPhotos: boolean("placeholder_photos").notNull().default(false),
+    // What comes in the box, one item per line (devices and accessories).
+    inTheBoxEn: text("in_the_box_en"),
+    inTheBoxAr: text("in_the_box_ar"),
     publishedAt: timestamp("published_at", { withTimezone: true }),
     soldAt: timestamp("sold_at", { withTimezone: true }),
     createdAt: createdAt(),
@@ -118,6 +139,9 @@ export const products = pgTable(
     check("products_quantity_non_negative", sql`${t.quantity} >= 0`),
     // A guitar is a single instrument.
     check("products_guitar_single", sql`${t.kind} <> 'guitar' OR ${t.quantity} <= 1`),
+    // A service add-on has no stock. (Kinds added in M10 are compared as text: Postgres
+    // can't use a new enum value in the transaction that adds it.)
+    check("products_addon_no_stock", sql`${t.kind}::text <> 'service_addon' OR ${t.quantity} = 0`),
     check(
       "products_money_non_negative",
       sql`coalesce(${t.priceFils}, 0) >= 0 AND coalesce(${t.costFils}, 0) >= 0`,
@@ -131,10 +155,11 @@ export const products = pgTable(
       "products_listed_complete",
       sql`${t.status} IN ('draft', 'archived') OR (${t.priceFils} IS NOT NULL AND ${t.categoryId} IS NOT NULL AND ${t.publishedAt} IS NOT NULL)`,
     ),
-    // Stock and status agree: listed items have stock, sold ones have none.
+    // Stock and status agree: listed items have stock, sold ones have none. A service
+    // add-on is available without stock, and never sold out or held.
     check(
       "products_stock_matches_status",
-      sql`(${t.status} NOT IN ('available', 'reserved') OR ${t.quantity} > 0) AND (${t.status} <> 'sold' OR ${t.quantity} = 0)`,
+      sql`CASE WHEN ${t.kind}::text = 'service_addon' THEN ${t.status} IN ('draft', 'available', 'archived') ELSE (${t.status} NOT IN ('available', 'reserved') OR ${t.quantity} > 0) AND (${t.status} <> 'sold' OR ${t.quantity} = 0) END`,
     ),
     // A hold is on one specific item, so only single-unit listings can be reserved.
     check("products_reserved_single", sql`${t.status} <> 'reserved' OR ${t.quantity} = 1`),
@@ -150,7 +175,7 @@ export const productImages = pgTable(
       .notNull()
       .references(() => products.id, { onDelete: "cascade" }),
     // Storage key without width or extension; each image is stored at several widths.
-    // Keys under "samples/" are the sample photos in public/images/samples.
+    // Keys under "samples/" and "stand-ins/" are photos in public/images (product-images.ts).
     key: text("key").notNull().unique(),
     width: integer("width").notNull(),
     height: integer("height").notNull(),
@@ -162,6 +187,47 @@ export const productImages = pgTable(
   (t) => [
     index("product_images_product_idx").on(t.productId, t.sort),
     check("product_images_size_positive", sql`${t.width} > 0 AND ${t.height} > 0`),
+  ],
+);
+
+/**
+ * Ways to buy one product, such as the NANOCORE's Device only, Starter Bundle and Custom
+ * Tone Bundle (M10). They share the product's stock and status; each has its own name
+ * and price. A product with active variants is listed at its lowest active variant price
+ * (`products.price_fils` is kept equal to it, src/lib/admin/variants.ts).
+ */
+export const productVariants = pgTable(
+  "product_variants",
+  {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    productId: integer("product_id")
+      .notNull()
+      .references(() => products.id, { onDelete: "cascade" }),
+    nameEn: text("name_en").notNull(),
+    // Optional: the public site falls back to English.
+    nameAr: text("name_ar"),
+    priceFils: integer("price_fils").notNull(),
+    compareAtFils: integer("compare_at_fils"),
+    // Tones built for the customer (the tone-details step in M13, builds in M15).
+    customToneSlots: smallint("custom_tone_slots").notNull().default(0),
+    // A ready-made Signature Pack comes with it (packs in M16).
+    includesPack: boolean("includes_pack").notNull().default(false),
+    // Marked "Our pick" and chosen first on the product page.
+    featured: boolean("featured").notNull().default(false),
+    sort: integer("sort").notNull().default(0),
+    // Inactive variants are kept (orders may name them) but not offered.
+    active: boolean("active").notNull().default(true),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [
+    index("product_variants_product_idx").on(t.productId, t.sort),
+    check("product_variants_price_non_negative", sql`${t.priceFils} >= 0`),
+    check(
+      "product_variants_compare_at_above_price",
+      sql`${t.compareAtFils} IS NULL OR ${t.compareAtFils} > ${t.priceFils}`,
+    ),
+    check("product_variants_slots", sql`${t.customToneSlots} BETWEEN 0 AND 10`),
   ],
 );
 
@@ -704,6 +770,8 @@ export type Category = typeof categories.$inferSelect;
 export type Product = typeof products.$inferSelect;
 export type NewProduct = typeof products.$inferInsert;
 export type ProductImage = typeof productImages.$inferSelect;
+export type ProductVariant = typeof productVariants.$inferSelect;
+export type ProductKind = (typeof productKind.enumValues)[number];
 export type DeliveryZone = typeof deliveryZones.$inferSelect;
 export type ProductStatus = (typeof productStatus.enumValues)[number];
 export type ProductCondition = (typeof productCondition.enumValues)[number];
