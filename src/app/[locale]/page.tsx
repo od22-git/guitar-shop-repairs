@@ -59,11 +59,11 @@ export default async function HomePage() {
           {withHighlight(brand.tagline[locale], brand.taglineHighlight[locale])}
         </Heading>
         <Grid className="mt-10 gap-y-8 md:mt-16">
-          <div className="relative col-span-4 aspect-[3/2] md:order-last md:col-span-7 md:col-start-6">
+          <div className="relative col-span-4 aspect-[3/2] md:order-last md:col-span-8 md:col-start-5">
             <StockPhoto
               photo="bend"
               alt={tPhoto("bend")}
-              sizes="(min-width: 1600px) 880px, (min-width: 768px) 56vw, 100vw"
+              sizes="(min-width: 1600px) 1000px, (min-width: 768px) 64vw, 100vw"
               className="grayscale"
               eager
             />
@@ -103,12 +103,12 @@ export default async function HomePage() {
 
       <Section aria-labelledby="nanocore-heading" className="pt-0 md:pt-0">
         <Grid className="gap-y-10">
-          <div className="col-span-4 flex aspect-[4/3] items-center justify-center bg-grey-100 p-6 md:col-span-7 md:aspect-[7/5]">
+          <div className="col-span-4 flex aspect-[4/3] items-center justify-center bg-grey-100 p-6 md:col-span-8 md:aspect-[3/2]">
             <Label as="p" className="text-center text-grey-600">
               {t("nanocore.photo")}
             </Label>
           </div>
-          <div className="col-span-4 self-center md:col-span-5">
+          <div className="col-span-4 md:col-span-4 md:col-start-9">
             <Label as="p" className="text-grey-600">
               {t("nanocore.label")}
             </Label>
@@ -151,14 +151,21 @@ export default async function HomePage() {
       </Section>
 
       <Section aria-labelledby="why-heading" className="pt-0 md:pt-0">
-        <Heading level="headline" as="h2" id="why-heading" className="max-w-[18ch]">
-          {t.rich("why.heading", { hl, brand: brand.name[locale] })}
-        </Heading>
-        <Grid className="mt-12 gap-y-10 md:mt-16">
+        <Grid className="gap-y-10 md:gap-y-16">
+          {/* A headline a step smaller than the others: it shares the row with the reasons. */}
+          <h2
+            id="why-heading"
+            className="col-span-4 mb-2 text-[clamp(2.25rem,3.4vw,3.25rem)] leading-[0.95] font-black tracking-[-0.02em] text-balance font-stretch-semi-expanded md:row-span-2 md:mb-0 rtl:leading-[1.3] rtl:tracking-normal"
+          >
+            {t.rich("why.heading", { hl, brand: brand.name[locale] })}
+          </h2>
           {reasons.map((key, i) => (
-            <RuledColumn key={key} className="col-span-4 sm:col-span-2 md:col-span-3">
+            <RuledColumn
+              key={key}
+              className={`col-span-4 sm:col-span-2 md:col-span-4 ${i % 2 === 0 ? "md:col-start-5" : ""}`}
+            >
               <Label as="p" className="tabular-nums">{`0${i + 1}`}</Label>
-              <h3 className="mt-6 text-xl font-extrabold font-stretch-semi-expanded md:mt-8">
+              <h3 className="mt-6 text-xl font-extrabold font-stretch-semi-expanded">
                 {t(`why.${key}.title`)}
               </h3>
               <p className="mt-2 max-w-[40ch] text-grey-600">
@@ -171,22 +178,22 @@ export default async function HomePage() {
 
       <Section aria-labelledby="care-heading" className="pt-0 md:pt-0">
         <Grid className="gap-y-10">
-          <div className="relative col-span-4 aspect-[4/3] md:col-span-5 md:aspect-[4/5]">
+          <div className="relative col-span-4 aspect-[4/3] md:col-span-4 md:aspect-[4/5]">
             <StockPhoto
               photo="workbench"
               alt={tPhoto("workbench")}
-              sizes="(min-width: 1600px) 620px, (min-width: 768px) 40vw, 100vw"
+              sizes="(min-width: 1600px) 480px, (min-width: 768px) 32vw, 100vw"
               className="grayscale"
             />
           </div>
-          <div className="col-span-4 self-center md:col-span-6 md:col-start-7">
+          <div className="col-span-4 md:col-span-8 md:col-start-5">
             <Label as="p" className="text-grey-600">
               {t("care.label")}
             </Label>
             <Heading level="headline" as="h2" id="care-heading" className="mt-4">
               {t("care.heading")}
             </Heading>
-            <PriceList className="mt-10">
+            <PriceList className="mt-10 max-w-xl">
               {services.map((service) => (
                 <PriceRow
                   key={service.key}

@@ -17,8 +17,9 @@ type Props = {
 
 /**
  * The opening of an inner page (repairs, sell, about): the page's display heading across
- * the width, then the lead and its buttons next to a black-and-white photo. On phones the
- * photo comes before the lead, as on the home page.
+ * the width, then the lead and its buttons next to a black-and-white photo. The photo starts
+ * on the grid's 5th column (landscape) or 9th (portrait), the lines every page aligns to.
+ * On phones the photo comes before the lead, as on the home page.
  */
 export function PageHero({ title, lead, actions, photo, photoAlt }: Props) {
   const [w, h] = stockPhotos[photo].aspect;
@@ -31,12 +32,16 @@ export function PageHero({ title, lead, actions, photo, photoAlt }: Props) {
       </Heading>
       <Grid className="mt-10 gap-y-8 md:mt-16">
         <div
-          className={`relative col-span-4 md:order-last ${portrait ? "aspect-[4/5] md:col-span-5 md:col-start-8 md:aspect-[2/3]" : "aspect-[3/2] md:col-span-7 md:col-start-6"}`}
+          className={`relative col-span-4 md:order-last ${portrait ? "aspect-[4/5] md:col-span-4 md:col-start-9 md:aspect-[2/3]" : "aspect-[3/2] md:col-span-8 md:col-start-5"}`}
         >
           <StockPhoto
             photo={photo}
             alt={photoAlt}
-            sizes="(min-width: 1600px) 880px, (min-width: 768px) 56vw, 100vw"
+            sizes={
+              portrait
+                ? "(min-width: 1600px) 480px, (min-width: 768px) 32vw, 100vw"
+                : "(min-width: 1600px) 1000px, (min-width: 768px) 64vw, 100vw"
+            }
             className="grayscale"
             eager
           />

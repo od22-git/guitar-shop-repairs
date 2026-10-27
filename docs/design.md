@@ -100,11 +100,12 @@ Rules:
 - **Page margins**: 48px (`--spacing-gutter`), 20px on phones, up to a 1600px-wide page (`Container`).
 - **Sections**: 120px apart (`--spacing-section`), 80px on phones (`Section`). Inside a section: label to heading 16–24px, heading to content 48–64px.
 - **Rhythm**: everything on a 4px grid; components use Tailwind's spacing scale.
+- **Column lines** (M9b, after owner feedback that text and photos didn't line up): on wide screens every block starts on the 1st, 5th or 9th column, the thirds the home page's index columns sit on. A photo and its text split 8 + 4 (hero, NANOCORE, page heroes, product page, contact) or 4 + 8 (care prices); four items go two by two on columns 5 and 9 beside their heading (why us, how it works); a page's topics put the heading on columns 1–4 and the content on 5–12 (about, FAQ, policies, forms); the footer has three columns on the same thirds. Text beside a photo lines up with the photo's top edge, or its bottom edge in a hero.
 - **Layouts** used by the mockups:
-  - *Hero*: the display heading across the full width, then a 4-column intro (lead + two buttons) next to a 7-column photo.
+  - *Hero*: the display heading across the full width, then a 4-column intro (lead + two buttons) next to an 8-column photo starting on column 5 (the mockups had 7; M9b moved it onto the column lines).
   - *Index*: three 4-column `RuledColumn`s, each "01 / Name", a title, a line, a link.
-  - *Feature*: a 7-column product photo on `grey-100` next to a 5-column column of name, line and `PriceList`.
-  - *Split*: a 5-column photo next to a 6-column heading and `PriceList`.
+  - *Feature*: an 8-column product photo on `grey-100` next to a 4-column column of name, line and `PriceList` starting on column 9.
+  - *Split*: a 4-column photo next to an 8-column heading and `PriceList` starting on column 5.
   - *Statement*: a black `Section` with a mono label, a display heading of at most 15 characters a line, and a full-width photo.
   - On phones every layout is one column; the hero photo comes before the intro.
 

@@ -12,8 +12,9 @@ import { Container, Grid } from "./ui/layout";
 import { Label } from "./ui/text";
 import { Wordmark } from "./wordmark";
 
-// The black band that closes every page: the page links in columns, where we work, and the
-// wordmark across the full width.
+// The black band that closes every page: three columns on the thirds of the grid, like the
+// pages above (shop; help and the policies; where we work), then the wordmark across the
+// full width.
 
 const linkClass =
   "inline-flex min-h-11 items-center underline-offset-4 decoration-2 hover:underline";
@@ -40,7 +41,7 @@ function Column({
   children: ReactNode;
 }) {
   return (
-    <div className={`${span} md:col-span-3`}>
+    <div className={`${span} md:col-span-4`}>
       <Label as="h2" className="text-grey-400">
         {heading}
       </Label>
@@ -92,9 +93,10 @@ export async function SiteFooter() {
                 </a>
               </li>
             </ul>
-          </Column>
-          <Column heading={t("policiesHeading")}>
-            <ul>
+            <Label as="h2" className="mt-10 text-grey-400">
+              {t("policiesHeading")}
+            </Label>
+            <ul className="mt-4">
               {policies.map((policy) => (
                 <li key={policy}>
                   <Link href={`/policies/${policy}`} className={linkClass}>

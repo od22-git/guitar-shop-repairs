@@ -54,7 +54,7 @@ export default async function AboutPage() {
               </Heading>
               <Prose
                 text={t(`sections.${key}.body`, values)}
-                className="col-span-4 text-lg md:col-span-7 md:col-start-6"
+                className="col-span-4 text-lg md:col-span-8 md:col-start-5"
               />
             </Grid>
           </section>

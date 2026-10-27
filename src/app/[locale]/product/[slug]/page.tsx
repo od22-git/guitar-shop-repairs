@@ -219,7 +219,7 @@ export default async function ProductPage({ params }: PageProps<"/[locale]/produ
         </nav>
 
         <Grid className="mt-4 gap-y-10">
-          <div className="col-span-4 md:col-span-7">
+          <div className="col-span-4 md:col-span-8">
             {images.length > 0 ? (
               <ProductGallery
                 images={images}
@@ -238,7 +238,7 @@ export default async function ProductPage({ params }: PageProps<"/[locale]/produ
             )}
           </div>
 
-          <div className="col-span-4 md:sticky md:top-6 md:col-span-5 md:self-start lg:ps-6">
+          <div className="col-span-4 md:sticky md:top-6 md:col-span-4 md:self-start">
             {(sold || product.status === "reserved") && (
               <Badge variant={sold ? "solid" : "outline"} className="mb-5">
                 {t(`status.${status}`)}
@@ -325,7 +325,7 @@ export default async function ProductPage({ params }: PageProps<"/[locale]/produ
         </Grid>
 
         <Grid className="mt-20 gap-y-16 md:mt-28">
-          <div className="col-span-4 flex flex-col gap-12 md:col-span-6">
+          <div className="col-span-4 flex flex-col gap-12 md:col-span-8">
             {description && (
               <section aria-labelledby="about-heading">
                 <Heading level="title" as="h2" id="about-heading">
@@ -355,7 +355,7 @@ export default async function ProductPage({ params }: PageProps<"/[locale]/produ
           </div>
           <section
             aria-labelledby="details-heading"
-            className="col-span-4 md:col-span-5 md:col-start-8"
+            className="col-span-4 md:col-span-4 md:col-start-9"
           >
             <Heading level="title" as="h2" id="details-heading" className="mb-6">
               {t("details")}
