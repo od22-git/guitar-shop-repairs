@@ -13,6 +13,9 @@ import { CatalogFallback, CatalogResults, ShopHeader } from "../catalog";
 
 export async function generateStaticParams() {
   const { categories } = await getCatalog();
+  // A static route needs one path to build. With no categories yet (a database that
+  // hasn't been seeded), this one shows not found.
+  if (categories.length === 0) return [{ category: "none-yet" }];
   return categories.map((category) => ({ category: category.slug }));
 }
 
