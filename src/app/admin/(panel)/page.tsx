@@ -63,16 +63,16 @@ export default async function AdminHome() {
   return (
     <>
       <h1 className="text-2xl font-bold">Overview</h1>
-      <section aria-labelledby="orders-heading" className="rounded-lg bg-paper p-4 sm:p-6">
+      <section aria-labelledby="orders-heading" className="rounded-lg bg-white p-4 sm:p-6">
         <h2 id="orders-heading" className="mb-3 text-lg font-bold">
           Orders
         </h2>
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {orderItems.map(({ label, n, urgent, href }) => (
             <div key={label}>
-              <dt className="text-sm text-ink-muted">{label}</dt>
+              <dt className="text-sm text-grey-600">{label}</dt>
               <dd
-                className={`text-2xl font-bold tabular-nums ${urgent && n > 0 ? "text-fiesta-deep" : ""}`}
+                className={`text-2xl font-bold tabular-nums ${urgent && n > 0 ? "text-red" : ""}`}
               >
                 <Link href={href} className="hover:underline">
                   {n}
@@ -82,11 +82,11 @@ export default async function AdminHome() {
           ))}
         </dl>
         <p className="mt-4">
-          <span className="text-sm text-ink-muted">Received in the last 12 months: </span>
+          <span className="text-sm text-grey-600">Received in the last 12 months: </span>
           <span className="font-bold tabular-nums">
             {formatMoney(orders.last12MonthsFils, "en")}
           </span>
-          <span className="text-sm text-ink-muted">
+          <span className="text-sm text-grey-600">
             {" "}
             of the {formatMoney(VAT_THRESHOLD_FILS, "en")} VAT registration threshold
           </span>
@@ -100,16 +100,16 @@ export default async function AdminHome() {
           </Link>
         </p>
       </section>
-      <section aria-labelledby="repairs-heading" className="rounded-lg bg-paper p-4 sm:p-6">
+      <section aria-labelledby="repairs-heading" className="rounded-lg bg-white p-4 sm:p-6">
         <h2 id="repairs-heading" className="mb-3 text-lg font-bold">
           Repairs
         </h2>
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {repairItems.map(({ label, n, urgent, href }) => (
             <div key={label}>
-              <dt className="text-sm text-ink-muted">{label}</dt>
+              <dt className="text-sm text-grey-600">{label}</dt>
               <dd
-                className={`text-2xl font-bold tabular-nums ${urgent && n > 0 ? "text-fiesta-deep" : ""}`}
+                className={`text-2xl font-bold tabular-nums ${urgent && n > 0 ? "text-red" : ""}`}
               >
                 {href ? (
                   <Link href={`/admin/repairs${href}`} className="hover:underline">
@@ -131,27 +131,27 @@ export default async function AdminHome() {
           </Link>
         </p>
       </section>
-      <section aria-labelledby="inbox-heading" className="rounded-lg bg-paper p-4 sm:p-6">
+      <section aria-labelledby="inbox-heading" className="rounded-lg bg-white p-4 sm:p-6">
         <h2 id="inbox-heading" className="mb-3 text-lg font-bold">
           Inbox
         </h2>
         <dl>
-          <dt className="text-sm text-ink-muted">New bookings and messages</dt>
-          <dd className={`text-2xl font-bold tabular-nums ${inbox > 0 ? "text-fiesta-deep" : ""}`}>
+          <dt className="text-sm text-grey-600">New bookings and messages</dt>
+          <dd className={`text-2xl font-bold tabular-nums ${inbox > 0 ? "text-red" : ""}`}>
             <Link href="/admin/inbox?status=new" className="hover:underline">
               {inbox}
             </Link>
           </dd>
         </dl>
       </section>
-      <section aria-labelledby="products-heading" className="rounded-lg bg-paper p-4 sm:p-6">
+      <section aria-labelledby="products-heading" className="rounded-lg bg-white p-4 sm:p-6">
         <h2 id="products-heading" className="mb-3 text-lg font-bold">
           Products
         </h2>
         <dl className="grid grid-cols-2 gap-3 sm:grid-cols-5">
           {productStatus.enumValues.map((status) => (
             <div key={status}>
-              <dt className="text-sm text-ink-muted">{statusLabels[status]}</dt>
+              <dt className="text-sm text-grey-600">{statusLabels[status]}</dt>
               <dd className="text-2xl font-bold tabular-nums">
                 <Link href={`/admin/products?status=${status}`} className="hover:underline">
                   {byStatus.get(status) ?? 0}

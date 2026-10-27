@@ -11,7 +11,7 @@ export default function AdminError({ error, retry }: { error: unknown; retry: ()
   return (
     <div className="mx-auto max-w-xl px-4 py-16">
       <h1 className="text-2xl font-extrabold">Something went wrong</h1>
-      <p className="mt-3 text-ink-muted">
+      <p className="mt-3 text-grey-600">
         Nothing was changed by the step that failed unless the page says so. Try again, or go back
         to the overview.
         {digest && <> Error reference: {digest}.</>}
@@ -20,7 +20,7 @@ export default function AdminError({ error, retry }: { error: unknown; retry: ()
         <button
           type="button"
           onClick={() => retry()}
-          className="inline-flex min-h-11 items-center rounded-sm bg-ink px-4 font-semibold text-mist hover:bg-ink/90"
+          className="inline-flex min-h-11 items-center rounded-sm bg-black px-4 font-semibold text-white hover:bg-grey-800"
         >
           Try again
         </button>

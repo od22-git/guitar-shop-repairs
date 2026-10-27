@@ -43,7 +43,7 @@ export function LoginForm() {
   }
 
   const errorText = error && (
-    <p role="alert" className="font-medium text-fiesta-deep">
+    <p role="alert" className="font-medium text-red">
       {error}
     </p>
   );
@@ -73,7 +73,7 @@ export function LoginForm() {
         <button
           type="button"
           onClick={() => setUseBackup(!useBackup)}
-          className="self-start text-ink underline underline-offset-4"
+          className="self-start text-black underline underline-offset-4"
         >
           {useBackup ? "Use the authenticator app" : "Use a backup code instead"}
         </button>
@@ -113,7 +113,7 @@ export function LoginForm() {
       <button type="submit" disabled={pending} className={primaryButton}>
         {pending ? "Signing in…" : "Sign in"}
       </button>
-      <p className="text-sm text-ink-muted">
+      <p className="text-sm text-grey-600">
         Forgot your password or lost your phone? Reset it from the command line: see the README.
       </p>
     </form>

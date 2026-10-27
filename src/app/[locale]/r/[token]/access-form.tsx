@@ -2,7 +2,8 @@
 
 import { startTransition, useActionState, useEffect, useRef } from "react";
 
-import { fieldProps, FormField, inputClass, submitClass } from "@/components/form-parts";
+import { buttonClass } from "@/components/ui/button";
+import { Field, fieldProps, inputClass } from "@/components/ui/field";
 
 import { checkAccessAction, type AccessState } from "./actions";
 
@@ -32,7 +33,7 @@ export function AccessForm({
   return (
     <form
       noValidate
-      className="flex flex-col gap-4"
+      className="flex flex-col gap-6"
       onSubmit={(event) => {
         event.preventDefault();
         const form = new FormData(event.currentTarget);
@@ -40,7 +41,7 @@ export function AccessForm({
       }}
     >
       <input type="hidden" name="locale" value={locale} />
-      <FormField label={labels.digits} name="digits" error={error}>
+      <Field label={labels.digits} name="digits" error={error}>
         <input
           {...fieldProps("digits", error)}
           ref={input}
@@ -48,10 +49,10 @@ export function AccessForm({
           autoComplete="off"
           maxLength={4}
           dir="ltr"
-          className={`${inputClass} max-w-40 text-center text-xl tabular-nums`}
+          className={`${inputClass} max-w-44 text-center font-mono text-2xl tabular-nums`}
         />
-      </FormField>
-      <button type="submit" disabled={pending} className={`${submitClass} self-start`}>
+      </Field>
+      <button type="submit" disabled={pending} className={`${buttonClass("primary")} self-start`}>
         {pending ? labels.checking : labels.show}
       </button>
     </form>

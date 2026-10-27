@@ -23,9 +23,9 @@ import type { StockPhotoKey } from "@/config/stock-photos";
 import { Link } from "@/i18n/navigation";
 import { localized } from "@/lib/localized";
 
-// The M9a design system on one page: every token and core component, in both languages,
-// so they can be reviewed, screenshotted and checked with axe before M9b builds the pages
-// from them. Not linked from the site and not in the sitemap.
+// The design system (M9a) on one page: every token and core component, in both languages,
+// so they can be reviewed, screenshotted and checked with axe. Not linked from the site and
+// not in the sitemap.
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("DesignSystem");
@@ -104,7 +104,7 @@ export default async function DesignSystemPage() {
   const highlight = (chunks: ReactNode) => <Highlight>{chunks}</Highlight>;
 
   return (
-    <div className="theme-midtown">
+    <>
       <Section className="border-b border-black">
         <Eyebrow>{t("eyebrow")}</Eyebrow>
         <Heading level="display" as="h1" className="mt-6">
@@ -391,6 +391,6 @@ export default async function DesignSystemPage() {
           <PhotoCredits photos={photos} tone="light" />
         </div>
       </Section>
-    </div>
+    </>
   );
 }

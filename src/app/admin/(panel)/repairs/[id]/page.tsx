@@ -112,7 +112,7 @@ export default async function TicketPage({
         <h1 className="text-2xl font-bold">
           <span dir="ltr">{ticket.number}</span> · {instrument ?? "Instrument"}
         </h1>
-        <p className="text-ink-muted">
+        <p className="text-grey-600">
           {statusLabels[ticket.status]}
           {ticket.closeReason && ` (${closeReasonLabels[ticket.closeReason].toLowerCase()})`}
           {ticket.etaDate && ticket.status !== "closed" && ` · ETA ${day(ticket.etaDate)}`}
@@ -225,16 +225,16 @@ export default async function TicketPage({
       <Panel title="History">
         <ol className="flex flex-col gap-3">
           {[...events].reverse().map((event) => (
-            <li key={event.id} className="border-b border-mist pb-3">
+            <li key={event.id} className="border-b border-grey-300 pb-3">
               <p className="font-medium">{describe(event, bundle)}</p>
-              <p className="text-sm text-ink-muted">
+              <p className="text-sm text-grey-600">
                 {formatDateTime(event.createdAt, "en")}
                 {event.notifiedAt ? " · message sent" : " · message not sent yet"}
               </p>
               {event.etaDate && <p>New ETA: {day(event.etaDate)}</p>}
               {event.publicNote && <p className="whitespace-pre-line">{event.publicNote}</p>}
               {event.internalNote && (
-                <p className="whitespace-pre-line text-ink-muted">Internal: {event.internalNote}</p>
+                <p className="whitespace-pre-line text-grey-600">Internal: {event.internalNote}</p>
               )}
             </li>
           ))}
@@ -244,15 +244,15 @@ export default async function TicketPage({
       <Panel title="Intake">
         <dl className="grid gap-x-6 gap-y-2 sm:grid-cols-2">
           <div>
-            <dt className="text-sm text-ink-muted">Opened</dt>
+            <dt className="text-sm text-grey-600">Opened</dt>
             <dd>{formatDateTime(ticket.createdAt, "en")}</dd>
           </div>
           <div>
-            <dt className="text-sm text-ink-muted">How it arrived</dt>
+            <dt className="text-sm text-grey-600">How it arrived</dt>
             <dd>{intakeMethodLabels[ticket.intakeMethod]}</dd>
           </div>
           <div>
-            <dt className="text-sm text-ink-muted">Repair terms</dt>
+            <dt className="text-sm text-grey-600">Repair terms</dt>
             <dd>
               {ticket.termsAcceptedAt
                 ? `Accepted ${formatDateTime(ticket.termsAcceptedAt, "en")}`

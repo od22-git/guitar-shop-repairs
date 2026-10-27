@@ -55,7 +55,7 @@ export default async function ProductsPage({ searchParams }: PageProps<"/admin/p
         <h1 className="text-2xl font-bold">Products</h1>
         <Link
           href="/admin/products/new"
-          className="inline-flex min-h-11 items-center rounded-md bg-fiesta px-5 font-semibold text-white hover:bg-fiesta-deep"
+          className="inline-flex min-h-11 items-center rounded-md bg-black px-5 font-semibold text-white hover:bg-grey-800"
         >
           Add a product
         </Link>
@@ -69,7 +69,7 @@ export default async function ProductsPage({ searchParams }: PageProps<"/admin/p
               <Link
                 href={value ? `/admin/products?status=${value}` : "/admin/products"}
                 aria-current={filter === value ? "page" : undefined}
-                className="inline-flex min-h-11 items-center rounded-full border border-ink-muted px-4 aria-[current=page]:border-ink aria-[current=page]:bg-ink aria-[current=page]:text-mist"
+                className="inline-flex min-h-11 items-center rounded-full border border-grey-600 px-4 aria-[current=page]:border-black aria-[current=page]:bg-black aria-[current=page]:text-white"
               >
                 {label}
               </Link>
@@ -79,13 +79,13 @@ export default async function ProductsPage({ searchParams }: PageProps<"/admin/p
       </nav>
 
       {rows.length === 0 ? (
-        <p className="rounded-lg bg-paper p-6">
+        <p className="rounded-lg bg-white p-6">
           {filter
             ? `Nothing is ${statusLabels[filter].toLowerCase()}.`
             : "No products yet. Add the first one."}
         </p>
       ) : (
-        <ul className="flex flex-col divide-y divide-mist overflow-hidden rounded-lg bg-paper">
+        <ul className="flex flex-col divide-y divide-grey-300 overflow-hidden rounded-lg bg-white">
           {rows.map((product) => {
             const photo = mainPhoto.get(product.id);
             return (
@@ -94,7 +94,7 @@ export default async function ProductsPage({ searchParams }: PageProps<"/admin/p
                   href={`/admin/products/${product.id}`}
                   className="flex items-center gap-4 p-3 hover:bg-white"
                 >
-                  <div className="size-16 shrink-0 overflow-hidden rounded-md bg-mist">
+                  <div className="size-16 shrink-0 overflow-hidden rounded-md bg-grey-100">
                     {photo && (
                       <Image
                         src={productImageSrc(photo.key)}
@@ -108,14 +108,14 @@ export default async function ProductsPage({ searchParams }: PageProps<"/admin/p
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-semibold">{product.titleEn}</p>
-                    <p className="text-sm text-ink-muted">
+                    <p className="text-sm text-grey-600">
                       <span dir="ltr">{product.sku}</span>
                       {product.kind === "gear" && ` · ${product.quantity} in stock`}
                     </p>
                   </div>
                   <div className="text-end">
                     <p className="font-medium">{statusLabels[product.status]}</p>
-                    <p className="text-sm text-ink-muted tabular-nums">
+                    <p className="text-sm text-grey-600 tabular-nums">
                       {product.priceFils === null
                         ? "No price"
                         : formatMoney(product.priceFils, "en")}

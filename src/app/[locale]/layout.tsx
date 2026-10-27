@@ -12,7 +12,7 @@ import { brand } from "@/config/brand";
 import { localeDirection, routing, type Locale } from "@/i18n/routing";
 import { env } from "@/lib/env";
 
-import { alexandria, archivo, jetbrainsMono, outfit, tajawal } from "../fonts";
+import { fontVariables } from "../fonts";
 
 import "../globals.css";
 
@@ -39,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#13294b",
+  themeColor: "#ffffff",
 };
 
 export default async function LocaleLayout({ children }: LayoutProps<"/[locale]">) {
@@ -56,12 +56,14 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
     <html
       lang={locale}
       dir={localeDirection(locale)}
-      className={`${outfit.variable} ${tajawal.variable} ${archivo.variable} ${alexandria.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${fontVariables} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col">
+      <body className="theme-midtown flex min-h-full flex-col">
+        {/* Hidden like sr-only, but without its -1px margin, which pushed the page 1px wider
+            in Arabic. */}
         <a
           href="#main"
-          className="sr-only rounded-sm bg-mist px-4 py-3 font-semibold text-ink focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-50"
+          className="absolute start-0 top-0 size-px overflow-hidden bg-black font-bold whitespace-nowrap text-white [clip-path:inset(50%)] focus:fixed focus:start-4 focus:top-4 focus:z-50 focus:size-auto focus:overflow-visible focus:px-5 focus:py-3 focus:[clip-path:none]"
         >
           {t("skipToContent")}
         </a>

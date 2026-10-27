@@ -33,4 +33,10 @@ describe("brand", () => {
     expect(brand.wordmark).toMatch(/^[A-Z ]+$/);
     expect(brand.wordmark).toBe(brand.name.en.toUpperCase());
   });
+
+  it("highlights words that are in the tagline", () => {
+    for (const locale of ["en", "ar"] as const) {
+      expect(brand.tagline[locale]).toContain(brand.taglineHighlight[locale]);
+    }
+  });
 });

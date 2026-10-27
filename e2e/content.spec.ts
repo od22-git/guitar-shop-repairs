@@ -18,7 +18,7 @@ for (const locale of locales) {
     test("about tells the shop's story and leads to the shop and contact", async ({ page }) => {
       await page.goto(`/${locale}/about`);
       await expect(page.locator("html")).toHaveAttribute("lang", locale);
-      await expect(page.getByRole("heading", { level: 1 })).toHaveText(m.About.title);
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText(m.About.heading);
       for (const section of Object.values(m.About.sections)) {
         await expect(page.getByRole("heading", { level: 2, name: section.heading })).toBeVisible();
       }
@@ -108,14 +108,32 @@ test("an unknown policy is a real 404", async ({ request }) => {
   expect((await request.get("/ar/policies")).status()).toBe(404);
 });
 
-test("the header links Contact on wide screens; phones find it in the footer", async ({
+test("the header links Contact on wide screens; phones find it behind Menu", async ({
   page,
   isMobile,
 }) => {
   await page.goto("/en/contact");
   const nav = page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Contact" });
-  if (isMobile) await expect(nav).toBeHidden();
-  else await expect(nav).toHaveAttribute("aria-current", "page");
+  if (isMobile) {
+    await expect(nav).toBeHidden();
+    const menu = page.getByRole("button", { name: "Menu" });
+    await menu.click();
+    await expect(menu).toHaveAttribute("aria-expanded", "true");
+    await expect(nav).toHaveAttribute("aria-current", "page");
+    await page.keyboard.press("Escape");
+    await expect(nav).toBeHidden();
+    // Following a link closes the menu too.
+    await menu.click();
+    await page
+      .getByRole("navigation", { name: "Main" })
+      .getByRole("link", { name: "About" })
+      .click();
+    await expect(page).toHaveURL("/en/about");
+    await expect(nav).toBeHidden();
+  } else {
+    await expect(page.getByRole("button", { name: "Menu" })).toBeHidden();
+    await expect(nav).toHaveAttribute("aria-current", "page");
+  }
 });
 
 test("the sitemap lists the content pages in both languages", async ({ request }) => {

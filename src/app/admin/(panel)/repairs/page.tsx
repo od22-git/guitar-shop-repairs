@@ -91,7 +91,7 @@ export default async function RepairsPage({ searchParams }: PageProps<"/admin/re
         <h1 className="text-2xl font-bold">Repairs</h1>
         <Link
           href="/admin/repairs/new"
-          className="inline-flex min-h-11 items-center rounded-md bg-fiesta px-5 font-semibold text-white hover:bg-fiesta-deep"
+          className="inline-flex min-h-11 items-center rounded-md bg-black px-5 font-semibold text-white hover:bg-grey-800"
         >
           New ticket
         </Link>
@@ -122,7 +122,7 @@ export default async function RepairsPage({ searchParams }: PageProps<"/admin/re
               <Link
                 href={href(value)}
                 aria-current={filter === value ? "page" : undefined}
-                className="inline-flex min-h-11 items-center rounded-full border border-ink-muted px-4 aria-[current=page]:border-ink aria-[current=page]:bg-ink aria-[current=page]:text-mist"
+                className="inline-flex min-h-11 items-center rounded-full border border-grey-600 px-4 aria-[current=page]:border-black aria-[current=page]:bg-black aria-[current=page]:text-white"
               >
                 {label}
               </Link>
@@ -132,7 +132,7 @@ export default async function RepairsPage({ searchParams }: PageProps<"/admin/re
       </nav>
 
       {rows.length === 0 ? (
-        <p className="rounded-lg bg-paper p-6">
+        <p className="rounded-lg bg-white p-6">
           {q
             ? "No tickets match."
             : filter === "open"
@@ -142,7 +142,7 @@ export default async function RepairsPage({ searchParams }: PageProps<"/admin/re
                 : "No tickets here."}
         </p>
       ) : (
-        <ul className="flex flex-col divide-y divide-mist overflow-hidden rounded-lg bg-paper">
+        <ul className="flex flex-col divide-y divide-grey-300 overflow-hidden rounded-lg bg-white">
           {rows.map(({ ticket, customer, unsent: unsentCount }) => {
             const late =
               ticket.etaDate !== null &&
@@ -159,7 +159,7 @@ export default async function RepairsPage({ searchParams }: PageProps<"/admin/re
                     <p className="font-semibold">
                       <span dir="ltr">{ticket.number}</span> · {customer.name}
                     </p>
-                    <p className="truncate text-sm text-ink-muted">
+                    <p className="truncate text-sm text-grey-600">
                       {instrumentName(ticket) ?? "Instrument"} ·{" "}
                       <span dir="ltr">{formatPhone(customer.phoneE164)}</span>
                     </p>
@@ -168,16 +168,14 @@ export default async function RepairsPage({ searchParams }: PageProps<"/admin/re
                     <p className="font-medium">{statusLabels[ticket.status]}</p>
                     {eta && (
                       <p
-                        className={
-                          late ? "text-sm font-medium text-fiesta-deep" : "text-sm text-ink-muted"
-                        }
+                        className={late ? "text-sm font-medium text-red" : "text-sm text-grey-600"}
                       >
                         {late ? "Past ETA " : "ETA "}
                         {formatDate(eta, "en")}
                       </p>
                     )}
                     {unsentCount ? (
-                      <p className="text-sm font-semibold text-fiesta-deep">
+                      <p className="text-sm font-semibold text-red">
                         {unsentCount === 1
                           ? "1 message to send"
                           : `${unsentCount} messages to send`}

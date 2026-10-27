@@ -2,15 +2,18 @@
 
 import { startTransition, useActionState, useEffect, useRef, useState } from "react";
 
+import { Turnstile } from "@/components/turnstile";
+import { buttonClass } from "@/components/ui/button";
 import {
-  checkClass,
+  Checkbox,
+  Field,
   FieldError,
   fieldProps,
-  FormField,
+  formAlertClass,
   inputClass,
-  submitClass,
-} from "@/components/form-parts";
-import { Turnstile } from "@/components/turnstile";
+  OptionCard,
+  selectClass,
+} from "@/components/ui/field";
 
 import { bookRepairAction, type BookingState } from "./actions";
 
@@ -67,9 +70,16 @@ export function BookingForm({ labels, emirates, locale, turnstileSiteKey }: Prop
 
   if (state.status === "sent") {
     return (
-      <div ref={done} tabIndex={-1} role="status" className="focus:outline-none">
-        <h3 className="text-xl font-bold">{labels.sentHeading}</h3>
-        <p className="mt-2">{labels.sentBody}</p>
+      <div
+        ref={done}
+        tabIndex={-1}
+        role="status"
+        className="border-t-4 border-black pt-6 focus:outline-none"
+      >
+        <h3 className="text-title font-extrabold font-stretch-semi-expanded rtl:leading-[1.4]">
+          {labels.sentHeading}
+        </h3>
+        <p className="mt-3 max-w-[50ch] text-lg">{labels.sentBody}</p>
       </div>
     );
   }
@@ -89,26 +99,21 @@ export function BookingForm({ labels, emirates, locale, turnstileSiteKey }: Prop
           : null;
   const optional = (label: string) => (
     <>
-      {label} <span className="font-normal text-ink-muted">({labels.optional})</span>
+      {label} <span className="font-normal text-grey-600">({labels.optional})</span>
     </>
   );
 
   return (
     <form
       noValidate
-      className="flex flex-col gap-5"
+      className="flex flex-col gap-6"
       onSubmit={(event) => {
         event.preventDefault();
         const form = new FormData(event.currentTarget);
         startTransition(() => formAction(form));
       }}
     >
-      <p
-        ref={summary}
-        tabIndex={-1}
-        role="alert"
-        className="font-semibold text-fiesta-deep empty:hidden focus:outline-none"
-      >
+      <p ref={summary} tabIndex={-1} role="alert" className={formAlertClass}>
         {message}
       </p>
       <input type="hidden" name="locale" value={locale} />
@@ -120,15 +125,15 @@ export function BookingForm({ labels, emirates, locale, turnstileSiteKey }: Prop
         </label>
       </div>
 
-      <FormField label={labels.name} name="name" error={error("name")}>
+      <Field label={labels.name} name="name" error={error("name")}>
         <input
           {...fieldProps("name", error("name"))}
           autoComplete="name"
           maxLength={120}
           className={inputClass}
         />
-      </FormField>
-      <FormField label={labels.phone} name="phone" error={error("phone")} hint={labels.phoneHint}>
+      </Field>
+      <Field label={labels.phone} name="phone" error={error("phone")} hint={labels.phoneHint}>
         <input
           {...fieldProps("phone", error("phone"), true)}
           type="tel"
@@ -136,14 +141,16 @@ export function BookingForm({ labels, emirates, locale, turnstileSiteKey }: Prop
           autoComplete="tel"
           dir="ltr"
           maxLength={40}
-          className={`${inputClass} rtl:text-end`}
+          className={`${inputClass} text-start rtl:text-end`}
         />
-      </FormField>
+      </Field>
 
-      <fieldset className="flex flex-col gap-4">
-        <legend className="mb-1 text-lg font-bold">{labels.instrumentHeading}</legend>
+      <fieldset className="flex flex-col gap-6 border-t border-black pt-6">
+        <legend className="float-start mb-2 w-full text-title font-extrabold font-stretch-semi-expanded rtl:leading-[1.4]">
+          {labels.instrumentHeading}
+        </legend>
         <div className="grid gap-4 sm:grid-cols-2">
-          <FormField
+          <Field
             label={optional(labels.instrumentBrand)}
             name="instrumentBrand"
             error={error("instrumentBrand")}
@@ -153,8 +160,8 @@ export function BookingForm({ labels, emirates, locale, turnstileSiteKey }: Prop
               maxLength={80}
               className={inputClass}
             />
-          </FormField>
-          <FormField
+          </Field>
+          <Field
             label={optional(labels.instrumentModel)}
             name="instrumentModel"
             error={error("instrumentModel")}
@@ -164,46 +171,45 @@ export function BookingForm({ labels, emirates, locale, turnstileSiteKey }: Prop
               maxLength={80}
               className={inputClass}
             />
-          </FormField>
+          </Field>
         </div>
-        <FormField label={labels.issue} name="issue" error={error("issue")} hint={labels.issueHint}>
+        <Field label={labels.issue} name="issue" error={error("issue")} hint={labels.issueHint}>
           <textarea
             {...fieldProps("issue", error("issue"), true)}
             rows={4}
             maxLength={2000}
             className={inputClass}
           />
-        </FormField>
+        </Field>
       </fieldset>
 
       <fieldset
-        className="flex flex-col gap-1"
+        className="flex flex-col gap-2"
         aria-describedby={error("intakeMethod") ? "intakeMethod-error" : undefined}
       >
-        <legend className="mb-1 font-semibold">{labels.intakeMethod}</legend>
-        {(["drop_off", "courier"] as const).map((value) => (
-          <label key={value} className="flex min-h-11 items-center gap-3">
-            <input
-              type="radio"
+        <legend className="mb-2 font-bold">{labels.intakeMethod}</legend>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {(["drop_off", "courier"] as const).map((value) => (
+            <OptionCard
+              key={value}
               name="intakeMethod"
               value={value}
               defaultChecked={value === "drop_off"}
               onChange={() => setCourier(value === "courier")}
-              className={checkClass}
+              label={labels[value]}
             />
-            {labels[value]}
-          </label>
-        ))}
+          ))}
+        </div>
         {error("intakeMethod") && (
           <FieldError name="intakeMethod">{error("intakeMethod")}</FieldError>
         )}
       </fieldset>
       {courier && (
-        <FormField label={labels.emirate} name="emirate" error={error("emirate")}>
+        <Field label={labels.emirate} name="emirate" error={error("emirate")}>
           <select
             {...fieldProps("emirate", error("emirate"))}
             defaultValue=""
-            className={inputClass}
+            className={selectClass}
           >
             <option value="" disabled>
               {labels.chooseEmirate}
@@ -214,20 +220,16 @@ export function BookingForm({ labels, emirates, locale, turnstileSiteKey }: Prop
               </option>
             ))}
           </select>
-        </FormField>
+        </Field>
       )}
 
       <div className="flex flex-col gap-1">
-        <label className="flex min-h-11 items-center gap-3">
-          <input
-            type="checkbox"
-            name="whatsappConsent"
-            aria-invalid={error("whatsappConsent") ? true : undefined}
-            aria-describedby={error("whatsappConsent") ? "whatsappConsent-error" : undefined}
-            className={checkClass}
-          />
-          <span>{labels.consent}</span>
-        </label>
+        <Checkbox
+          name="whatsappConsent"
+          label={labels.consent}
+          aria-invalid={error("whatsappConsent") ? true : undefined}
+          aria-describedby={error("whatsappConsent") ? "whatsappConsent-error" : undefined}
+        />
         {error("whatsappConsent") && (
           <FieldError name="whatsappConsent">{error("whatsappConsent")}</FieldError>
         )}
@@ -239,7 +241,11 @@ export function BookingForm({ labels, emirates, locale, turnstileSiteKey }: Prop
         resetKey={state.status === "idle" ? 0 : state.at}
       />
 
-      <button type="submit" disabled={pending} className={`${submitClass} self-start`}>
+      <button
+        type="submit"
+        disabled={pending}
+        className={`${buttonClass("primary")} max-sm:w-full sm:self-start`}
+      >
         {pending ? labels.sending : labels.submit}
       </button>
     </form>

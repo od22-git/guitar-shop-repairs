@@ -20,7 +20,7 @@ export default async function NewProductPage() {
         </Link>
       </p>
       <h1 className="text-2xl font-bold">New product</h1>
-      <p className="text-ink-muted">
+      <p className="text-grey-600">
         It starts as a draft. Add photos on the next screen, then publish it.
       </p>
       <ProductForm

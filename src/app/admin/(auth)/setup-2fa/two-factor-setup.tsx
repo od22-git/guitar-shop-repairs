@@ -43,7 +43,7 @@ export function TwoFactorSetup() {
   }
 
   const errorText = error && (
-    <p role="alert" className="font-medium text-fiesta-deep">
+    <p role="alert" className="font-medium text-red">
       {error}
     </p>
   );
@@ -84,7 +84,7 @@ export function TwoFactorSetup() {
             // Generated here from the otpauth URI; no outside content.
             dangerouslySetInnerHTML={{ __html: renderSVG(enrolment.uri) }}
           />
-          <p className="mt-3 text-sm text-ink-muted">Or type this key into the app:</p>
+          <p className="mt-3 text-sm text-grey-600">Or type this key into the app:</p>
           <code data-testid="totp-secret" className="font-semibold break-all" dir="ltr">
             {enrolment.secret}
           </code>

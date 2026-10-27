@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { brand } from "@/config/brand";
@@ -6,20 +8,46 @@ import { Link } from "@/i18n/navigation";
 import { shopWhatsAppUrl } from "@/lib/whatsapp/shop-link";
 
 import { SocialLinks } from "./social-links";
+import { Container, Grid } from "./ui/layout";
+import { Label } from "./ui/text";
+import { Wordmark } from "./wordmark";
+
+// The black band that closes every page: the page links in columns, where we work, and the
+// wordmark across the full width.
 
 const linkClass =
-  "inline-flex min-h-11 items-center underline decoration-gold underline-offset-4 hover:text-gold";
+  "inline-flex min-h-11 items-center underline-offset-4 decoration-2 hover:underline";
 
 const shopLinks = [
   ["/shop", "shop"],
   ["/repairs", "repairs"],
   ["/sell", "sell"],
-  ["/faq", "faq"],
 ] as const;
-const aboutLinks = [
+const helpLinks = [
+  ["/faq", "faq"],
   ["/about", "about"],
   ["/contact", "contact"],
 ] as const;
+
+function Column({
+  heading,
+  span = "col-span-2",
+  children,
+}: {
+  heading: string;
+  /** Columns on phones, out of 4. */
+  span?: "col-span-2" | "col-span-4";
+  children: ReactNode;
+}) {
+  return (
+    <div className={`${span} md:col-span-3`}>
+      <Label as="h2" className="text-grey-400">
+        {heading}
+      </Label>
+      <div className="mt-4">{children}</div>
+    </div>
+  );
+}
 
 export async function SiteFooter() {
   const locale = await getLocale();
@@ -30,61 +58,67 @@ export async function SiteFooter() {
   ]);
 
   return (
-    <footer className="bg-rosewood">
-      {/* The bottom padding keeps the floating WhatsApp button clear of the last line. */}
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 pt-12 pb-28 sm:grid-cols-3 sm:px-6 lg:grid-cols-[2fr_1fr_1fr_1fr]">
-        <div className="sm:col-span-3 lg:col-span-1">
-          <p className="text-lg font-extrabold" translate="no">
-            {brand.name[locale]}
-          </p>
-          <p className="mt-1 text-ink-subtle">{brand.tagline[locale]}</p>
-          <p className="mt-4 max-w-[60ch] text-ink-subtle">
-            {t("serviceArea", { location: brand.location[locale] })}
-          </p>
-          <SocialLinks linkClass={linkClass} className="mt-2" />
-        </div>
-        <div>
-          <h2 className="font-bold text-gold">{t("linksHeading")}</h2>
-          <ul className="mt-2">
-            {shopLinks.map(([href, key]) => (
-              <li key={href}>
-                <Link href={href} className={linkClass}>
-                  {t(key)}
-                </Link>
+    <footer className="bg-black text-white">
+      <Container className="pt-16 md:pt-24">
+        <Grid className="gap-y-12">
+          <Column heading={t("shopHeading")}>
+            <ul>
+              {shopLinks.map(([href, key]) => (
+                <li key={href}>
+                  <Link href={href} className={linkClass}>
+                    {t(key)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Column>
+          <Column heading={t("helpHeading")}>
+            <ul>
+              {helpLinks.map(([href, key]) => (
+                <li key={href}>
+                  <Link href={href} className={linkClass}>
+                    {t(key)}
+                  </Link>
+                </li>
+              ))}
+              <li>
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={linkClass}
+                >
+                  {t("whatsapp")}
+                </a>
               </li>
-            ))}
-          </ul>
+            </ul>
+          </Column>
+          <Column heading={t("policiesHeading")}>
+            <ul>
+              {policies.map((policy) => (
+                <li key={policy}>
+                  <Link href={`/policies/${policy}`} className={linkClass}>
+                    {tPolicies(`${policy}.title`)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Column>
+          <Column heading={t("whereHeading")} span="col-span-4">
+            <p className="max-w-[34ch] pt-2.5">
+              {t("serviceArea", { location: brand.location[locale] })}
+            </p>
+            <p className="mt-4 text-grey-400">{brand.tagline[locale]}</p>
+            <SocialLinks linkClass={linkClass} className="mt-2" />
+          </Column>
+        </Grid>
+        {/* The wordmark spans the column: its width is about 11.3 times its font size, so
+            8.7% of the container's width. The bottom padding keeps the floating WhatsApp
+            button clear of it. */}
+        <div className="@container pt-20 pb-24 md:pt-32 md:pb-28">
+          <Wordmark className="block text-[8.7cqi]" />
         </div>
-        <div>
-          <h2 className="font-bold text-gold">{t("contactHeading")}</h2>
-          <ul className="mt-2">
-            <li>
-              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className={linkClass}>
-                {t("whatsapp")}
-              </a>
-            </li>
-            {aboutLinks.map(([href, key]) => (
-              <li key={href}>
-                <Link href={href} className={linkClass}>
-                  {t(key)}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <h2 className="font-bold text-gold">{t("policiesHeading")}</h2>
-          <ul className="mt-2">
-            {policies.map((policy) => (
-              <li key={policy}>
-                <Link href={`/policies/${policy}`} className={linkClass}>
-                  {tPolicies(`${policy}.title`)}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
+      </Container>
     </footer>
   );
 }

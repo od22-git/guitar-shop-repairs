@@ -28,7 +28,7 @@ export function AdminNav({ unsent, inbox }: { unsent: number; inbox: number }) {
               <Link
                 href={href}
                 aria-current={current ? "page" : undefined}
-                className="inline-block py-2 underline-offset-8 aria-[current=page]:font-semibold aria-[current=page]:text-gold aria-[current=page]:underline"
+                className="inline-block py-2 underline-offset-8 aria-[current=page]:font-semibold aria-[current=page]:underline"
               >
                 {label}
                 {href === "/admin/repairs" && unsent > 0 && (
@@ -48,7 +48,7 @@ export function AdminNav({ unsent, inbox }: { unsent: number; inbox: number }) {
 
 function Badge({ n, label }: { n: number; label: string }) {
   return (
-    <span className="ms-1.5 inline-block min-w-6 rounded-full bg-fiesta px-1.5 text-center text-sm font-bold text-white no-underline">
+    <span className="ms-1.5 inline-block min-w-6 rounded-full bg-blue px-1.5 text-center text-sm font-bold text-white no-underline">
       {n}
       <span className="sr-only"> {label}</span>
     </span>

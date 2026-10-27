@@ -5,9 +5,12 @@ import { expect, test } from "@playwright/test";
 
 test("the repairs page lists services with starting prices, in both languages", async ({
   page,
+  isMobile,
 }) => {
   await page.goto("/en/repairs");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Guitar repairs");
+  // Phones fold the header links behind the Menu button.
+  if (isMobile) await page.getByRole("button", { name: "Menu" }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Repairs and setups");
   await expect(page.getByRole("link", { name: "Repairs", exact: true })).toHaveAttribute(
     "aria-current",
     "page",
@@ -17,7 +20,7 @@ test("the repairs page lists services with starting prices, in both languages", 
   await expect(services.getByText("from AED 150")).toBeVisible();
 
   await page.goto("/ar/repairs");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("تصليح الجيتار");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("التصليح والضبط");
   const price = page
     .getByRole("region", { name: "الخدمات والأسعار المبدئية" })
     .locator("bdi")

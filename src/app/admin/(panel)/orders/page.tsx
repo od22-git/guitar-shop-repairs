@@ -45,7 +45,7 @@ export default async function OrdersPage({ searchParams }: PageProps<"/admin/ord
         <h1 className="text-2xl font-bold">Orders</h1>
         <Link
           href="/admin/orders/new"
-          className="inline-flex min-h-11 items-center rounded-md bg-fiesta px-5 font-semibold text-white hover:bg-fiesta-deep"
+          className="inline-flex min-h-11 items-center rounded-md bg-black px-5 font-semibold text-white hover:bg-grey-800"
         >
           New order
         </Link>
@@ -76,7 +76,7 @@ export default async function OrdersPage({ searchParams }: PageProps<"/admin/ord
               <Link
                 href={href(value)}
                 aria-current={filter === value ? "page" : undefined}
-                className="inline-flex min-h-11 items-center rounded-full border border-ink-muted px-4 aria-[current=page]:border-ink aria-[current=page]:bg-ink aria-[current=page]:text-mist"
+                className="inline-flex min-h-11 items-center rounded-full border border-grey-600 px-4 aria-[current=page]:border-black aria-[current=page]:bg-black aria-[current=page]:text-white"
               >
                 {label}
               </Link>
@@ -86,11 +86,11 @@ export default async function OrdersPage({ searchParams }: PageProps<"/admin/ord
       </nav>
 
       {rows.length === 0 ? (
-        <p className="rounded-lg bg-paper p-6">
+        <p className="rounded-lg bg-white p-6">
           {q ? "No orders match." : filter === "open" ? "Nothing to hand over." : "No orders here."}
         </p>
       ) : (
-        <ul className="flex flex-col divide-y divide-mist overflow-hidden rounded-lg bg-paper">
+        <ul className="flex flex-col divide-y divide-grey-300 overflow-hidden rounded-lg bg-white">
           {rows.map(({ order, customer, paidFils }) => {
             const { dueFils, toRefundFils } = orderBalance(order, [
               { kind: "payment", amountFils: paidFils },
@@ -105,21 +105,21 @@ export default async function OrdersPage({ searchParams }: PageProps<"/admin/ord
                     <p className="font-semibold">
                       <span dir="ltr">{order.number}</span> · {customer.name}
                     </p>
-                    <p className="truncate text-sm text-ink-muted">
+                    <p className="truncate text-sm text-grey-600">
                       {formatDate(order.createdAt, "en")} ·{" "}
                       <span dir="ltr">{formatPhone(customer.phoneE164)}</span>
                     </p>
                   </div>
                   <div className="text-end">
                     <p className="font-medium tabular-nums">{formatMoney(order.totalFils, "en")}</p>
-                    <p className="text-sm text-ink-muted">{orderStatusLabels[order.status]}</p>
+                    <p className="text-sm text-grey-600">{orderStatusLabels[order.status]}</p>
                     {dueFils > 0 && (
-                      <p className="text-sm font-semibold text-fiesta-deep">
+                      <p className="text-sm font-semibold text-red">
                         {formatMoney(dueFils, "en")} due
                       </p>
                     )}
                     {toRefundFils > 0 && (
-                      <p className="text-sm font-semibold text-fiesta-deep">
+                      <p className="text-sm font-semibold text-red">
                         {formatMoney(toRefundFils, "en")} to refund
                       </p>
                     )}

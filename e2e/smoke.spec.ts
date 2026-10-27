@@ -7,7 +7,7 @@ test("home page renders the brand", async ({ page }) => {
   expect(response?.status()).toBe(200);
   await expect(page).toHaveTitle(brand.name.en);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(brand.tagline.en);
-  await expect(page.getByRole("banner")).toContainText(brand.name.en);
+  await expect(page.getByRole("banner")).toContainText(brand.wordmark);
 });
 
 test("the pre-launch site is not indexable", async ({ page }) => {

@@ -5,7 +5,8 @@ import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
 import { Bdi, Ltr } from "@/components/bdi";
-import { formCard } from "@/components/form-parts";
+import { Container } from "@/components/ui/layout";
+import { Heading, Label, Lead } from "@/components/ui/text";
 import { WhatsAppIcon } from "@/components/whatsapp-icon";
 import { brand } from "@/config/brand";
 import { policyNumbers } from "@/config/policies";
@@ -45,6 +46,9 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+const sectionHeading =
+  "text-title font-extrabold tracking-[-0.01em] font-stretch-semi-expanded rtl:leading-[1.4] rtl:tracking-normal";
+
 const progress: RepairStatus[] = ["received", "diagnosed", "in_repair", "ready", "closed"];
 
 const day = (value: string | null, locale: Locale) => {
@@ -60,19 +64,26 @@ export default async function TicketPage({ params }: PageProps<"/[locale]/r/[tok
 
   if (!hasAccess(env.BETTER_AUTH_SECRET, token, jar.get(accessCookieName(ticketId))?.value)) {
     return (
-      <div className="mx-auto max-w-xl px-4 pt-6 pb-20 sm:px-6 md:pt-12">
-        <h1 className="text-3xl leading-tight font-extrabold text-balance sm:text-4xl rtl:leading-[1.3]">
-          {t("checkHeading")}
-        </h1>
-        <p className="mt-3 text-lg text-ink-subtle">{t("checkIntro")}</p>
-        <div className={`mt-8 ${formCard}`}>
-          <AccessForm
-            token={token}
-            locale={locale}
-            labels={{ digits: t("digits"), show: t("show"), checking: t("checking") }}
-          />
+      <Container className="pt-10 pb-20 md:pt-16 md:pb-section">
+        <div className="max-w-2xl">
+          <Label as="p" className="text-grey-600">
+            {t("title")}
+          </Label>
+          <Heading level="headline" as="h1" className="mt-4">
+            {t("checkHeading")}
+          </Heading>
+          <Lead wide className="mt-6 text-grey-600">
+            {t("checkIntro")}
+          </Lead>
+          <div className="mt-10 border-t border-black pt-8">
+            <AccessForm
+              token={token}
+              locale={locale}
+              labels={{ digits: t("digits"), show: t("show"), checking: t("checking") }}
+            />
+          </div>
         </div>
-      </div>
+      </Container>
     );
   }
 
@@ -93,129 +104,136 @@ export default async function TicketPage({ params }: PageProps<"/[locale]/r/[tok
     ticket.status !== "ready" && ticket.status !== "closed" && day(ticket.etaDate, locale);
 
   return (
-    <div className="mx-auto max-w-3xl px-4 pt-6 pb-20 sm:px-6 md:pt-12">
-      <p className="text-ink-subtle" translate="no">
-        {brand.name[locale]}
-      </p>
-      <h1 className="mt-1 text-3xl leading-tight font-extrabold text-balance sm:text-4xl rtl:leading-[1.3]">
-        {t.rich("heading", {
-          number: ticket.number,
-          ltr: (chunks) => <Ltr>{chunks}</Ltr>,
-        })}
-      </h1>
-      {ticket.instrument && (
-        <p className="mt-2 text-xl font-semibold">
-          <Bdi>{ticket.instrument}</Bdi>
+    <Container className="pt-10 pb-20 md:pt-16 md:pb-section">
+      <div className="max-w-3xl">
+        <Label as="p" className="text-grey-600">
+          <span translate="no">{brand.name[locale]}</span>
+        </Label>
+        <h1 className="mt-4 text-headline font-black tracking-[-0.02em] text-balance font-stretch-semi-expanded rtl:leading-[1.3] rtl:tracking-normal">
+          {t.rich("heading", {
+            number: ticket.number,
+            ltr: (chunks) => <Ltr>{chunks}</Ltr>,
+          })}
+        </h1>
+        {ticket.instrument && (
+          <p className="mt-4 text-title font-extrabold font-stretch-semi-expanded">
+            <Bdi>{ticket.instrument}</Bdi>
+          </p>
+        )}
+        <p className="mt-8 flex items-center gap-3 text-lg font-bold">
+          <span aria-hidden="true" className="size-3 shrink-0 bg-blue" />
+          {t("now", { status: waiting ? t("waiting") : statusName(ticket.status) })}
         </p>
-      )}
-      <p className="mt-4 text-lg font-bold text-gold">
-        {t("now", { status: waiting ? t("waiting") : statusName(ticket.status) })}
-      </p>
-      {eta && <p className="mt-1 text-ink-subtle">{t("eta", { date: eta })}</p>}
+        {eta && <p className="mt-1 ps-6 text-grey-600">{t("eta", { date: eta })}</p>}
 
-      <section aria-labelledby="progress-heading" className="mt-8">
-        <h2 id="progress-heading" className="sr-only">
-          {t("statusHeading")}
-        </h2>
-        <ol className="grid grid-cols-5 gap-1.5">
-          {progress.map((status, index) => {
-            const state = index < current ? "done" : index === current ? "current" : "next";
-            return (
-              <li key={status} aria-current={state === "current" ? "step" : undefined}>
+        <section aria-labelledby="progress-heading" className="mt-8">
+          <h2 id="progress-heading" className="sr-only">
+            {t("statusHeading")}
+          </h2>
+          <ol className="grid grid-cols-5 gap-1">
+            {progress.map((status, index) => {
+              const state = index < current ? "done" : index === current ? "current" : "next";
+              return (
+                <li key={status} aria-current={state === "current" ? "step" : undefined}>
+                  <span
+                    aria-hidden="true"
+                    className={`block h-1.5 ${state === "next" ? "bg-grey-300" : "bg-black"}`}
+                  />
+                  <span
+                    className={`mt-2 block text-sm leading-snug ${state === "current" ? "font-bold" : state === "done" ? "" : "text-grey-600"}`}
+                  >
+                    {status === "closed" && index === current
+                      ? statusName(status)
+                      : tStatus(status)}
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+
+        <section className="mt-12 border-t border-black pt-6">
+          <Label as="h2" className="text-grey-600">
+            {t("issueLabel")}
+          </Label>
+          <p className="mt-3 max-w-[60ch] text-lg whitespace-pre-line">{ticket.issue}</p>
+        </section>
+
+        {ticket.quote && (
+          <QuoteSection
+            ticket={ticket}
+            quote={ticket.quote}
+            token={token}
+            locale={locale}
+            labels={decisionLabels()}
+          />
+        )}
+
+        {ticket.payment && <PaySection payment={ticket.payment} locale={locale} />}
+
+        {ticket.photos.length > 0 && (
+          <section aria-labelledby="photos-heading" className="mt-16">
+            <h2 id="photos-heading" className={sectionHeading}>
+              {t("photosHeading")}
+            </h2>
+            <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {ticket.photos.map((photo, index) => (
+                <li key={photo.src}>
+                  <a href={photo.srcLarge} target="_blank" rel="noreferrer" className="block">
+                    {/* Signed, private files: next/image can't fetch them. */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={photo.src}
+                      width={photo.width}
+                      height={photo.height}
+                      alt={t("photoAlt", {
+                        stage: t(`photoStage.${photo.stage}`),
+                        n: index + 1,
+                      })}
+                      className="aspect-[4/3] w-full bg-grey-100 object-cover"
+                    />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        <section aria-labelledby="history-heading" className="mt-16">
+          <h2 id="history-heading" className={sectionHeading}>
+            {t("historyHeading")}
+          </h2>
+          <ol className="mt-6 border-s border-black">
+            {ticket.events.toReversed().map((event, index) => (
+              <li key={index} className="relative ps-5 pb-6 last:pb-0">
                 <span
                   aria-hidden="true"
-                  className={`block h-1.5 rounded-full ${state === "next" ? "bg-mist/20" : "bg-gold"}`}
+                  className="absolute -start-[5px] top-2 size-2.5 bg-black"
                 />
-                <span
-                  className={`mt-2 block text-sm leading-snug ${state === "current" ? "font-bold text-mist" : state === "done" ? "text-mist" : "text-ink-subtle"}`}
-                >
-                  {status === "closed" && index === current ? statusName(status) : tStatus(status)}
-                </span>
-              </li>
-            );
-          })}
-        </ol>
-      </section>
-
-      <section className="mt-8 border-t border-mist/15 pt-6">
-        <h2 className="font-bold text-gold">{t("issueLabel")}</h2>
-        <p className="mt-2 whitespace-pre-line">{ticket.issue}</p>
-      </section>
-
-      {ticket.quote && (
-        <QuoteSection
-          ticket={ticket}
-          quote={ticket.quote}
-          token={token}
-          locale={locale}
-          labels={decisionLabels()}
-        />
-      )}
-
-      {ticket.payment && <PaySection payment={ticket.payment} locale={locale} />}
-
-      {ticket.photos.length > 0 && (
-        <section aria-labelledby="photos-heading" className="mt-10">
-          <h2 id="photos-heading" className="text-2xl font-extrabold">
-            {t("photosHeading")}
-          </h2>
-          <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {ticket.photos.map((photo, index) => (
-              <li key={photo.src}>
-                <a href={photo.srcLarge} target="_blank" rel="noreferrer" className="block">
-                  {/* Signed, private files: next/image can't fetch them. */}
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={photo.src}
-                    width={photo.width}
-                    height={photo.height}
-                    alt={t("photoAlt", {
-                      stage: t(`photoStage.${photo.stage}`),
-                      n: index + 1,
-                    })}
-                    className="aspect-[4/3] w-full rounded-sm object-cover"
-                  />
-                </a>
+                <p className="font-bold">{eventTitle(event)}</p>
+                <p className="text-sm text-grey-600">{formatDate(event.at, locale)}</p>
+                {event.note && <p className="mt-1 whitespace-pre-line">{event.note}</p>}
+                {event.etaDate && event.kind === "update" && (
+                  <p className="mt-1">{t("newEta", { date: day(event.etaDate, locale) ?? "" })}</p>
+                )}
               </li>
             ))}
-          </ul>
+          </ol>
         </section>
-      )}
 
-      <section aria-labelledby="history-heading" className="mt-10">
-        <h2 id="history-heading" className="text-2xl font-extrabold">
-          {t("historyHeading")}
-        </h2>
-        <ol className="mt-4 border-s border-mist/20">
-          {ticket.events.toReversed().map((event, index) => (
-            <li key={index} className="relative ps-5 pb-6 last:pb-0">
-              <span
-                aria-hidden="true"
-                className="absolute -start-[5px] top-2 size-2.5 rounded-full bg-gold"
-              />
-              <p className="font-semibold">{eventTitle(event)}</p>
-              <p className="text-sm text-ink-subtle">{formatDate(event.at, locale)}</p>
-              {event.note && <p className="mt-1 whitespace-pre-line">{event.note}</p>}
-              {event.etaDate && event.kind === "update" && (
-                <p className="mt-1">{t("newEta", { date: day(event.etaDate, locale) ?? "" })}</p>
-              )}
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <p className="mt-12">
-        <a
-          href={helpUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex min-h-11 items-center gap-2 font-semibold text-gold underline underline-offset-4"
-        >
-          <WhatsAppIcon className="size-5" />
-          {t("help")}
-        </a>
-      </p>
-    </div>
+        <p className="mt-16 border-t border-black pt-6">
+          <a
+            href={helpUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-11 items-center gap-2 font-bold underline decoration-blue decoration-2 underline-offset-[6px] hover:decoration-black"
+          >
+            <WhatsAppIcon className="size-5" />
+            {t("help")}
+          </a>
+        </p>
+      </div>
+    </Container>
   );
 
   function eventTitle(event: PublicRepairEvent): string {
@@ -273,15 +291,19 @@ async function QuoteSection({
   const needsTerms = pending && !ticket.termsAccepted;
 
   return (
-    <section aria-labelledby="quote-heading" className={`mt-8 ${formCard}`}>
+    <section aria-labelledby="quote-heading" className="mt-16">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 id="quote-heading" className="text-2xl font-extrabold">
+        <h2 id="quote-heading" className={sectionHeading}>
           {t("quoteHeading")}
         </h2>
-        <p className="text-sm text-ink-muted">{t("quoteVersion", { version: quote.version })}</p>
+        <Label as="p" className="text-grey-600">
+          {t("quoteVersion", { version: quote.version })}
+        </Label>
       </div>
-      {pending && <p className="mt-1 font-semibold text-fiesta-deep">{t("waiting")}</p>}
-      <table className="mt-4 w-full">
+      {pending && (
+        <p className="mt-3 inline-block bg-blue px-2 py-1 font-bold text-white">{t("waiting")}</p>
+      )}
+      <table className="mt-6 w-full border-t border-black">
         <thead className="sr-only">
           <tr>
             <th scope="col">{t("item")}</th>
@@ -290,11 +312,11 @@ async function QuoteSection({
         </thead>
         <tbody>
           {quote.items.map((item, index) => (
-            <tr key={index} className="border-b border-ink/15">
-              <td className="py-2 pe-4">
+            <tr key={index} className="border-b border-grey-300">
+              <td className="py-3 pe-4">
                 <Bdi>{item.label}</Bdi>
               </td>
-              <td className="py-2 text-end whitespace-nowrap tabular-nums">
+              <td className="py-3 text-end whitespace-nowrap tabular-nums">
                 {money(item.amountFils)}
               </td>
             </tr>
@@ -302,10 +324,10 @@ async function QuoteSection({
         </tbody>
         <tfoot>
           <tr>
-            <th scope="row" className="pt-3 text-start text-lg">
+            <th scope="row" className="pt-4 text-start text-lg">
               {t("total")}
             </th>
-            <td className="pt-3 text-end text-lg font-extrabold whitespace-nowrap tabular-nums">
+            <td className="pt-4 text-end text-2xl font-black whitespace-nowrap font-stretch-semi-expanded tabular-nums">
               {money(quote.totalFils)}
             </td>
           </tr>
@@ -314,7 +336,7 @@ async function QuoteSection({
       {quote.notes && <p className="mt-4 whitespace-pre-line">{quote.notes}</p>}
 
       {quote.decidedAt && (
-        <p className="mt-4 font-semibold">
+        <p className="mt-6 font-bold">
           {t(quote.status === "approved" ? "approved" : "declined", {
             date: formatDate(quote.decidedAt, locale),
           })}
@@ -322,11 +344,11 @@ async function QuoteSection({
       )}
 
       {pending && (
-        <div className="mt-6 flex flex-col gap-5 border-t border-ink/15 pt-5">
+        <div className="mt-8 flex flex-col gap-6 bg-grey-100 p-6 md:p-8">
           {needsTerms && (
             <div>
               <h3 className="font-bold">{t("termsHeading")}</h3>
-              <ul className="mt-2 list-disc space-y-1 ps-5 text-ink-muted">
+              <ul className="mt-3 list-disc space-y-1 ps-5 text-grey-600 marker:text-black">
                 {termKeys.map((key) => (
                   <li key={key}>{t(`terms.${key}`, policyNumbers)}</li>
                 ))}
@@ -334,7 +356,7 @@ async function QuoteSection({
               <Link
                 href="/policies/repair-terms"
                 target="_blank"
-                className="mt-2 inline-flex min-h-11 items-center underline underline-offset-4"
+                className="mt-2 inline-flex min-h-11 items-center font-bold underline decoration-blue underline-offset-4 hover:decoration-black"
               >
                 {t("fullTerms")}
               </Link>
@@ -364,8 +386,11 @@ async function PaySection({ payment, locale }: { payment: TicketBalance; locale:
   const settled = chargeFils !== null && dueFils === 0;
 
   return (
-    <section aria-labelledby="pay-heading" className="mt-8 rounded-sm bg-rosewood p-5 sm:p-6">
-      <h2 id="pay-heading" className="text-xl font-bold text-gold">
+    <section aria-labelledby="pay-heading" className="mt-12 bg-black p-6 text-white md:p-8">
+      <h2
+        id="pay-heading"
+        className="font-mono text-label font-medium tracking-[0.08em] text-grey-400 uppercase rtl:font-grotesk rtl:text-sm rtl:tracking-normal"
+      >
         {t("payHeading")}
       </h2>
       {paidFils <= 0 ? (
@@ -402,7 +427,7 @@ async function PaySection({ payment, locale }: { payment: TicketBalance; locale:
           )}
         </dl>
       )}
-      {!settled && <p className="mt-2 text-ink-subtle">{t("payNote")}</p>}
+      {!settled && <p className="mt-3 text-grey-400">{t("payNote")}</p>}
     </section>
   );
 }

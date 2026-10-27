@@ -1,92 +1,80 @@
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 
+import { PageHero } from "@/components/page-hero";
 import { PhotoCredits } from "@/components/photo-credits";
 import { Prose } from "@/components/prose";
-import { StockPhoto } from "@/components/stock-photo";
+import { Arrow, buttonClass } from "@/components/ui/button";
+import { Container, Grid, Section } from "@/components/ui/layout";
+import { Heading } from "@/components/ui/text";
 import { brand } from "@/config/brand";
+import { policyNumbers } from "@/config/policies";
 import { Link } from "@/i18n/navigation";
 import { pageMetadata } from "@/lib/seo";
 
-// Who the shop is and how it works: checked and honestly graded gear, repairs that
-// start only after a quote, and a home workshop, so visits are by appointment.
+// Who we are and how we work: three players, gear we'd use ourselves, tones built for the
+// music you play, care at our bench, and online first, with the workshop by appointment.
 
-const sections = ["shop", "repairs", "home"] as const;
-
-const buttonClass =
-  "inline-flex min-h-12 items-center rounded-sm bg-fiesta px-5 font-semibold text-white hover:bg-fiesta-deep";
+const sections = ["gear", "tones", "care", "online"] as const;
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
   const t = await getTranslations("About");
   return pageMetadata(locale, "/about", {
     title: t("title"),
-    description: t("description", { location: brand.location[locale] }),
+    description: t("description", { brand: brand.name[locale], location: brand.location[locale] }),
   });
 }
 
 export default async function AboutPage() {
   const locale = await getLocale();
   const [t, tPhoto] = await Promise.all([getTranslations("About"), getTranslations("Photos")]);
-  const values = { brand: brand.name[locale], location: brand.location[locale] };
+  const values = { brand: brand.name[locale], location: brand.location[locale], ...policyNumbers };
 
   return (
     <>
-      <section aria-labelledby="about-title" className="md:grid md:grid-cols-2">
-        <div className="relative aspect-[3/2] md:order-last md:aspect-auto md:min-h-[28rem]">
-          <StockPhoto
-            photo="guitars"
-            alt={tPhoto("guitars")}
-            sizes="(min-width: 768px) 50vw, 100vw"
-            eager
-          />
-        </div>
-        <div className="px-4 py-10 sm:px-6 md:self-center md:px-12 md:py-16 lg:px-16">
-          <div className="max-w-[32rem]">
-            <h1
-              id="about-title"
-              className="text-4xl leading-tight font-extrabold tracking-tight text-balance sm:text-5xl rtl:leading-[1.3] rtl:tracking-normal"
-            >
-              {t("title")}
-            </h1>
-            <p className="mt-4 text-lg text-ink-subtle">{t("intro", values)}</p>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        title={t("heading")}
+        lead={t("intro", values)}
+        photo="jam"
+        photoAlt={tPhoto("jam")}
+      />
 
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+      <Section className="pt-0 md:pt-0">
         {sections.map((key) => (
-          <section
-            key={key}
-            aria-labelledby={`${key}-heading`}
-            className="grid gap-4 border-t border-mist/15 py-12 first:border-t-0 md:grid-cols-[1fr_2fr] md:gap-12 md:py-16"
-          >
-            <h2
-              id={`${key}-heading`}
-              className="text-2xl leading-tight font-extrabold text-balance text-gold sm:text-3xl rtl:leading-[1.3]"
-            >
-              {t(`sections.${key}.heading`)}
-            </h2>
-            <Prose text={t(`sections.${key}.body`, values)} className="text-lg" />
+          <section key={key} aria-labelledby={`${key}-heading`} className="border-t border-black">
+            <Grid className="gap-y-6 py-12 md:py-16">
+              <Heading
+                level="title"
+                as="h2"
+                id={`${key}-heading`}
+                className="col-span-4 md:col-span-4"
+              >
+                {t(`sections.${key}.heading`)}
+              </Heading>
+              <Prose
+                text={t(`sections.${key}.body`, values)}
+                className="col-span-4 text-lg md:col-span-7 md:col-start-6"
+              />
+            </Grid>
           </section>
         ))}
 
-        <div className="flex flex-wrap gap-4 border-t border-mist/15 py-12">
-          <Link href="/shop" className={buttonClass}>
+        <div className="flex flex-col gap-3 border-t border-black pt-12 sm:flex-row">
+          <Link href="/shop" className={buttonClass("primary")}>
             {t("shopCta")}
+            <Arrow />
           </Link>
-          <Link
-            href="/contact"
-            className="inline-flex min-h-12 items-center rounded-sm border border-mist/40 px-5 font-semibold hover:border-gold hover:text-gold"
-          >
+          <Link href="/contact" className={buttonClass("secondary")}>
             {t("contactCta")}
+            <Arrow />
           </Link>
         </div>
+      </Section>
 
-        <div className="py-6">
-          <PhotoCredits photos={["guitars"]} />
-        </div>
-      </div>
+      <Container className="py-6">
+        <PhotoCredits photos={["jam"]} tone="light" />
+      </Container>
     </>
   );
 }

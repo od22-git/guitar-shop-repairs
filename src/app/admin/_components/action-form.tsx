@@ -51,9 +51,7 @@ export function ActionForm({
         <p
           role="status"
           className={
-            state.ok === false
-              ? "basis-full font-medium text-fiesta-deep"
-              : "basis-full text-ink-muted"
+            state.ok === false ? "basis-full font-medium text-red" : "basis-full text-grey-600"
           }
         >
           {state.message}

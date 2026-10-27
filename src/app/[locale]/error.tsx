@@ -1,34 +1,30 @@
 "use client";
 
 import { useErrorText } from "@/components/error-text";
+import { buttonClass } from "@/components/ui/button";
+import { Container } from "@/components/ui/layout";
 import { Link } from "@/i18n/navigation";
 
 // The 500 page inside the site's layout, with strings from the layout (ErrorTextProvider).
+// A client component, so it styles the heading itself rather than using <Heading>.
 
 export default function ErrorPage({ retry }: { error: unknown; retry: () => void }) {
   const text = useErrorText();
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-      <h1 className="text-4xl font-extrabold tracking-tight text-balance rtl:tracking-normal">
+    <Container className="pt-10 pb-20 md:pt-16 md:pb-section">
+      <h1 className="text-headline font-black tracking-[-0.02em] text-balance font-stretch-semi-expanded rtl:leading-[1.3] rtl:tracking-normal">
         {text.title}
       </h1>
-      <p className="mt-4 max-w-[55ch] text-lg text-ink-subtle">{text.body}</p>
-      <div className="mt-8 flex flex-wrap items-center gap-6">
-        <button
-          type="button"
-          onClick={() => retry()}
-          className="inline-flex min-h-12 items-center rounded-sm bg-fiesta px-5 font-semibold text-white hover:bg-fiesta-deep"
-        >
+      <p className="mt-8 max-w-[48ch] text-lead text-pretty text-grey-600">{text.body}</p>
+      <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+        <button type="button" onClick={() => retry()} className={buttonClass("primary")}>
           {text.retry}
         </button>
-        <Link
-          href="/"
-          className="inline-flex min-h-11 items-center font-semibold underline decoration-gold decoration-2 underline-offset-4 hover:text-gold"
-        >
+        <Link href="/" className={buttonClass("secondary")}>
           {text.home}
         </Link>
       </div>
-    </div>
+    </Container>
   );
 }

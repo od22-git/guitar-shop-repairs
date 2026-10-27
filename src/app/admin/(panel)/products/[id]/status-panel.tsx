@@ -80,13 +80,13 @@ export function StatusPanel({ product, publishProblems }: Props) {
   return (
     <section
       aria-labelledby="status-heading"
-      className="flex flex-col gap-5 rounded-lg bg-paper p-4 sm:p-6"
+      className="flex flex-col gap-5 rounded-lg bg-white p-4 sm:p-6"
     >
       <div>
         <h2 id="status-heading" className="text-lg font-bold">
           Status and stock
         </h2>
-        <p className="text-ink-muted">
+        <p className="text-grey-600">
           {gear ? `${quantity} in stock.` : quantity > 0 ? "One instrument." : "Sold."}
         </p>
       </div>
@@ -128,7 +128,7 @@ export function StatusPanel({ product, publishProblems }: Props) {
           >
             {status === "reserved" ? "Make the order for the customer holding it" : "Make an order"}
           </Link>{" "}
-          <span className="text-ink-muted">to record payments and print a receipt.</span>
+          <span className="text-grey-600">to record payments and print a receipt.</span>
         </p>
       )}
 
@@ -227,10 +227,7 @@ export function StatusPanel({ product, publishProblems }: Props) {
           {button("Restore as draft", "Restoring…")}
         </ActionForm>
       )}
-      <p
-        role="status"
-        className={result.ok === false ? "font-medium text-fiesta-deep" : "font-medium"}
-      >
+      <p role="status" className={result.ok === false ? "font-medium text-red" : "font-medium"}>
         {result.message}
       </p>
     </section>

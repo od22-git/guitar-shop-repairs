@@ -53,12 +53,12 @@ export default async function ReceiptPage({ params }: PageProps<"/admin/orders/[
       <article
         lang={locale}
         dir={locale === "ar" ? "rtl" : "ltr"}
-        className="flex flex-col gap-6 rounded-lg bg-white p-6 text-ink print:p-0"
+        className="flex flex-col gap-6 rounded-lg bg-white p-6 text-black print:p-0"
       >
         <header className="flex flex-wrap justify-between gap-4">
           <div>
             <p className="text-xl font-bold">{brand.name[locale]}</p>
-            <p className="text-ink-muted">{brand.location[locale]}</p>
+            <p className="text-grey-600">{brand.location[locale]}</p>
             {vat && order.trn && <p>{t.rich("trn", { trn: order.trn, ltr })}</p>}
           </div>
           <div className="text-end">
@@ -69,7 +69,7 @@ export default async function ReceiptPage({ params }: PageProps<"/admin/orders/[
         </header>
 
         <section>
-          <h2 className="text-sm font-bold text-ink-muted">{t("customer")}</h2>
+          <h2 className="text-sm font-bold text-grey-600">{t("customer")}</h2>
           <p>
             <Bdi>{customer.name}</Bdi>
           </p>
@@ -80,7 +80,7 @@ export default async function ReceiptPage({ params }: PageProps<"/admin/orders/[
 
         <table className="w-full">
           <thead>
-            <tr className="border-b-2 border-ink text-start">
+            <tr className="border-b-2 border-black text-start">
               <th scope="col" className="py-2 pe-3 text-start">
                 {t("item")}
               </th>
@@ -92,12 +92,12 @@ export default async function ReceiptPage({ params }: PageProps<"/admin/orders/[
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-mist">
+          <tbody className="divide-y divide-grey-300">
             {items.map((item) => (
               <tr key={item.id}>
                 <td className="py-2 pe-3">
                   <Bdi>{item.titleSnapshot}</Bdi>{" "}
-                  <Ltr className="text-sm text-ink-muted">{item.skuSnapshot}</Ltr>
+                  <Ltr className="text-sm text-grey-600">{item.skuSnapshot}</Ltr>
                 </td>
                 <td className="py-2 pe-3 text-end tabular-nums">{item.quantity}</td>
                 <td className="py-2 text-end tabular-nums">
@@ -115,7 +115,7 @@ export default async function ReceiptPage({ params }: PageProps<"/admin/orders/[
             )}
           </tbody>
           <tfoot>
-            <tr className="border-t-2 border-ink text-lg font-bold">
+            <tr className="border-t-2 border-black text-lg font-bold">
               <th scope="row" colSpan={2} className="py-2 pe-3 text-start">
                 {t("total")}
               </th>
@@ -131,7 +131,7 @@ export default async function ReceiptPage({ params }: PageProps<"/admin/orders/[
             )}
           </tfoot>
         </table>
-        {!vat && <p className="text-sm text-ink-muted">{t("notVatRegistered")}</p>}
+        {!vat && <p className="text-sm text-grey-600">{t("notVatRegistered")}</p>}
 
         {bundle.payments.length > 0 && (
           <section>
@@ -155,7 +155,7 @@ export default async function ReceiptPage({ params }: PageProps<"/admin/orders/[
             </ul>
           </section>
         )}
-        <dl className="flex flex-col gap-1 border-t border-mist pt-3">
+        <dl className="flex flex-col gap-1 border-t border-grey-300 pt-3">
           <div className="flex justify-between gap-4">
             <dt>{t("paid")}</dt>
             <dd className="tabular-nums">{money(balance.paidFils)}</dd>

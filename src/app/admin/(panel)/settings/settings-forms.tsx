@@ -5,7 +5,7 @@ import { describedBy, Field, inputClass, primaryButton } from "../../_components
 
 import { saveVatAction, saveWhatsAppAction, saveZoneAction } from "./actions";
 
-const checkboxClass = "size-6 shrink-0 accent-fiesta";
+const checkboxClass = "size-6 shrink-0 accent-black";
 
 export function WhatsAppForm({ value }: { value: string }) {
   return (
@@ -84,13 +84,13 @@ export function ZoneForm({
   return (
     <ActionForm
       action={saveZoneAction.bind(null, zone.id)}
-      className="flex flex-wrap items-end gap-3 border-b border-mist pb-4"
+      className="flex flex-wrap items-end gap-3 border-b border-grey-300 pb-4"
     >
       {(pending, state) => (
         <>
           <div className="min-w-48 flex-1">
             <p className="font-medium">{zone.name}</p>
-            <p className="text-sm text-ink-muted">{zone.emirates}</p>
+            <p className="text-sm text-grey-600">{zone.emirates}</p>
           </div>
           <Field label={`${zone.name} fee (AED)`} name={fee} error={state.errors?.fee}>
             <input

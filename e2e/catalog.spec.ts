@@ -52,6 +52,9 @@ const journeys = {
 for (const [locale, j] of Object.entries(journeys)) {
   test(`browse, filter, open a product and order on WhatsApp (${locale})`, async ({ page }) => {
     await page.goto(`/${locale}`);
+    // Phones fold the header links behind the Menu button.
+    const menu = page.getByRole("button", { name: /^(Menu|القائمة)$/ });
+    if (await menu.isVisible()) await menu.click();
     await page
       .getByRole("navigation", { name: /Main|القائمة/ })
       .getByRole("link", { name: j.shop })

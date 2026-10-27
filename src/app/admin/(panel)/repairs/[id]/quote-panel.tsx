@@ -53,7 +53,7 @@ export function QuotePanel({
   return (
     <section
       aria-labelledby="quote-heading"
-      className="flex flex-col gap-5 rounded-lg bg-paper p-4 sm:p-6"
+      className="flex flex-col gap-5 rounded-lg bg-white p-4 sm:p-6"
     >
       <h2 id="quote-heading" className="text-lg font-bold">
         Quote
@@ -68,7 +68,7 @@ export function QuotePanel({
             <caption className="sr-only">Quote version {current.version}</caption>
             <tbody>
               {current.items.map((item, index) => (
-                <tr key={index} className="border-b border-mist">
+                <tr key={index} className="border-b border-grey-300">
                   <td className="py-1">{item.label}</td>
                   <td className="py-1 text-end tabular-nums">{item.amount}</td>
                 </tr>
@@ -84,17 +84,17 @@ export function QuotePanel({
             </tfoot>
           </table>
           {current.notes && <p className="whitespace-pre-line">{current.notes}</p>}
-          {current.decided && <p className="text-ink-muted">{current.decided}</p>}
+          {current.decided && <p className="text-grey-600">{current.decided}</p>}
           {current.status === "declined" && diagnosisFee && <p>Diagnosis fee: {diagnosisFee}</p>}
         </div>
       ) : (
-        <p className="text-ink-muted">No quote yet.</p>
+        <p className="text-grey-600">No quote yet.</p>
       )}
 
       {current?.status === "declined" && (
         <ActionForm
           action={setDiagnosisFeeAction.bind(null, ticketId)}
-          className="flex flex-wrap items-end gap-3 border-t border-mist pt-4"
+          className="flex flex-wrap items-end gap-3 border-t border-grey-300 pt-4"
         >
           {(pending, state) => (
             <>
@@ -120,9 +120,9 @@ export function QuotePanel({
       )}
 
       {current?.status === "pending" && (
-        <div className="flex flex-col gap-4 border-t border-mist pt-4">
+        <div className="flex flex-col gap-4 border-t border-grey-300 pt-4">
           <h3 className="font-bold">Record the customer’s answer</h3>
-          <p className="text-ink-muted">
+          <p className="text-grey-600">
             When they reply on WhatsApp or tell you in person. (They can also approve on the
             tracking link.)
           </p>
@@ -212,7 +212,7 @@ export function QuotePanel({
                 <p className="font-medium">
                   Version {quote.version}: {quote.total}
                 </p>
-                <p className="text-sm text-ink-muted">{quote.items.join(" · ")}</p>
+                <p className="text-sm text-grey-600">{quote.items.join(" · ")}</p>
               </li>
             ))}
           </ul>
@@ -243,7 +243,7 @@ function QuoteBuilder({
     <ActionForm
       action={createQuoteAction.bind(null, ticketId)}
       announce={(state) => state.ok && onDone()}
-      className="flex flex-col gap-4 border-t border-mist pt-4"
+      className="flex flex-col gap-4 border-t border-grey-300 pt-4"
     >
       {(pending, state) => {
         const e = state.errors ?? {};
@@ -251,7 +251,7 @@ function QuoteBuilder({
           <>
             <h3 className="font-bold">Quote version {next}</h3>
             {next > 1 && (
-              <p className="text-ink-muted">
+              <p className="text-grey-600">
                 It replaces version {next - 1}, and the customer needs to approve it again.
               </p>
             )}
@@ -296,7 +296,7 @@ function QuoteBuilder({
                 </li>
               ))}
             </ol>
-            {e.items && <p className="font-medium text-fiesta-deep">{e.items}</p>}
+            {e.items && <p className="font-medium text-red">{e.items}</p>}
             {rows.length < 20 && (
               <button
                 type="button"
@@ -325,7 +325,7 @@ function QuoteBuilder({
               <input
                 type="checkbox"
                 name="approvedInPerson"
-                className="size-6 shrink-0 accent-fiesta"
+                className="size-6 shrink-0 accent-black"
               />
               The customer approved it in person just now
             </label>

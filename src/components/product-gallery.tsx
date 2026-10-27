@@ -18,27 +18,20 @@ type Props = {
   };
 };
 
-const sizes = "(min-width: 1152px) 640px, (min-width: 768px) 56vw, 100vw";
+const sizes = "(min-width: 1600px) 880px, (min-width: 768px) 56vw, 100vw";
 
 function Chevron() {
   // Points to the inline end; flipped in Arabic, where "next" is to the left. Only the
   // control is mirrored, never the photos.
   return (
     <svg viewBox="0 0 20 20" aria-hidden="true" className="size-5 rtl:-scale-x-100">
-      <path
-        d="M7.5 4.5 13 10l-5.5 5.5"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <path d="M7.5 4.5 13 10l-5.5 5.5" fill="none" stroke="currentColor" strokeWidth="2" />
     </svg>
   );
 }
 
 const arrowClass =
-  "absolute top-1/2 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-ink/85 text-mist ring-1 ring-mist/40 hover:bg-ink disabled:invisible";
+  "absolute top-1/2 inline-flex size-12 -translate-y-1/2 items-center justify-center border-2 border-black bg-white text-black hover:bg-black hover:text-white disabled:invisible";
 
 /**
  * Product photos as a scroll-snap strip: swipe on touch screens, arrow keys once the strip
@@ -88,13 +81,13 @@ export function ProductGallery({ images, labels }: Props) {
           ref={strip}
           tabIndex={many ? 0 : undefined}
           aria-label={labels.gallery}
-          className="flex snap-x snap-mandatory [scrollbar-width:none] overflow-x-auto overscroll-x-contain rounded-sm bg-rosewood [&::-webkit-scrollbar]:hidden"
+          className="flex snap-x snap-mandatory [scrollbar-width:none] overflow-x-auto overscroll-x-contain bg-grey-100 [&::-webkit-scrollbar]:hidden"
         >
           {images.map((image, i) => (
             <li
               key={image.src}
               aria-label={many ? labels.positions[i] : undefined}
-              className="relative aspect-[4/5] w-full shrink-0 snap-start"
+              className="relative aspect-[4/5] w-full shrink-0 snap-start md:aspect-square"
             >
               <FillPhoto src={image.src} alt={image.alt} sizes={sizes} eager={i === 0} />
             </li>
@@ -129,7 +122,7 @@ export function ProductGallery({ images, labels }: Props) {
         )}
       </div>
       {many && (
-        <ul className="mt-3 flex gap-2">
+        <ul className="mt-3 grid grid-cols-5 gap-2 md:gap-3">
           {images.map((image, i) => (
             <li key={image.src}>
               <button
@@ -137,9 +130,9 @@ export function ProductGallery({ images, labels }: Props) {
                 onClick={() => show(i)}
                 aria-label={labels.show[i]}
                 aria-current={i === current ? "true" : undefined}
-                className="relative block aspect-[4/5] w-16 overflow-hidden rounded-sm opacity-70 ring-gold hover:opacity-100 aria-[current=true]:opacity-100 aria-[current=true]:ring-2"
+                className="relative block aspect-[4/5] w-full overflow-hidden bg-grey-100 after:absolute after:inset-0 after:inset-ring-black hover:after:inset-ring-1 aria-[current=true]:after:inset-ring-2 md:aspect-square"
               >
-                <FillPhoto src={image.src} alt="" sizes="64px" />
+                <FillPhoto src={image.src} alt="" sizes="(min-width: 768px) 11vw, 20vw" />
               </button>
             </li>
           ))}

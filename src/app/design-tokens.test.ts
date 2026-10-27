@@ -9,7 +9,7 @@ const LARGE_OR_UI = 3;
 
 type Pair = [foreground: string, background: string, minimum: number, use: string];
 
-// M9a, Midtown Gears: black on white, greys, blue for highlights, red for errors.
+// Midtown Gears (M9a): black on white, greys, blue for highlights, red for errors.
 const pairs: Pair[] = [
   ["black", "white", TEXT, "body text and headings"],
   ["black", "grey-100", TEXT, "text on raised surfaces"],
@@ -27,29 +27,6 @@ const pairs: Pair[] = [
   ["black", "white", LARGE_OR_UI, "input and button edges"],
   ["grey-600", "white", LARGE_OR_UI, "unselected option card edge"],
   ["red", "white", LARGE_OR_UI, "edge of a field with an error"],
-];
-
-// M1–M8: the dark look the pages still use until M9b, which deletes these with the tokens.
-const legacyPairs: Pair[] = [
-  ["mist", "ink", TEXT, "body text"],
-  ["ink-subtle", "ink", TEXT, "secondary text"],
-  ["gold", "ink", TEXT, "headings, link underlines, focus ring"],
-  ["mist", "rosewood", TEXT, "text on rosewood"],
-  ["ink-subtle", "rosewood", TEXT, "secondary text on rosewood"],
-  ["gold", "rosewood", TEXT, "headings and focus ring on rosewood"],
-  ["white", "fiesta", TEXT, "primary button"],
-  ["white", "fiesta-deep", TEXT, "primary button, hover"],
-  ["fiesta", "ink", LARGE_OR_UI, "primary button edge on the page"],
-  ["white", "sherwood", TEXT, "WhatsApp button"],
-  ["mist", "rosewood", LARGE_OR_UI, "WhatsApp button ring over rosewood"],
-  ["ink", "mist", TEXT, "skip link"],
-  ["ink", "paper", TEXT, "text on light cards"],
-  ["ink-muted", "mist", TEXT, "secondary text on mist"],
-  ["ink-muted", "paper", TEXT, "secondary text on light cards"],
-  ["fiesta-deep", "mist", TEXT, "small red text on mist"],
-  ["fiesta-deep", "paper", TEXT, "small red text on light cards"],
-  ["ink", "white", TEXT, "admin form inputs"],
-  ["ink-muted", "white", LARGE_OR_UI, "admin input borders"],
 ];
 
 const css = readFileSync(new URL("./globals.css", import.meta.url), "utf8");
@@ -80,10 +57,6 @@ describe("colour tokens meet WCAG AA", () => {
   });
 
   it.each(pairs)("%s on %s ≥ %s:1 (%s)", (foreground, background, minimum) => {
-    expect(contrast(token(foreground), token(background))).toBeGreaterThanOrEqual(minimum);
-  });
-
-  it.each(legacyPairs)("M1 tokens: %s on %s ≥ %s:1 (%s)", (foreground, background, minimum) => {
     expect(contrast(token(foreground), token(background))).toBeGreaterThanOrEqual(minimum);
   });
 

@@ -80,7 +80,7 @@ export function ProductForm({ action, options, values, creating, slugLocked }: P
 
         return (
           <>
-            <fieldset className="flex flex-col gap-4 rounded-lg bg-paper p-4 sm:p-6">
+            <fieldset className="flex flex-col gap-4 rounded-lg bg-white p-4 sm:p-6">
               <legend className="float-start mb-2 text-lg font-bold">What it is</legend>
               <div className="flex gap-6">
                 {(["guitar", "gear"] as const).map((kind) => (
@@ -90,7 +90,7 @@ export function ProductForm({ action, options, values, creating, slugLocked }: P
                       name="kind"
                       value={kind}
                       defaultChecked={(values.kind ?? "guitar") === kind}
-                      className="size-5 accent-fiesta"
+                      className="size-5 accent-black"
                     />
                     {kind === "guitar" ? "A guitar" : "Gear (pedals, amps, parts)"}
                   </label>
@@ -115,7 +115,7 @@ export function ProductForm({ action, options, values, creating, slugLocked }: P
               {select("condition", "Condition", options.conditions, "Not graded (new gear)")}
             </fieldset>
 
-            <fieldset className="flex flex-col gap-4 rounded-lg bg-paper p-4 sm:p-6">
+            <fieldset className="flex flex-col gap-4 rounded-lg bg-white p-4 sm:p-6">
               <legend className="float-start mb-2 text-lg font-bold">Price and stock</legend>
               <div className="grid gap-4 sm:grid-cols-3">
                 {money("priceFils", "Price", "The final price.")}
@@ -130,7 +130,7 @@ export function ProductForm({ action, options, values, creating, slugLocked }: P
                 text("quantity", "How many in stock", { hint: "A guitar is always one." })}
             </fieldset>
 
-            <fieldset className="flex flex-col gap-4 rounded-lg bg-paper p-4 sm:p-6">
+            <fieldset className="flex flex-col gap-4 rounded-lg bg-white p-4 sm:p-6">
               <legend className="float-start mb-2 text-lg font-bold">Link and SKU</legend>
               <Field
                 label="Link (slug)"
@@ -147,7 +147,7 @@ export function ProductForm({ action, options, values, creating, slugLocked }: P
                   defaultValue={values.slug}
                   readOnly={slugLocked}
                   dir="ltr"
-                  className={`${inputClass} read-only:bg-mist`}
+                  className={`${inputClass} read-only:bg-grey-100`}
                 />
               </Field>
               <Field
@@ -165,7 +165,7 @@ export function ProductForm({ action, options, values, creating, slugLocked }: P
               </Field>
             </fieldset>
 
-            <fieldset className="flex flex-col gap-4 rounded-lg bg-paper p-4 sm:p-6">
+            <fieldset className="flex flex-col gap-4 rounded-lg bg-white p-4 sm:p-6">
               <legend className="float-start mb-2 text-lg font-bold">Description</legend>
               {area("descriptionEn", "Description in English")}
               {area("descriptionAr", "Description in Arabic", true)}
@@ -173,9 +173,9 @@ export function ProductForm({ action, options, values, creating, slugLocked }: P
               {area("techNotesAr", "Tech notes in Arabic", true)}
             </fieldset>
 
-            <fieldset className="flex flex-col gap-4 rounded-lg bg-paper p-4 sm:p-6">
+            <fieldset className="flex flex-col gap-4 rounded-lg bg-white p-4 sm:p-6">
               <legend className="float-start mb-2 text-lg font-bold">Specs</legend>
-              <p className="text-ink-muted">
+              <p className="text-grey-600">
                 Fill in what applies. Values are shown as you type them.
               </p>
               <div className="grid gap-4 sm:grid-cols-2">
@@ -195,7 +195,7 @@ export function ProductForm({ action, options, values, creating, slugLocked }: P
               {area("spec.mods", "Modifications")}
             </fieldset>
 
-            <div className="sticky bottom-0 -mx-4 flex items-center gap-4 bg-mist/95 px-4 py-3">
+            <div className="sticky bottom-0 -mx-4 flex items-center gap-4 bg-grey-100/95 px-4 py-3">
               <button type="submit" disabled={pending} className={primaryButton}>
                 {pending ? "Saving…" : creating ? "Create draft" : "Save changes"}
               </button>

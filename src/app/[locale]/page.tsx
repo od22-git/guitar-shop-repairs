@@ -1,32 +1,41 @@
+import type { ReactNode } from "react";
+
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 
+import { Bdi } from "@/components/bdi";
 import { PhotoCredits } from "@/components/photo-credits";
 import { StockPhoto } from "@/components/stock-photo";
-import { WhatsAppIcon } from "@/components/whatsapp-icon";
+import { Badge } from "@/components/ui/badge";
+import { Arrow, buttonClass } from "@/components/ui/button";
+import { Container, Grid, PriceList, PriceRow, RuledColumn, Section } from "@/components/ui/layout";
+import { Price } from "@/components/ui/price";
+import { Eyebrow, Heading, Highlight, Label, Lead, withHighlight } from "@/components/ui/text";
 import { brand } from "@/config/brand";
+import { extraToneFils, nanocoreVariants } from "@/config/nanocore";
+import { policyNumbers } from "@/config/policies";
+import { repairServices } from "@/config/repair-services";
 import { Link } from "@/i18n/navigation";
+import { formatMoney } from "@/lib/money";
 import { pageAlternates } from "@/lib/seo";
 import { shopWhatsAppUrl } from "@/lib/whatsapp/shop-link";
 
-// The home page shows what the shop sells and repairs; repairs lead to /repairs, where
-// the booking form is.
+// The home page, as in the approved mockup (docs/design/m9a/mockups/): the tagline, what
+// we do (gear, tones, care), the NANOCORE, why buy here rather than from Amazon, the care
+// prices, and who it's for.
 
-// Each home category, with its shop category (slugs from src/lib/db/seed.ts).
-const categories = {
-  guitars: "electric-guitars",
-  pedals: "pedals",
-  amps: "amps",
-  parts: "parts-accessories",
-} as const;
-const categoryKeys = Object.keys(categories) as (keyof typeof categories)[];
-const services = ["setup", "frets", "electronics", "hardware"] as const;
-const photosOnPage = ["hero", ...categoryKeys, "bench", "strings"] as const;
+const index = [
+  { key: "gear", href: "/shop" },
+  { key: "tones", href: "/faq#tones" },
+  { key: "care", href: "/repairs" },
+] as const;
+const reasons = ["warranty", "tested", "tones", "people"] as const;
+// The services the home page lists, cheapest first; /repairs has them all.
+const careServices = ["strings", "electronics", "setup", "frets"] as const;
+const photosOnPage = ["bend", "workbench", "player"] as const;
 
-const buttonClass =
-  "inline-flex min-h-12 items-center gap-2.5 rounded-sm bg-fiesta px-5 font-semibold text-white hover:bg-fiesta-deep";
-const sectionHeadingClass =
-  "text-3xl leading-tight font-extrabold text-balance sm:text-4xl rtl:leading-[1.3]";
+const textLink =
+  "inline-flex min-h-11 items-center font-bold underline decoration-blue decoration-2 underline-offset-[6px] hover:decoration-black";
 
 export async function generateMetadata(): Promise<Metadata> {
   return { alternates: pageAlternates(await getLocale(), "/") };
@@ -34,132 +43,201 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function HomePage() {
   const locale = await getLocale();
-  const [t, tPhoto, tWhatsApp, whatsappUrl] = await Promise.all([
+  const [t, tRepairs, tPhoto, nanocoreUrl] = await Promise.all([
     getTranslations("Home"),
+    getTranslations("Repairs"),
     getTranslations("Photos"),
-    getTranslations("WhatsApp"),
-    shopWhatsAppUrl(locale),
+    shopWhatsAppUrl(locale, "nanocore"),
   ]);
+  const hl = (chunks: ReactNode) => <Highlight>{chunks}</Highlight>;
+  const services = careServices.map((key) => repairServices.find((s) => s.key === key)!);
 
   return (
     <>
-      {/* The guitar runs off the inline-end edge on wide screens and leads on phones. */}
-      <section className="relative overflow-hidden">
-        <div className="relative aspect-[4/5] max-h-[72svh] w-full md:absolute md:inset-y-0 md:end-0 md:aspect-auto md:max-h-none md:w-[58%]">
-          <StockPhoto
-            photo="hero"
-            alt={tPhoto("hero")}
-            sizes="(min-width: 768px) 58vw, 100vw"
-            eager
-          />
-          {/* Blend the photo's black into the page so no edge shows: below it on phones,
-              on its inner side and under the header on wide screens. */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-linear-to-t from-ink to-transparent to-25% md:to-30% md:ltr:bg-linear-to-r md:rtl:bg-linear-to-l"
-          />
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 hidden bg-linear-to-b from-ink to-transparent to-15% md:block"
-          />
-        </div>
-        <div className="relative mx-auto -mt-10 max-w-6xl px-4 pb-16 sm:px-6 md:mt-0 md:flex md:min-h-[min(84svh,50rem)] md:items-center md:py-20">
-          <div className="md:max-w-[29rem] lg:max-w-[33rem]">
-            <h1 className="text-5xl leading-[1.02] font-extrabold tracking-tight text-balance sm:text-6xl lg:text-7xl rtl:text-4xl rtl:leading-[1.3] rtl:tracking-normal sm:rtl:text-5xl lg:rtl:text-6xl">
-              {brand.tagline[locale]}
-            </h1>
-            <p className="mt-6 max-w-[55ch] text-lg text-ink-subtle">
-              {t("intro", { location: brand.location[locale] })}
-            </p>
+      <Section className="pt-10 md:pt-16">
+        <Heading level="display" as="h1">
+          {withHighlight(brand.tagline[locale], brand.taglineHighlight[locale])}
+        </Heading>
+        <Grid className="mt-10 gap-y-8 md:mt-16">
+          <div className="relative col-span-4 aspect-[3/2] md:order-last md:col-span-7 md:col-start-6">
+            <StockPhoto
+              photo="bend"
+              alt={tPhoto("bend")}
+              sizes="(min-width: 1600px) 880px, (min-width: 768px) 56vw, 100vw"
+              className="grayscale"
+              eager
+            />
+          </div>
+          <div className="col-span-4 flex flex-col justify-end md:col-span-4">
+            <Lead>{t("intro", { location: brand.location[locale] })}</Lead>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <Link href="/shop" className={`${buttonClass("primary", { block: true })} sm:w-auto`}>
+                {t("shopCta")}
+                <Arrow />
+              </Link>
+              <Link
+                href="/repairs"
+                className={`${buttonClass("secondary", { block: true })} sm:w-auto`}
+              >
+                {t("careCta")}
+                <Arrow />
+              </Link>
+            </div>
+          </div>
+        </Grid>
+        <Grid className="mt-16 gap-y-12 md:mt-24">
+          {index.map(({ key, href }, i) => (
+            <RuledColumn key={key} className="col-span-4">
+              <Eyebrow number={`0${i + 1}`}>{t(`index.${key}.name`)}</Eyebrow>
+              <Heading level="title" as="h2" className="mt-6 md:mt-8">
+                {t(`index.${key}.title`)}
+              </Heading>
+              <p className="mt-3 max-w-[40ch] text-grey-600">{t(`index.${key}.body`)}</p>
+              <Link href={href} className={`mt-4 ${textLink}`}>
+                {t(`index.${key}.link`)}
+              </Link>
+            </RuledColumn>
+          ))}
+        </Grid>
+      </Section>
+
+      <Section aria-labelledby="nanocore-heading" className="pt-0 md:pt-0">
+        <Grid className="gap-y-10">
+          <div className="col-span-4 flex aspect-[4/3] items-center justify-center bg-grey-100 p-6 md:col-span-7 md:aspect-[7/5]">
+            <Label as="p" className="text-center text-grey-600">
+              {t("nanocore.photo")}
+            </Label>
+          </div>
+          <div className="col-span-4 self-center md:col-span-5">
+            <Label as="p" className="text-grey-600">
+              {t("nanocore.label")}
+            </Label>
+            <Heading level="headline" as="h2" id="nanocore-heading" className="mt-4">
+              <span translate="no">NANOCORE</span>
+            </Heading>
+            <p className="mt-4 max-w-[45ch] text-grey-600">{t("nanocore.body")}</p>
+            <PriceList className="mt-8">
+              {nanocoreVariants.map((variant) => (
+                <PriceRow
+                  key={variant.key}
+                  name={
+                    <>
+                      {t(`nanocore.variants.${variant.key}`)}
+                      {"pick" in variant && <Badge className="ms-2">{t("nanocore.pick")}</Badge>}
+                    </>
+                  }
+                  price={<Price fils={variant.fils} />}
+                />
+              ))}
+              <PriceRow
+                name={<span className="text-grey-600">{t("nanocore.extraTone")}</span>}
+                price={<Price fils={extraToneFils} prefix="+" />}
+              />
+            </PriceList>
+            <Label as="p" className="mt-4 text-grey-600">
+              {t("nanocore.note")}
+            </Label>
             <a
-              href={whatsappUrl}
+              href={nanocoreUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className={`mt-8 ${buttonClass}`}
+              className={`mt-8 ${buttonClass("primary")}`}
             >
-              <WhatsAppIcon className="size-5" />
-              {tWhatsApp("cta")}
+              {t("nanocore.cta")}
+              <Arrow />
             </a>
           </div>
-        </div>
-      </section>
+        </Grid>
+      </Section>
 
-      <section aria-labelledby="shop-heading" className="bg-rosewood">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24">
-          <h2 id="shop-heading" className={sectionHeadingClass}>
-            {t("shopHeading")}
-          </h2>
-          <p className="mt-3 max-w-[55ch] text-lg text-ink-subtle">{t("shopIntro")}</p>
-          {/* Every other photo hangs lower, like guitars on a shop wall. */}
-          <ul className="mt-10 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4 md:gap-x-6">
-            {categoryKeys.map((key, i) => (
-              <li key={key} className={i % 2 ? "mt-8 md:mt-14" : undefined}>
-                <Link href={`/shop/${categories[key]}`} className="group block">
-                  <div className="relative aspect-[3/4] overflow-hidden rounded-sm">
-                    <StockPhoto
-                      photo={key}
-                      alt={tPhoto(key)}
-                      sizes="(min-width: 1152px) 270px, (min-width: 768px) 23vw, 46vw"
-                    />
-                  </div>
-                  <h3 className="mt-4 text-lg leading-snug font-bold text-gold underline-offset-4 group-hover:underline">
-                    {t(`categories.${key}.name`)}
-                  </h3>
-                  <p className="mt-1 text-ink-subtle">{t(`categories.${key}.detail`)}</p>
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <Link href="/shop" className={`mt-12 ${buttonClass}`}>
-            {t("shopCta")}
-          </Link>
-        </div>
-      </section>
+      <Section aria-labelledby="why-heading" className="pt-0 md:pt-0">
+        <Heading level="headline" as="h2" id="why-heading" className="max-w-[18ch]">
+          {t.rich("why.heading", { hl, brand: brand.name[locale] })}
+        </Heading>
+        <Grid className="mt-12 gap-y-10 md:mt-16">
+          {reasons.map((key, i) => (
+            <RuledColumn key={key} className="col-span-4 sm:col-span-2 md:col-span-3">
+              <Label as="p" className="tabular-nums">{`0${i + 1}`}</Label>
+              <h3 className="mt-6 text-xl font-extrabold font-stretch-semi-expanded md:mt-8">
+                {t(`why.${key}.title`)}
+              </h3>
+              <p className="mt-2 max-w-[40ch] text-grey-600">
+                {t(`why.${key}.body`, policyNumbers)}
+              </p>
+            </RuledColumn>
+          ))}
+        </Grid>
+      </Section>
 
-      <section aria-labelledby="repairs-heading" className="md:grid md:grid-cols-2">
-        <div className="relative aspect-[3/2] md:aspect-auto md:min-h-[34rem]">
-          <StockPhoto photo="bench" alt={tPhoto("bench")} sizes="(min-width: 768px) 50vw, 100vw" />
-        </div>
-        <div className="px-4 py-14 sm:px-6 md:self-center md:px-12 md:py-20 lg:px-16">
-          <div className="max-w-[30rem]">
-            <h2 id="repairs-heading" className={sectionHeadingClass}>
-              {t("repairsHeading")}
-            </h2>
-            <p className="mt-3 text-lg text-ink-subtle">{t("repairsIntro")}</p>
-            <ul className="mt-6 border-t border-mist/15">
-              {services.map((key) => (
-                <li key={key} className="border-b border-mist/15 py-3">
-                  {t(`services.${key}`)}
-                </li>
+      <Section aria-labelledby="care-heading" className="pt-0 md:pt-0">
+        <Grid className="gap-y-10">
+          <div className="relative col-span-4 aspect-[4/3] md:col-span-5 md:aspect-[4/5]">
+            <StockPhoto
+              photo="workbench"
+              alt={tPhoto("workbench")}
+              sizes="(min-width: 1600px) 620px, (min-width: 768px) 40vw, 100vw"
+              className="grayscale"
+            />
+          </div>
+          <div className="col-span-4 self-center md:col-span-6 md:col-start-7">
+            <Label as="p" className="text-grey-600">
+              {t("care.label")}
+            </Label>
+            <Heading level="headline" as="h2" id="care-heading" className="mt-4">
+              {t("care.heading")}
+            </Heading>
+            <PriceList className="mt-10">
+              {services.map((service) => (
+                <PriceRow
+                  key={service.key}
+                  name={tRepairs(`services.${service.key}.name`)}
+                  price={
+                    <span className="font-extrabold whitespace-nowrap font-stretch-semi-expanded tabular-nums">
+                      {tRepairs.rich("from", {
+                        price: formatMoney(service.fromFils, locale),
+                        bdi: (chunks) => <Bdi>{chunks}</Bdi>,
+                      })}
+                    </span>
+                  }
+                />
               ))}
-            </ul>
-            <Link href="/repairs" className={`mt-8 ${buttonClass}`}>
-              {t("repairsCta")}
+            </PriceList>
+            <Label as="p" className="mt-4 text-grey-600">
+              {t("care.note")}
+            </Label>
+            <Link href="/repairs#book" className={`mt-8 ${buttonClass("secondary")}`}>
+              {t("careCta")}
+              <Arrow />
             </Link>
           </div>
-        </div>
-      </section>
+        </Grid>
+      </Section>
 
-      <section aria-labelledby="visit-heading" className="relative isolate">
-        <div className="absolute inset-0 -z-10">
-          <StockPhoto photo="strings" alt={tPhoto("strings")} sizes="100vw" />
+      <Section tone="dark" aria-labelledby="statement-heading">
+        <Label as="p" className="text-grey-400">
+          {t("statement.label")}
+        </Label>
+        <Heading
+          level="display"
+          as="h2"
+          id="statement-heading"
+          className="mt-6 max-w-[15ch] text-[clamp(2.5rem,6vw,5.75rem)]"
+        >
+          {t("statement.heading")}
+        </Heading>
+        <div className="relative mt-12 aspect-[4/3] md:mt-16 md:aspect-[21/9]">
+          <StockPhoto
+            photo="player"
+            alt={tPhoto("player")}
+            sizes="(min-width: 1600px) 1504px, 100vw"
+            className="grayscale"
+          />
         </div>
-        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 md:py-32">
-          <div className="max-w-[28rem] rounded-sm bg-ink p-6 sm:p-8">
-            <h2
-              id="visit-heading"
-              className="text-2xl leading-tight font-extrabold text-balance text-gold"
-            >
-              {t("visitHeading")}
-            </h2>
-            <p className="mt-3">{t("visitBody", { location: brand.location[locale] })}</p>
-          </div>
-        </div>
-      </section>
+      </Section>
 
-      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
-        <PhotoCredits photos={photosOnPage} />
-      </div>
+      <Container className="py-6">
+        <PhotoCredits photos={photosOnPage} tone="light" />
+      </Container>
     </>
   );
 }

@@ -69,7 +69,7 @@ export function PhotoUpload({ fields }: { fields: Record<string, string> }) {
         className="sr-only"
         onChange={(event) => event.target.files?.length && upload(event.target.files)}
       />
-      <p role="status" className="text-ink-muted">
+      <p role="status" className="text-grey-600">
         {status}
       </p>
     </div>

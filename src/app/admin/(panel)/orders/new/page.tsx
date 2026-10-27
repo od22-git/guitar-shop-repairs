@@ -47,7 +47,7 @@ export default async function NewOrderPage({ searchParams }: PageProps<"/admin/o
         </Link>
       </p>
       <h1 className="text-2xl font-bold">New order</h1>
-      <p className="text-ink-muted">
+      <p className="text-grey-600">
         For a sale agreed on WhatsApp or in person. Its items leave the shop as soon as it’s made;
         record deposits and payments on the next screen.
       </p>

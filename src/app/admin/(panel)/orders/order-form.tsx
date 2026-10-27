@@ -30,7 +30,7 @@ type Props = {
   start?: number;
 };
 
-const checkboxClass = "size-6 shrink-0 accent-fiesta";
+const checkboxClass = "size-6 shrink-0 accent-black";
 
 export function OrderForm({ action, products, emirates, start }: Props) {
   const [rows, setRows] = useState([{ key: 0, productId: start ? String(start) : "" }]);
@@ -59,7 +59,7 @@ export function OrderForm({ action, products, emirates, start }: Props) {
         const section = (id: string, title: string, children: React.ReactNode) => (
           <section
             aria-labelledby={id}
-            className="flex flex-col gap-4 rounded-lg bg-paper p-4 sm:p-6"
+            className="flex flex-col gap-4 rounded-lg bg-white p-4 sm:p-6"
           >
             <h2 id={id} className="text-lg font-bold">
               {title}
@@ -208,7 +208,7 @@ export function OrderForm({ action, products, emirates, start }: Props) {
                     );
                   })}
                 </ol>
-                {e.items && <p className="font-medium text-fiesta-deep">{e.items}</p>}
+                {e.items && <p className="font-medium text-red">{e.items}</p>}
                 {rows.length < 20 && (
                   <button
                     type="button"

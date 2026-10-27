@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { getLocale, getTranslations } from "next-intl/server";
 
+import { Container, Grid } from "@/components/ui/layout";
+import { Heading, Label, Lead } from "@/components/ui/text";
 import { brand } from "@/config/brand";
 import { policies, policyNumbers } from "@/config/policies";
 import { Link } from "@/i18n/navigation";
@@ -13,7 +16,30 @@ import { pageMetadata } from "@/lib/seo";
 // quote the numbers in src/config/policies.ts, so they match the policies.
 
 const linkClass =
-  "inline-flex min-h-11 items-center underline decoration-gold underline-offset-4 hover:text-gold";
+  "inline-flex min-h-11 items-center font-medium underline decoration-blue decoration-2 underline-offset-4 hover:decoration-black";
+
+/** A topic: its heading at the inline start on wide screens, the content beside it. */
+function Topic({ id, heading, children }: { id: string; heading: string; children: ReactNode }) {
+  return (
+    <section
+      id={id}
+      aria-labelledby={`${id}-heading`}
+      className="scroll-mt-6 border-t border-black py-12 md:py-16"
+    >
+      <Grid className="gap-y-6">
+        <Heading
+          level="title"
+          as="h2"
+          id={`${id}-heading`}
+          className="col-span-4 md:sticky md:top-6 md:col-span-4 md:self-start"
+        >
+          {heading}
+        </Heading>
+        <div className="col-span-4 md:col-span-7 md:col-start-6">{children}</div>
+      </Grid>
+    </section>
+  );
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
@@ -32,55 +58,49 @@ export default async function FaqPage() {
   const values = { location: brand.location[locale], ...policyNumbers };
 
   return (
-    <div className="mx-auto max-w-3xl px-4 pt-6 pb-20 sm:px-6 md:pt-10">
-      <h1 className="text-4xl leading-tight font-extrabold tracking-tight text-balance sm:text-5xl rtl:leading-[1.3] rtl:tracking-normal">
+    <Container className="pt-10 pb-20 md:pt-16 md:pb-section">
+      <Heading level="headline" as="h1">
         {t("title")}
-      </h1>
+      </Heading>
+      <Lead wide className="mt-6 mb-12 text-grey-600 md:mb-20">
+        {t("description")}
+      </Lead>
 
-      <section id="condition" aria-labelledby="condition-heading" className="mt-10 scroll-mt-6">
-        <h2 id="condition-heading" className="text-2xl font-extrabold text-gold">
-          {t("conditionHeading")}
-        </h2>
-        <p className="mt-3 max-w-[65ch] text-lg text-ink-subtle">{t("conditionIntro")}</p>
-        <dl className="mt-6 border-t border-mist/15">
+      <Topic id="condition" heading={t("conditionHeading")}>
+        <p className="max-w-[60ch] text-lg">{t("conditionIntro")}</p>
+        <dl className="mt-8 border-t border-grey-300">
           {conditionFilters.map((grade) => (
             <div
               key={grade}
-              className="grid gap-1 border-b border-mist/15 py-4 sm:grid-cols-[9rem_1fr] sm:gap-6"
+              className="grid gap-1 border-b border-grey-300 py-4 sm:grid-cols-[9rem_1fr] sm:gap-6"
             >
               <dt className="font-bold">{tCondition(grade)}</dt>
-              <dd className="max-w-[60ch]">{t(`grades.${grade}`)}</dd>
+              <dd className="max-w-[60ch] text-grey-600">{t(`grades.${grade}`)}</dd>
             </div>
           ))}
         </dl>
-      </section>
+      </Topic>
 
       {text.keys("groups").map((group) => (
-        <section
-          key={group}
-          id={group}
-          aria-labelledby={`${group}-heading`}
-          className="mt-14 scroll-mt-6"
-        >
-          <h2 id={`${group}-heading`} className="text-2xl font-extrabold text-gold">
-            {text(`groups.${group}.heading`)}
-          </h2>
-          {text.keys(`groups.${group}.questions`).map((key) => (
-            <div key={key} className="mt-6">
-              <h3 className="text-lg font-bold">{text(`groups.${group}.questions.${key}.q`)}</h3>
-              <p className="mt-2 max-w-[65ch] text-ink-subtle">
-                {text(`groups.${group}.questions.${key}.a`, values)}
-              </p>
-            </div>
-          ))}
-        </section>
+        <Topic key={group} id={group} heading={text(`groups.${group}.heading`)}>
+          <div className="border-t border-grey-300 md:border-t-0">
+            {text.keys(`groups.${group}.questions`).map((key) => (
+              <div key={key} className="border-b border-grey-300 py-6 md:first:pt-0">
+                <h3 className="text-lg font-bold">{text(`groups.${group}.questions.${key}.q`)}</h3>
+                <p className="mt-2 max-w-[60ch] text-grey-600">
+                  {text(`groups.${group}.questions.${key}.a`, values)}
+                </p>
+              </div>
+            ))}
+          </div>
+        </Topic>
       ))}
 
-      <nav aria-labelledby="policies-heading" className="mt-14 border-t border-mist/15 pt-6">
-        <h2 id="policies-heading" className="font-bold">
+      <nav aria-labelledby="policies-heading" className="border-t border-black pt-8">
+        <Label as="h2" id="policies-heading" className="text-grey-600">
           {t("policiesHeading")}
-        </h2>
-        <ul className="mt-2 flex flex-wrap gap-x-6">
+        </Label>
+        <ul className="mt-3 flex flex-wrap gap-x-8">
           {policies.map((policy) => (
             <li key={policy}>
               <Link href={`/policies/${policy}`} className={linkClass}>
@@ -90,6 +110,6 @@ export default async function FaqPage() {
           ))}
         </ul>
       </nav>
-    </div>
+    </Container>
   );
 }

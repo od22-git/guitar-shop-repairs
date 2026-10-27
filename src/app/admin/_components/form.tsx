@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 // 16px text so phones don't zoom in on focus.
 
 export const inputClass =
-  "block min-h-11 w-full rounded-md border border-ink-muted bg-white px-3 py-2 text-base text-ink aria-invalid:border-fiesta-deep aria-invalid:border-2";
+  "block min-h-11 w-full rounded-md border border-grey-600 bg-white px-3 py-2 text-base text-black aria-invalid:border-red aria-invalid:border-2";
 
 export function Field({
   label,
@@ -26,12 +26,12 @@ export function Field({
       </label>
       {children}
       {hint && (
-        <p id={`${name}-hint`} className="text-sm text-ink-muted">
+        <p id={`${name}-hint`} className="text-sm text-grey-600">
           {hint}
         </p>
       )}
       {error && (
-        <p id={`${name}-error`} className="text-sm font-medium text-fiesta-deep">
+        <p id={`${name}-error`} className="text-sm font-medium text-red">
           {error}
         </p>
       )}
@@ -53,7 +53,7 @@ export function describedBy(name: string, error?: string, hint?: boolean) {
 export function Panel({ title, children }: { title: string; children: ReactNode }) {
   const id = `panel-${title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
   return (
-    <section aria-labelledby={id} className="rounded-lg bg-paper p-4 sm:p-6">
+    <section aria-labelledby={id} className="rounded-lg bg-white p-4 sm:p-6">
       <h2 id={id} className="mb-4 text-lg font-bold">
         {title}
       </h2>
@@ -63,6 +63,6 @@ export function Panel({ title, children }: { title: string; children: ReactNode 
 }
 
 export const primaryButton =
-  "inline-flex min-h-11 items-center justify-center rounded-md bg-fiesta px-5 font-semibold text-white hover:bg-fiesta-deep disabled:opacity-60";
+  "inline-flex min-h-11 items-center justify-center rounded-md bg-black px-5 font-semibold text-white hover:bg-grey-800 disabled:opacity-60";
 export const secondaryButton =
-  "inline-flex min-h-11 items-center justify-center rounded-md border border-ink px-4 font-medium text-ink hover:bg-mist disabled:opacity-60";
+  "inline-flex min-h-11 items-center justify-center rounded-md border border-black px-4 font-medium text-black hover:bg-grey-100 disabled:opacity-60";

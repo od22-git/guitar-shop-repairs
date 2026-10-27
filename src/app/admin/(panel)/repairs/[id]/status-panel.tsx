@@ -31,13 +31,13 @@ export function StatusPanel({ ticketId, status, moves, closeReasons, undoTo }: P
   return (
     <section
       aria-labelledby="status-heading"
-      className="flex flex-col gap-5 rounded-lg bg-paper p-4 sm:p-6"
+      className="flex flex-col gap-5 rounded-lg bg-white p-4 sm:p-6"
     >
       <div>
         <h2 id="status-heading" className="text-lg font-bold">
           Status
         </h2>
-        <p className="text-ink-muted">Now: {statusLabels[status]}</p>
+        <p className="text-grey-600">Now: {statusLabels[status]}</p>
       </div>
 
       {forward.length > 0 && (
@@ -45,7 +45,7 @@ export function StatusPanel({ ticketId, status, moves, closeReasons, undoTo }: P
           {forward.map((move, index) => (
             <li key={move.to}>
               {move.problem ? (
-                <p className="text-ink-muted">
+                <p className="text-grey-600">
                   {moveLabels[move.to]}: {blockedLabels[move.problem].toLowerCase()}
                 </p>
               ) : (
@@ -116,10 +116,7 @@ export function StatusPanel({ ticketId, status, moves, closeReasons, undoTo }: P
         </ActionForm>
       )}
 
-      <p
-        role="status"
-        className={result.ok === false ? "font-medium text-fiesta-deep" : "font-medium"}
-      >
+      <p role="status" className={result.ok === false ? "font-medium text-red" : "font-medium"}>
         {result.message}
       </p>
     </section>

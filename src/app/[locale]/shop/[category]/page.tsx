@@ -31,6 +31,7 @@ export async function generateMetadata({
     title: category.name,
     description: t("categoryDescription", {
       category: category.name,
+      brand: brand.name[locale],
       location: brand.location[locale],
     }),
   });

@@ -1,13 +1,11 @@
 @import "tailwindcss";
 
 /*
- * Colour tokens. Every text/background pair in use is listed, with its contrast ratio, in
+ * Colour tokens (M9a, Midtown Gears, bold editorial): black type on white, neutral greys for
+ * surfaces, lines and muted text, and blue only for highlights. Red marks errors and nothing
+ * else. Every text/background pair in use is listed, with its contrast ratio, in
  * docs/design.md and checked by src/app/design-tokens.test.ts. Add a pair there before
  * using a new one.
- *
- * M9a (Midtown Gears, bold editorial): black type on white, neutral greys for surfaces,
- * lines and muted text, and blue only for highlights. Red marks errors and nothing else.
- * The pages move onto these in M9b, which then deletes the M1 tokens further down.
  */
 @theme {
   /* Only these colours exist; Tailwind's default palette is switched off. */
@@ -21,31 +19,19 @@
   --color-grey-600: #5c5c5c; /* muted text on white and grey-100 */
   --color-grey-800: #262626; /* primary button hover */
   --color-red: #c8102e; /* error text and the edge of a field with an error */
-
-  /* M1–M8 tokens (the dark guitar-shop look), until M9b moves every page off them. */
-  --color-mist: #e6eef1; /* Sonic Blue mist: text on dark surfaces; light surfaces */
-  --color-paper: #f7fafb; /* raised light surfaces */
-  --color-ink: #13294b; /* Lake Placid Blue, deep: the page; text on light surfaces */
-  --color-ink-muted: #46597a; /* secondary text on mist/paper */
-  --color-ink-subtle: #b7c6d3; /* secondary text on ink and rosewood */
-  --color-fiesta: #d2383a; /* Fiesta Red: button fills with white text */
-  --color-fiesta-deep: #b3262a; /* Fiesta Red: button hover; small red text on light */
-  --color-gold: #c8a55a; /* Shoreline Gold: headings and links on dark; focus ring */
-  --color-rosewood: #4a2f27; /* Rosewood: warm dark surfaces */
-  --color-sherwood: #1e6b4f; /* Sherwood Green: the WhatsApp button */
 }
 
 @theme inline {
-  /* Outfit carries Latin text and digits; characters it lacks (Arabic) fall through to Tajawal. */
-  --font-sans: var(--font-outfit), var(--font-tajawal), ui-sans-serif, system-ui, sans-serif;
-  /* M9a: Archivo for Latin, Alexandria for Arabic (and anything else Archivo lacks). */
+  /* Archivo for Latin, Alexandria for Arabic (and anything else Archivo lacks). */
   --font-grotesk: var(--font-archivo), var(--font-alexandria), ui-sans-serif, system-ui, sans-serif;
+  /* Tailwind's default family, so anything unstyled gets the same stack. */
+  --font-sans: var(--font-grotesk);
   /* Small labels ("01 / Gear"). Arabic labels fall through to Alexandria. */
   --font-mono: var(--font-jetbrains-mono), var(--font-alexandria), ui-monospace, monospace;
 }
 
 /*
- * M9a type scale (docs/design.md). Sizes in rem; the big ones scale with the viewport.
+ * The type scale (docs/design.md). Sizes in rem; the big ones scale with the viewport.
  * Arabic gets more line height through the components (rtl:leading-*).
  */
 @theme {
@@ -65,14 +51,9 @@
 
 @layer base {
   html {
-    color-scheme: dark;
+    color-scheme: light;
     /* Focused elements scroll clear of the fixed WhatsApp button. */
     scroll-padding-block-end: 6rem;
-  }
-
-  body {
-    @apply bg-ink font-sans text-mist;
-    -webkit-tap-highlight-color: color-mix(in srgb, var(--color-gold) 25%, transparent);
   }
 
   a,
@@ -80,29 +61,19 @@
     touch-action: manipulation;
   }
 
+  /*
+   * The focus ring is blue: 5.25:1 on white, 3.77:1 on black, both above the 3:1 it needs.
+   */
   :focus-visible {
-    outline: 3px solid var(--color-gold);
+    outline: 3px solid var(--color-blue);
     outline-offset: 3px;
-  }
-
-  /* On light surfaces (mist, paper) the ring switches to ink so it stays visible. */
-  .surface-light :focus-visible {
-    outline-color: var(--color-ink);
   }
 }
 
-/*
- * The M9a look on a light page: wrap a page (and from M9b, the whole site) in .theme-midtown.
- * The focus ring is blue: 5.25:1 on white, 3.77:1 on black, both above the 3:1 it needs.
- */
+/* The light page: on <body> of the public site and the admin. */
 @layer base {
   .theme-midtown {
     @apply bg-white font-grotesk text-black;
-    color-scheme: light;
     -webkit-tap-highlight-color: color-mix(in srgb, var(--color-blue) 20%, transparent);
-  }
-
-  .theme-midtown :focus-visible {
-    outline-color: var(--color-blue);
   }
 }

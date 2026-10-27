@@ -14,7 +14,7 @@ type Props = {
   fromInboxId?: number;
 };
 
-const checkboxClass = "size-6 shrink-0 accent-fiesta";
+const checkboxClass = "size-6 shrink-0 accent-black";
 
 export function TicketForm({ action, values, creating, fromInboxId }: Props) {
   return (
@@ -61,7 +61,7 @@ export function TicketForm({ action, values, creating, fromInboxId }: Props) {
               <span>{label}</span>
             </label>
             {e[name] && (
-              <p id={`${name}-error`} className="text-sm font-medium text-fiesta-deep">
+              <p id={`${name}-error`} className="text-sm font-medium text-red">
                 {e[name]}
               </p>
             )}
@@ -93,7 +93,7 @@ export function TicketForm({ action, values, creating, fromInboxId }: Props) {
             {creating && (
               <section
                 aria-labelledby="customer-heading"
-                className="flex flex-col gap-4 rounded-lg bg-paper p-4 sm:p-6"
+                className="flex flex-col gap-4 rounded-lg bg-white p-4 sm:p-6"
               >
                 <h2 id="customer-heading" className="text-lg font-bold">
                   Customer
@@ -114,7 +114,7 @@ export function TicketForm({ action, values, creating, fromInboxId }: Props) {
 
             <section
               aria-labelledby="instrument-heading"
-              className="flex flex-col gap-4 rounded-lg bg-paper p-4 sm:p-6"
+              className="flex flex-col gap-4 rounded-lg bg-white p-4 sm:p-6"
             >
               <h2 id="instrument-heading" className="text-lg font-bold">
                 Instrument
@@ -138,7 +138,7 @@ export function TicketForm({ action, values, creating, fromInboxId }: Props) {
             {creating && (
               <section
                 aria-labelledby="intake-heading"
-                className="flex flex-col gap-4 rounded-lg bg-paper p-4 sm:p-6"
+                className="flex flex-col gap-4 rounded-lg bg-white p-4 sm:p-6"
               >
                 <h2 id="intake-heading" className="text-lg font-bold">
                   Intake

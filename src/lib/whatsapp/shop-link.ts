@@ -8,7 +8,7 @@ import { waMeUrl } from "./wa-me";
 import type { Locale } from "@/i18n/routing";
 
 /** The opening messages the site can prefill, in the WhatsApp message namespace. */
-export type ShopGreeting = "greeting" | "repairGreeting" | "stock";
+export type ShopGreeting = "greeting" | "repairGreeting" | "stock" | "nanocore";
 
 /** wa.me link to the shop with a short opening message in the visitor's language. */
 export async function shopWhatsAppUrl(
