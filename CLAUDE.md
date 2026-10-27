@@ -27,6 +27,7 @@ pnpm 10 and Node 22 (`.nvmrc`). Copy `.env.example` to `.env.local` first: `dev`
 - `pnpm build && pnpm test:e2e` — Playwright against the production build (`e2e/`, desktop + mobile)
 - `pnpm db:migrate` — apply migrations in `drizzle/` to `DATABASE_URL`; `pnpm db:seed` — categories, delivery zones and sample products (idempotent; `--no-samples` skips the samples). `build` reads settings from the database, so migrate first.
 - `pnpm db:generate` — after changing `src/lib/db/schema.ts`, writes the next SQL migration; commit it. Never edit an applied migration.
+- On Vercel the build command is `vercel-build` (`pnpm db:migrate && next build`), so each deploy applies new migrations to its environment's `DATABASE_URL` before building. Migrations must therefore be safe to apply before the PR merges: add columns and tables, don't drop or rename what the deployed code still reads.
 
 Database unit tests run on PGlite (`src/test/db.ts`). With `TEST_DATABASE_URL` set to a Postgres server URL (any database; the tests create and drop their own), the inventory race tests also run there on real connections, e.g. `TEST_DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres pnpm test`.
 
