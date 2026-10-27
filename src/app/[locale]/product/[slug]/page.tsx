@@ -234,7 +234,7 @@ export default async function ProductPage({ params }: PageProps<"/[locale]/produ
                 }}
               />
             ) : (
-              <div className="aspect-[4/5] bg-grey-100" />
+              <div className="aspect-[4/5] bg-grey-100 md:aspect-square" />
             )}
           </div>
 

@@ -59,9 +59,11 @@ export default async function LocaleLayout({ children }: LayoutProps<"/[locale]"
       className={`${fontVariables} h-full antialiased`}
     >
       <body className="theme-midtown flex min-h-full flex-col">
+        {/* Hidden like sr-only, but without its -1px margin, which pushed the page 1px wider
+            in Arabic. */}
         <a
           href="#main"
-          className="sr-only bg-black px-5 py-3 font-bold text-white focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-50"
+          className="absolute start-0 top-0 size-px overflow-hidden bg-black font-bold whitespace-nowrap text-white [clip-path:inset(50%)] focus:fixed focus:start-4 focus:top-4 focus:z-50 focus:size-auto focus:overflow-visible focus:px-5 focus:py-3 focus:[clip-path:none]"
         >
           {t("skipToContent")}
         </a>

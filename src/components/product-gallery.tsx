@@ -87,7 +87,7 @@ export function ProductGallery({ images, labels }: Props) {
             <li
               key={image.src}
               aria-label={many ? labels.positions[i] : undefined}
-              className="relative aspect-[4/5] w-full shrink-0 snap-start"
+              className="relative aspect-[4/5] w-full shrink-0 snap-start md:aspect-square"
             >
               <FillPhoto src={image.src} alt={image.alt} sizes={sizes} eager={i === 0} />
             </li>
@@ -130,7 +130,7 @@ export function ProductGallery({ images, labels }: Props) {
                 onClick={() => show(i)}
                 aria-label={labels.show[i]}
                 aria-current={i === current ? "true" : undefined}
-                className="relative block aspect-[4/5] w-full overflow-hidden bg-grey-100 after:absolute after:inset-0 after:inset-ring-black hover:after:inset-ring-1 aria-[current=true]:after:inset-ring-2"
+                className="relative block aspect-[4/5] w-full overflow-hidden bg-grey-100 after:absolute after:inset-0 after:inset-ring-black hover:after:inset-ring-1 aria-[current=true]:after:inset-ring-2 md:aspect-square"
               >
                 <FillPhoto src={image.src} alt="" sizes="(min-width: 768px) 11vw, 20vw" />
               </button>

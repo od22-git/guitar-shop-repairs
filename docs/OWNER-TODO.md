@@ -4,7 +4,7 @@ Everything the site needs from you (the partners) before or around launch. Each 
 
 ## Brand and accounts
 
-- [ ] **Instagram handle.** Default: none, so the link is hidden. Send it once the account exists; it goes in `src/config/brand.ts` and the link appears in the footer (and on Contact from M9b).
+- [ ] **Instagram handle.** Default: none, so the link is hidden. Send it once the account exists; it goes in `src/config/brand.ts` and the link appears in the footer and on Contact.
 - [ ] **TikTok handle.** Default: none, so the link is hidden. Same as Instagram.
 - [ ] **Custom domain.** Default: `guitar-shop-repairs.vercel.app`. Needed by M18 (buy it any time; switching is a settings change).
 - [ ] **Trade licence**, under the name "Midtown Gears". Stripe, Tabby and public selling all need it. Needed by M18. **Apply now.**
@@ -17,6 +17,7 @@ Everything the site needs from you (the partners) before or around launch. Each 
 - [ ] **NANOCORE photos (your own).** Default: Unsplash stand-ins flagged `placeholder_photos`; the launch check refuses them. Shot list: [`photo-shot-list.md`](photo-shot-list.md). Needed by M18.
 - [ ] **Footswitch and parts/knobs photos (your own).** Default: Unsplash stand-ins, flagged the same way. Needed by M18.
 - [x] **Approve the redesign mockups** (home + product page, bold editorial) **and the atmosphere photos** (Unsplash contact sheet). Done in M9a: mockups approved, Arabic font changed to Alexandria at your request, photos left to Claude.
+- [ ] **Approve the redesigned pages.** Screenshots of every page, en and ar, desktop and mobile, are in [`design/m9b/`](design/m9b/). The site already runs on them (M9b); send changes and they go into the next milestone.
 - [ ] **Tone demo recordings** for Signature Packs and product pages. Default: placeholder audio. Needed by M16.
 
 ## Services and delivery
@@ -51,14 +52,15 @@ Everything the site needs from you (the partners) before or around launch. Each 
   | Custom Tone Bundle | 349 |
   | Extra custom tone | +50 |
 
-  Needed by M10.
+  The home page already shows these launch prices, from `src/config/nanocore.ts` (M9b), until M10 moves them to the product's variants. Needed by M10.
+- [ ] **Warranty length on devices.** Default: 6 months, from `src/config/policies.ts`; the home page, About and product pages quote it. Needed by M10 (warranty policy).
 - [ ] **Footswitch price and landed cost.** Default: a draft product with no price, so it can't be published. Needed when footswitches launch.
 - [ ] **Signature Pack names and their tones.** Default: Thrash, Prog Metal, Blues, marked placeholder. Needed by M16.
 - [ ] **Extra tweak-round fee.** Default: AED 25, editable. Needed by M15.
-- [ ] **Included tweak rounds.** Default: 3. Needed by M15.
+- [ ] **Included tweak rounds.** Default: 3 (`toneRounds` in `src/config/policies.ts`; the FAQ quotes it from M9b). Needed by M15.
 - [ ] **Tone turnaround promise.** Default: 3–5 days after confirmation. Needed by M15.
 
 ## Reviews
 
 - [ ] **Policies:** terms, privacy, returns, delivery, repair terms, and the new 6-month warranty. They are drafts; you (and ideally a lawyer) should review them. Needed by M18.
-- [ ] **Arabic copy review** across the site. Needed by M18.
+- [ ] **Arabic copy review** across the site, including the copy rewritten in M9b. Needed by M18.

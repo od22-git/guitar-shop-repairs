@@ -47,13 +47,13 @@ export function SiteNav({ label, menu, links, localeSwitch }: Props) {
           setOpenedAt(pathname);
           setOpen((value) => !value);
         }}
-        className="inline-flex min-h-11 items-center gap-2 ps-2 font-bold md:hidden"
+        className="inline-flex min-h-11 items-center gap-2 ps-1 font-bold md:hidden"
       >
         {menu}
         <svg
           aria-hidden="true"
           viewBox="0 0 20 20"
-          className={`size-4 transition-transform motion-reduce:transition-none ${open ? "rotate-45" : ""}`}
+          className={`size-4 transition-transform motion-reduce:transition-none max-[22rem]:hidden ${open ? "rotate-45" : ""}`}
         >
           <path d="M10 3v14M3 10h14" stroke="currentColor" strokeWidth="2" />
         </svg>

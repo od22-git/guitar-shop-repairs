@@ -2,7 +2,7 @@
 
 **Midtown Gears, bold editorial** (M9a, October 2026). Tokens live in `src/app/globals.css`, components in `src/components/ui/` and `src/components/wordmark.tsx`, and every token and component is shown in both languages at `/en/design-system` and `/ar/design-system` (not linked, not in the sitemap, `noindex`). This file explains them and records the checks.
 
-M9a built the system; **M9b moves every public page onto it** and then deletes the M1–M8 tokens, fonts and components listed under "Until M9b" at the end.
+M9a built the system; **M9b moved every public page onto it**, gave the admin its tokens and wordmark, and deleted the M1–M8 look (see "M9b" at the end).
 
 ## Direction
 
@@ -60,7 +60,7 @@ Every text/background pair in use. `src/app/design-tokens.test.ts` reads the hex
 
 Not allowed: `blue` text on `black` (3.77:1, large text only, and blue stays off black anyway); `grey-300` for anything that has to be seen (1.48:1); `blue` on `grey-100` for small text (4.69:1 passes, but keep highlights on white).
 
-The focus ring is a 3px `blue` outline with a 3px offset inside `.theme-midtown` (the class that sets the light page; M9b puts it on `<body>`).
+The focus ring is a 3px `blue` outline with a 3px offset on every page (`globals.css`). `.theme-midtown`, on the `<body>` of the site and the admin, sets the white page, the grotesk stack and black text.
 
 ## Type
 
@@ -73,8 +73,8 @@ Characters a font lacks fall through to the next, so Arabic text is Alexandria a
 
 - **Why Archivo.** Picked from a render of five heavy grotesks with the wordmark and tagline ([`design/m9a/fonts-latin.jpg`](design/m9a/fonts-latin.jpg)). Its width axis goes to 125%, so the wordmark and display headings can be extra wide and heavy (the hardware-label look of the references), while body text uses the normal width of the same file.
 - **Why Alexandria.** The owners asked for an Arabic font closer to the English one than Tajawal. Of six Arabic fonts rendered next to Archivo ([`design/m9a/fonts-arabic.jpg`](design/m9a/fonts-arabic.jpg)), Alexandria is the closest match: wide, geometric, flat stroke ends, a true Black weight, and readable body text. It replaces Tajawal from M9b.
-- **JetBrains Mono** sets the small labels only (section numbers, categories, badges, notes under prices), uppercase and letter-spaced in Latin.
-- The three new fonts aren't preloaded until M9b moves the pages onto them.
+- **JetBrains Mono** sets the small labels only (section numbers, categories, badges, notes under prices), uppercase and letter-spaced in Latin. Arabic labels are set in Alexandria instead (`rtl:font-grotesk` in `Label`): the mono font's wide spaces left gaps between Arabic words.
+- All three are preloaded on every page (`fontVariables` in `src/app/fonts.ts`, used by both root layouts and the global error page).
 
 **Scale** (`--text-*` in `globals.css`; the big sizes scale with the viewport):
 
@@ -116,23 +116,26 @@ M9a components, in `src/components/ui/` unless noted. All are server components,
 |---|---|---|
 | `Wordmark` | `src/components/wordmark.tsx` | "MIDTOWN GEARS" from `brand.wordmark`: Archivo Black at 125% width. Always `dir="ltr"` and `translate="no"`; takes the text colour; size it with a `text-*` class |
 | `Heading` | `text.tsx` | `level` (`display`, `headline`, `title`) sets the look, `as` the element, so the outline stays right |
-| `Lead`, `Highlight`, `Label`, `Eyebrow` | `text.tsx` | Intro paragraph; a blue word in a heading; the mono label; "01 / Gear" above a heading |
+| `Lead`, `Highlight`, `withHighlight`, `Label`, `Eyebrow` | `text.tsx` | Intro paragraph (34 characters a line, 48 with `wide`); a blue word in a heading, kept on one line; `withHighlight` picks a phrase out of a config string (the tagline, with `brand.taglineHighlight`); the mono label; "01 / Gear" above a heading |
 | `buttonClass`, `Arrow` | `button.tsx` | `primary` (black), `secondary` (outlined), `inverse` (white on black sections); 56px tall (52px on phones), square, 2px edge. `{ block: true }` for full width with the arrow at the far end. The arrow flips in Arabic |
 | `Badge` | `badge.tsx` | `highlight` (white on blue), `outline`, `solid` (white on black). Mono, uppercase. The text must make sense without the colour |
 | `Price` | `price.tsx` | AED via `formatMoney`, tabular, isolated with `<Bdi>`; sizes `sm`, `md`, `lg`; struck-through old price with "Was …" for screen readers; a `prefix` for add-ons ("+AED 50", and "+50 د.إ." kept together in Arabic) |
 | `ProductCard` | `product-card.tsx` | A 4:5 photo on `grey-100` (zooms slightly on hover, not with reduced motion), title, one detail line, price; a badge on the photo's top inline-start corner; `muted` greys a sold item's photo. Presentational: M9b maps the catalog DTOs onto it |
-| `Field`, `inputClass`, `selectClass`, `fieldProps` | `field.tsx` | Square fields, 1px black edge, 52px tall, 16px text. Label above, hint and error below, tied with `aria-describedby`; an error sets `aria-invalid`, a 2px red edge and a written message |
+| `Field`, `inputClass`, `selectClass`, `fieldProps`, `FieldError`, `formAlertClass` | `field.tsx` | Square fields, 1px black edge, 52px tall, 16px text. Label above, hint and error below, tied with `aria-describedby` (`fieldProps`); an error sets `aria-invalid`, a 2px red edge and a written message. `formAlertClass` is the message about a whole submission, with a red rule at its start |
 | `Checkbox` | `field.tsx` | A native tick box with its label and an optional detail line |
 | `OptionCard` | `field.tsx` | A radio (or tick box) as a card with a name, detail and price: the bundle picker and add-ons. The chosen card gets a 2px black edge via CSS `:has(:checked)`, no script; the focus ring goes round the card |
 | `Container`, `Grid`, `Section`, `RuledColumn` | `layout.tsx` | Page margins, the column grid, a section's spacing (`tone="dark"` for the black band), a column opening with a black rule |
 | `PriceList`, `PriceRow` | `layout.tsx` | Name … price rows with a dotted leader: bundles, service prices, specs |
-| `SocialLinks` | `src/components/social-links.tsx` | Instagram and TikTok from `brand.social`; each shows only once its handle is set (in the footer now; M9b adds Contact) |
+| `SocialLinks` | `src/components/social-links.tsx` | Instagram and TikTok from `brand.social`; each shows only once its handle is set (footer and Contact) |
+| `PageHero` | `src/components/page-hero.tsx` | M9b. The opening of an inner page (repairs, sell, about): the display heading across the width, then the lead and buttons next to a black-and-white photo (landscape over 7 columns, portrait over 5); on phones the photo comes first |
+| `SiteHeader`, `SiteNav` | `src/components/site-header.tsx`, `site-nav.tsx` | M9b. Wordmark, page links, Contact at the inline end, the language switch; a white bar closed by a black rule. The current section is underlined in blue. Phones show the wordmark, the language switch and a Menu button that opens the links as a list under the bar (Escape or following a link closes it) |
+| `SiteFooter` | `src/components/site-footer.tsx` | M9b. The black band: Shop, Help, Policies and Where columns under mono labels, the social links, then the wordmark across the full width (sized in container units, 8.7cqi, so it always fits) |
 
-Kept from M1–M8 and restyled in M9b: `Bdi`/`Ltr`, `FillPhoto`/`StockPhoto` (photos never mirrored), `PhotoCredits` (now with a `light` tone), `LocaleSwitch`, `ProductGallery`, `CatalogControls`, `WhatsAppButton`, `fieldProps`.
+Kept from M1–M8 and restyled in M9b: `Bdi`/`Ltr`, `FillPhoto`/`StockPhoto` (photos never mirrored), `PhotoCredits` (`light` by default, `dark` on black), `LocaleSwitch`, `ProductGallery` (square on wide screens so a photo fits a laptop screen), `CatalogControls`, `WhatsAppButton` (a black square with a white edge, so it shows on white pages and on the footer), `Prose`.
 
 ## Photos
 
-Atmosphere photos are free-licence Unsplash stock picked from contact sheets; sources and authors are in [`IMAGE_CREDITS.md`](IMAGE_CREDITS.md). The M9a set (`bend`, `player`, `gig`, `knobs`, `workbench`, `jam`) was chosen from [`design/m9a/contact-sheet.jpg`](design/m9a/contact-sheet.jpg); the owners left the pick to Claude. Two candidates were dropped because another brand's logo was their subject. Pages show them in black and white with Tailwind's `grayscale`, except `gig`, whose blue light already fits.
+Atmosphere photos are free-licence Unsplash stock picked from contact sheets; sources and authors are in [`IMAGE_CREDITS.md`](IMAGE_CREDITS.md). The M9a set (`bend`, `player`, `gig`, `knobs`, `workbench`, `jam`) was chosen from [`design/m9a/contact-sheet.jpg`](design/m9a/contact-sheet.jpg); the owners left the pick to Claude. Two candidates were dropped because another brand's logo was their subject. Pages show them in black and white with Tailwind's `grayscale`, except `gig`, whose blue light already fits. M9b uses `bend` (home hero), `workbench` (home care prices, repairs), `player` (home statement), `knobs` (sell) and `jam` (about); `gig` is kept for the gig and handover pages to come. The M1b set was deleted.
 
 To add one: save it under `public/images/stock/<key>-<width>.webp` at each width in `stockPhotoWidths`, cropped to one aspect ratio; add the key to `src/config/stock-photos.ts`, alt text to `messages/*.json` (`Photos.<key>`) and a row to `IMAGE_CREDITS.md`. `src/config/stock-photos.test.ts` fails if any of these is missing or a file's size doesn't match. Alt text is written per photo (Unsplash's own descriptions are often wrong) and translated.
 
@@ -142,12 +145,25 @@ Product photos are always the owners' own. Until they exist, product pages use U
 
 `src/config/brand.ts`: the name ("Midtown Gears", Arabic ميدتاون جيرز for Arabic running text), the wordmark, the tagline ("Big tone, no big-brand tax." / "صوت كبير، بلا ضريبة الماركات."), the location ("UAE"; the workshop address is never published) and the Instagram and TikTok handles, which are unset until the owners create the accounts (`docs/OWNER-TODO.md`), so their links stay hidden.
 
-## Until M9b: the M1–M8 look
+## M9b: the pages
 
-The pages still use the M1b dark look until M9b moves them: `ink`, `rosewood`, `mist`, `paper`, `fiesta`, `gold`, `sherwood` and the `ink-*` tokens, the Outfit + Tajawal stack (`font-sans`), and the M1–M8 components (`PriceTag`'s swing tag, the old `ProductCard`, `form-parts.tsx`'s classes). Their contrast pairs are still checked (`legacyPairs` in `design-tokens.test.ts`). M9b deletes all of them with their tests, switches `<body>` to `.theme-midtown`, preloads the new fonts and gives the admin the new tokens and wordmark. Screenshots of the old look: [`design/m1b/`](design/m1b/), [`design/m3/`](design/m3/) to [`design/m8a/`](design/m8a/).
+Every public page is built from the components above, with copy rewritten in the new voice (`messages/*.json`):
+
+- **Home** follows the approved mockup: the tagline as the display heading (`brand.taglineHighlight` in blue), the index (gear, tones, care), the NANOCORE feature, "Why Midtown Gears, not Amazon", the care prices and the black "Who it’s for" statement. Until M10 makes the NANOCORE a product, its bundles and launch prices come from `src/config/nanocore.ts` and the photo is a grey frame ("photos coming soon"); its button asks on WhatsApp. "Our pick" replaces the mockup's "Most picked", which isn't true before launch.
+- **Shop**: a headline, the category tabs (the current one underlined in blue), the filters as a column of tick boxes under mono labels, and `ProductCard`s with a badge for On hold, Sold and price drops.
+- **Product**: the mockup's layout for the products there are today: gallery, title, price, condition and availability rows, the WhatsApp button, then three promises (checked, delivered, returns) and the details as a spec sheet. The bundle picker, what's in the box and the five checks come with M10.
+- **Repairs** and **Sell** open with `PageHero`, then the price list or the steps (numbered, as they are a sequence), and the form beside its heading. Forms sit straight on the page with black rules between their groups; no cards.
+- **Ticket tracking**: the ticket number as a headline, progress as black bars, the quote as a spec-sheet table, approval in a grey panel, the amount due on black.
+- **About, FAQ, contact, policies**: a heading at the inline start and the content beside it, topics separated by black rules. The FAQ gained a "Custom tones" group (`/faq#tones`, linked from the home page).
+- **404 and error pages**: a heading, a line and two buttons. The global error page (outside the layouts) uses the new fonts too.
+- **Admin**: same layout, new tokens (black header with the wordmark, `grey-100` page, white panels, black buttons, red errors, blue badges).
+
+Deleted with the M1–M8 look: the `ink`, `rosewood`, `mist`, `paper`, `fiesta`, `gold`, `sherwood` and `ink-*` tokens and their contrast pairs; Outfit and the self-hosted Tajawal; `PriceTag`, the old `ProductCard` and `form-parts.tsx`; the M1b stock photos. Screenshots of every page, en and ar, desktop and mobile: [`design/m9b/`](design/m9b/). Older looks: [`design/m1b/`](design/m1b/), [`design/m3/`](design/m3/) to [`design/m8a/`](design/m8a/).
 
 ## Reviews
 
 **M9a.** axe (`e2e/a11y.spec.ts`) runs on `/en/design-system` and `/ar/design-system`, desktop and mobile: no serious or critical issues. `e2e/design-system.spec.ts` checks the wordmark stays LTR and untranslated in Arabic, option cards behave as radios, the error field's `aria-invalid` and description, no horizontal overflow on phones, the page's `noindex` and its absence from the sitemap, and that no social links show while the handles are unset. A `web-design-guidelines` pass over the new components: labels on every field, `fieldset`/`legend` round the option cards, errors in words, 44px+ targets, visible focus on the option cards (`:has(:focus-visible)`), reduced motion respected on the card hover, `translate="no"` on the wordmark and brand names, tabular figures on prices, no letter-spacing in Arabic.
+
+**M9b.** axe (`e2e/a11y.spec.ts`) runs on every public page in both languages, desktop and mobile: no serious or critical issues. A `web-design-guidelines` pass over the pages: the phone menu is a button with `aria-expanded` and `aria-controls`, closes on Escape and on navigation; the skip link stays first and no longer widens the Arabic page (it is hidden like `sr-only` but without the -1px margin); the phone header fits down to 320px in both languages (the wordmark scales with the screen, the menu's plus sign hides below 352px); numbered markers only where the content is a sequence (the how-it-works steps and the approved home index); focus rings blue everywhere, white on black is the only text on the footer; prices tabular and isolated; Latin product names keep `lang="en"` on Arabic pages.
 
 *Earlier reviews (M1–M8 look)* are in the git history of this file (M1b, M3).

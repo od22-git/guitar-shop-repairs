@@ -14,9 +14,9 @@ export async function SiteHeader() {
 
   return (
     <header className="relative z-30 border-b border-black bg-white">
-      <Container className="flex min-h-16 items-center gap-x-8 md:min-h-18">
+      <Container className="flex min-h-16 items-center gap-x-3 md:min-h-18 md:gap-x-8">
         <Link href="/" className="-my-2 inline-flex min-h-11 shrink-0 items-center py-2">
-          <Wordmark className="text-[1.0625rem] md:text-xl" />
+          <Wordmark className="text-[clamp(0.75rem,3.6vw,1rem)] md:text-xl" />
         </Link>
         <SiteNav
           label={tNav("label")}
