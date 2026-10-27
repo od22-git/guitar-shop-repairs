@@ -97,7 +97,7 @@ export default async function RepairsPage() {
             </Heading>
             <p className="mt-6 max-w-[40ch] text-grey-600">{t("servicesNote")}</p>
           </div>
-          <PriceList className="col-span-4 md:col-span-7 md:col-start-6">
+          <PriceList className="col-span-4 md:col-span-8 md:col-start-5">
             {repairServices.map((service) => (
               <PriceRow
                 key={service.key}
@@ -126,28 +126,34 @@ export default async function RepairsPage() {
       </Section>
 
       <Section aria-labelledby="how-heading" className="pt-0 md:pt-0">
-        <Heading level="headline" as="h2" id="how-heading">
-          {t("howHeading")}
-        </Heading>
-        <ol className="mt-12 grid grid-cols-4 gap-x-4 gap-y-10 md:mt-16 md:grid-cols-12 md:gap-x-6">
-          {steps.map((step, index) => (
-            <li key={step} className="col-span-4 sm:col-span-2 md:col-span-3">
-              <RuledColumn>
-                {/* The list is numbered already; this is the visible number. */}
-                <Label as="p" aria-hidden="true" className="tabular-nums">
-                  {`0${index + 1}`}
-                </Label>
-                <h3 className="mt-6 text-xl font-extrabold font-stretch-semi-expanded md:mt-8">
-                  {t(`steps.${step}.title`)}
-                </h3>
-                <p className="mt-2 max-w-[40ch] text-grey-600">{t(`steps.${step}.body`)}</p>
-              </RuledColumn>
-            </li>
-          ))}
-        </ol>
+        <Grid className="gap-y-12">
+          <Heading level="headline" as="h2" id="how-heading" className="col-span-4">
+            {t("howHeading")}
+          </Heading>
+          {/* Two by two on the grid's 5th and 9th columns, like the rest of the page. */}
+          <ol className="col-span-4 grid grid-cols-4 gap-x-4 gap-y-12 md:col-span-8 md:col-start-5 md:grid-cols-8 md:gap-x-6">
+            {steps.map((step, index) => (
+              <li key={step} className="col-span-4 sm:col-span-2 md:col-span-4">
+                <RuledColumn>
+                  {/* The list is numbered already; this is the visible number. */}
+                  <Label as="p" aria-hidden="true" className="tabular-nums">
+                    {`0${index + 1}`}
+                  </Label>
+                  <h3 className="mt-6 text-xl font-extrabold font-stretch-semi-expanded">
+                    {t(`steps.${step}.title`)}
+                  </h3>
+                  <p className="mt-2 max-w-[40ch] text-grey-600">{t(`steps.${step}.body`)}</p>
+                </RuledColumn>
+              </li>
+            ))}
+          </ol>
+        </Grid>
         <Grid className="mt-16 gap-y-6 md:mt-20">
-          {(["dropOff", "courier"] as const).map((key) => (
-            <div key={key} className="col-span-4 bg-grey-100 p-6 md:col-span-6 md:p-8">
+          {(["dropOff", "courier"] as const).map((key, i) => (
+            <div
+              key={key}
+              className={`col-span-4 bg-grey-100 p-6 md:p-8 ${i === 0 ? "md:col-start-5" : ""}`}
+            >
               <h3 className="text-title font-extrabold tracking-[-0.01em] font-stretch-semi-expanded rtl:leading-[1.4] rtl:tracking-normal">
                 {t(`${key}Heading`)}
               </h3>
@@ -169,7 +175,7 @@ export default async function RepairsPage() {
             </Heading>
             <p className="mt-6 max-w-[40ch] text-lg text-grey-600">{t("bookIntro")}</p>
           </div>
-          <div className="col-span-4 md:col-span-7 md:col-start-6">
+          <div className="col-span-4 md:col-span-8 md:col-start-5">
             <BookingForm
               labels={labels}
               emirates={emirate.enumValues.map((value) => ({ value, label: tEmirate(value) }))}

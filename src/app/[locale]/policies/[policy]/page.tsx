@@ -87,7 +87,7 @@ export default async function PolicyPage({ params }: PageProps<"/[locale]/polici
             >
               {t(`sections.${key}.heading`, values)}
             </Heading>
-            <div className="col-span-4 md:col-span-7 md:col-start-6">
+            <div className="col-span-4 md:col-span-8 md:col-start-5">
               <Prose text={t(`sections.${key}.body`, values)} className="text-lg" />
               {policy === "delivery" && key === "fees" && <DeliveryZones />}
             </div>

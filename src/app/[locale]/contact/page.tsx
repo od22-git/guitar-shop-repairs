@@ -50,7 +50,7 @@ export default async function ContactPage() {
       <Lead className="mt-8 text-grey-600">{t("intro")}</Lead>
 
       <Grid className="mt-16 gap-y-12 md:mt-24">
-        <RuledColumn className="col-span-4 md:col-span-6">
+        <RuledColumn className="col-span-4 md:col-span-8">
           <section aria-labelledby="whatsapp-heading">
             <Heading level="headline" as="h2" id="whatsapp-heading">
               {t("whatsappHeading")}
@@ -70,7 +70,7 @@ export default async function ContactPage() {
             </a>
           </section>
         </RuledColumn>
-        <RuledColumn className="col-span-4 md:col-span-5 md:col-start-8">
+        <RuledColumn className="col-span-4 md:col-span-4 md:col-start-9">
           <section aria-labelledby="call-heading">
             <Heading level="headline" as="h2" id="call-heading">
               {t("callHeading")}
@@ -87,13 +87,13 @@ export default async function ContactPage() {
       </Grid>
 
       <Grid className="mt-16 gap-y-12 md:mt-24">
-        <section aria-labelledby="visit-heading" className="col-span-4 md:col-span-6">
+        <section aria-labelledby="visit-heading" className="col-span-4 md:col-span-8">
           <Label as="h2" id="visit-heading" className="text-grey-600">
             {t("visitHeading")}
           </Label>
           <p className="mt-4 max-w-[50ch] text-lg">{t("visitBody", { location })}</p>
         </section>
-        <div className="col-span-4 flex flex-col gap-12 md:col-span-5 md:col-start-8">
+        <div className="col-span-4 flex flex-col gap-12 md:col-span-4 md:col-start-9">
           {hasSocial && (
             <section aria-labelledby="social-heading">
               <Label as="h2" id="social-heading" className="text-grey-600">
