@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 
-import { PageHero } from "@/components/page-hero";
+import { PageHero, SectionIntro } from "@/components/page-hero";
 import { PhotoCredits } from "@/components/photo-credits";
+import { Steps } from "@/components/steps";
 import { buttonClass } from "@/components/ui/button";
-import { Container, Grid, RuledColumn, Section } from "@/components/ui/layout";
-import { Heading, Label } from "@/components/ui/text";
+import { Container, Section } from "@/components/ui/layout";
 import { productCondition } from "@/lib/db/schema";
 import { env } from "@/lib/env";
 import { MAX_SELL_PHOTOS } from "@/lib/inbox/sell-photos";
@@ -115,35 +115,19 @@ export default async function SellPage() {
       />
 
       <Section aria-labelledby="how-heading" className="pt-0 md:pt-0">
-        <Grid className="gap-y-12">
-          <Heading level="headline" as="h2" id="how-heading" className="col-span-4">
-            {t("howHeading")}
-          </Heading>
-          {/* Two by two on the grid's 5th and 9th columns, like the rest of the page. */}
-          <ol className="col-span-4 grid grid-cols-4 gap-x-4 gap-y-12 md:col-span-8 md:col-start-5 md:grid-cols-8 md:gap-x-6">
-            {steps.map((step, index) => (
-              <li key={step} className="col-span-4 sm:col-span-2 md:col-span-4">
-                <RuledColumn>
-                  <Label as="p" aria-hidden="true" className="tabular-nums">
-                    {`0${index + 1}`}
-                  </Label>
-                  <h3 className="mt-6 text-xl font-extrabold font-stretch-semi-expanded">
-                    {t(`steps.${step}.title`)}
-                  </h3>
-                  <p className="mt-2 max-w-[40ch] text-grey-600">{t(`steps.${step}.body`)}</p>
-                </RuledColumn>
-              </li>
-            ))}
-          </ol>
-        </Grid>
-        <Grid className="mt-16 md:mt-20">
-          <div className="col-span-4 bg-grey-100 p-6 md:col-span-8 md:col-start-5 md:p-8">
-            <h3 className="text-title font-extrabold tracking-[-0.01em] font-stretch-semi-expanded rtl:leading-[1.4] rtl:tracking-normal">
-              {t("ownershipHeading")}
-            </h3>
-            <p className="mt-3 max-w-[70ch]">{t("ownershipBody")}</p>
-          </div>
-        </Grid>
+        <SectionIntro id="how-heading" heading={t("howHeading")} />
+        <Steps
+          steps={steps.map((step) => ({
+            title: t(`steps.${step}.title`),
+            body: t(`steps.${step}.body`),
+          }))}
+        />
+        <div className="mt-16 bg-grey-100 p-6 md:mt-20 md:p-8">
+          <h3 className="text-title font-extrabold tracking-[-0.01em] font-stretch-semi-expanded rtl:leading-[1.4] rtl:tracking-normal">
+            {t("ownershipHeading")}
+          </h3>
+          <p className="mt-3 max-w-[70ch]">{t("ownershipBody")}</p>
+        </div>
       </Section>
 
       <Section
@@ -151,26 +135,17 @@ export default async function SellPage() {
         aria-labelledby="offer-heading"
         className="scroll-mt-6 border-t border-black"
       >
-        <Grid className="gap-y-10">
-          <div className="col-span-4 md:col-span-4">
-            <Heading level="headline" as="h2" id="offer-heading">
-              {t("formHeading")}
-            </Heading>
-            <p className="mt-6 max-w-[40ch] text-lg text-grey-600">{t("formIntro")}</p>
-          </div>
-          <div className="col-span-4 md:col-span-8 md:col-start-5">
-            <SellForm
-              labels={labels}
-              conditions={productCondition.enumValues.map((value) => ({
-                value,
-                label: tCondition(value),
-              }))}
-              maxPhotos={MAX_SELL_PHOTOS}
-              locale={locale}
-              turnstileSiteKey={env.TURNSTILE_SITE_KEY}
-            />
-          </div>
-        </Grid>
+        <SectionIntro id="offer-heading" heading={t("formHeading")} note={t("formIntro")} />
+        <SellForm
+          labels={labels}
+          conditions={productCondition.enumValues.map((value) => ({
+            value,
+            label: tCondition(value),
+          }))}
+          maxPhotos={MAX_SELL_PHOTOS}
+          locale={locale}
+          turnstileSiteKey={env.TURNSTILE_SITE_KEY}
+        />
       </Section>
 
       <Container className="py-6">

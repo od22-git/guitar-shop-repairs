@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { Bdi } from "@/components/bdi";
+import { IntroRow, WidePhoto } from "@/components/page-hero";
 import { PhotoCredits } from "@/components/photo-credits";
 import { StockPhoto } from "@/components/stock-photo";
 import { Badge } from "@/components/ui/badge";
@@ -20,9 +21,10 @@ import { formatMoney } from "@/lib/money";
 import { pageAlternates } from "@/lib/seo";
 import { shopWhatsAppUrl } from "@/lib/whatsapp/shop-link";
 
-// The home page, as in the approved mockup (docs/design/m9a/mockups/): the tagline, what
-// we do (gear, tones, care), the NANOCORE, why buy here rather than from Amazon, the care
-// prices, and who it's for.
+// The home page: the tagline, what we do (gear, tones, care), the NANOCORE, why buy here
+// rather than from Amazon, the care prices, and who it's for. Built from the approved
+// mockup (docs/design/m9a/mockups/), with photos stacked under their text across the full
+// width rather than beside it (owner decision, M9b), so no column is left empty.
 
 const index = [
   { key: "gear", href: "/shop" },
@@ -58,19 +60,10 @@ export default async function HomePage() {
         <Heading level="display" as="h1">
           {withHighlight(brand.tagline[locale], brand.taglineHighlight[locale])}
         </Heading>
-        <Grid className="mt-10 gap-y-8 md:mt-16">
-          <div className="relative col-span-4 aspect-[3/2] md:order-last md:col-span-8 md:col-start-5">
-            <StockPhoto
-              photo="bend"
-              alt={tPhoto("bend")}
-              sizes="(min-width: 1600px) 1000px, (min-width: 768px) 64vw, 100vw"
-              className="grayscale"
-              eager
-            />
-          </div>
-          <div className="col-span-4 flex flex-col justify-end md:col-span-4">
-            <Lead>{t("intro", { location: brand.location[locale] })}</Lead>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+        <IntroRow
+          lead={t("intro", { location: brand.location[locale] })}
+          actions={
+            <>
               <Link href="/shop" className={`${buttonClass("primary", { block: true })} sm:w-auto`}>
                 {t("shopCta")}
                 <Arrow />
@@ -82,9 +75,10 @@ export default async function HomePage() {
                 {t("careCta")}
                 <Arrow />
               </Link>
-            </div>
-          </div>
-        </Grid>
+            </>
+          }
+        />
+        <WidePhoto photo="bend" alt={tPhoto("bend")} eager />
         <Grid className="mt-16 gap-y-12 md:mt-24">
           {index.map(({ key, href }, i) => (
             <RuledColumn key={key} className="col-span-4">
@@ -103,20 +97,19 @@ export default async function HomePage() {
 
       <Section aria-labelledby="nanocore-heading" className="pt-0 md:pt-0">
         <Grid className="gap-y-10">
-          <div className="col-span-4 flex aspect-[4/3] items-center justify-center bg-grey-100 p-6 md:col-span-8 md:aspect-[3/2]">
-            <Label as="p" className="text-center text-grey-600">
-              {t("nanocore.photo")}
-            </Label>
-          </div>
-          <div className="col-span-4 md:col-span-4 md:col-start-9">
+          <div className="col-span-4 md:col-span-6">
             <Label as="p" className="text-grey-600">
               {t("nanocore.label")}
             </Label>
             <Heading level="headline" as="h2" id="nanocore-heading" className="mt-4">
               <span translate="no">NANOCORE</span>
             </Heading>
-            <p className="mt-4 max-w-[45ch] text-grey-600">{t("nanocore.body")}</p>
-            <PriceList className="mt-8">
+            <Lead wide className="mt-6 text-grey-600">
+              {t("nanocore.body")}
+            </Lead>
+          </div>
+          <div className="col-span-4 md:col-span-6">
+            <PriceList>
               {nanocoreVariants.map((variant) => (
                 <PriceRow
                   key={variant.key}
@@ -134,36 +127,37 @@ export default async function HomePage() {
                 price={<Price fils={extraToneFils} prefix="+" />}
               />
             </PriceList>
-            <Label as="p" className="mt-4 text-grey-600">
-              {t("nanocore.note")}
-            </Label>
-            <a
-              href={nanocoreUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`mt-8 ${buttonClass("primary")}`}
-            >
-              {t("nanocore.cta")}
-              <Arrow />
-            </a>
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
+              <Label as="p" className="text-grey-600">
+                {t("nanocore.note")}
+              </Label>
+              <a
+                href={nanocoreUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={buttonClass("primary")}
+              >
+                {t("nanocore.cta")}
+                <Arrow />
+              </a>
+            </div>
           </div>
         </Grid>
+        {/* The owners' NANOCORE photo goes here (M10). */}
+        <div className="mt-10 flex aspect-[4/3] items-center justify-center bg-grey-100 p-6 md:mt-12 md:aspect-[3/1]">
+          <Label as="p" className="text-center text-grey-600">
+            {t("nanocore.photo")}
+          </Label>
+        </div>
       </Section>
 
       <Section aria-labelledby="why-heading" className="pt-0 md:pt-0">
-        <Grid className="gap-y-10 md:gap-y-16">
-          {/* A headline a step smaller than the others: it shares the row with the reasons. */}
-          <h2
-            id="why-heading"
-            className="col-span-4 mb-2 text-[clamp(2.25rem,3.4vw,3.25rem)] leading-[0.95] font-black tracking-[-0.02em] text-balance font-stretch-semi-expanded md:row-span-2 md:mb-0 rtl:leading-[1.3] rtl:tracking-normal"
-          >
-            {t.rich("why.heading", { hl, brand: brand.name[locale] })}
-          </h2>
+        <Heading level="headline" as="h2" id="why-heading">
+          {t.rich("why.heading", { hl, brand: brand.name[locale] })}
+        </Heading>
+        <Grid className="mt-12 gap-y-10 md:mt-16">
           {reasons.map((key, i) => (
-            <RuledColumn
-              key={key}
-              className={`col-span-4 sm:col-span-2 md:col-span-4 ${i % 2 === 0 ? "md:col-start-5" : ""}`}
-            >
+            <RuledColumn key={key} className="col-span-4 sm:col-span-2 md:col-span-3">
               <Label as="p" className="tabular-nums">{`0${i + 1}`}</Label>
               <h3 className="mt-6 text-xl font-extrabold font-stretch-semi-expanded">
                 {t(`why.${key}.title`)}
@@ -178,22 +172,16 @@ export default async function HomePage() {
 
       <Section aria-labelledby="care-heading" className="pt-0 md:pt-0">
         <Grid className="gap-y-10">
-          <div className="relative col-span-4 aspect-[4/3] md:col-span-4 md:aspect-[4/5]">
-            <StockPhoto
-              photo="workbench"
-              alt={tPhoto("workbench")}
-              sizes="(min-width: 1600px) 480px, (min-width: 768px) 32vw, 100vw"
-              className="grayscale"
-            />
-          </div>
-          <div className="col-span-4 md:col-span-8 md:col-start-5">
+          <div className="col-span-4 md:col-span-6">
             <Label as="p" className="text-grey-600">
               {t("care.label")}
             </Label>
             <Heading level="headline" as="h2" id="care-heading" className="mt-4">
               {t("care.heading")}
             </Heading>
-            <PriceList className="mt-10 max-w-xl">
+          </div>
+          <div className="col-span-4 md:col-span-6">
+            <PriceList>
               {services.map((service) => (
                 <PriceRow
                   key={service.key}
@@ -209,15 +197,18 @@ export default async function HomePage() {
                 />
               ))}
             </PriceList>
-            <Label as="p" className="mt-4 text-grey-600">
-              {t("care.note")}
-            </Label>
-            <Link href="/repairs#book" className={`mt-8 ${buttonClass("secondary")}`}>
-              {t("careCta")}
-              <Arrow />
-            </Link>
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
+              <Label as="p" className="text-grey-600">
+                {t("care.note")}
+              </Label>
+              <Link href="/repairs#book" className={buttonClass("secondary")}>
+                {t("careCta")}
+                <Arrow />
+              </Link>
+            </div>
           </div>
         </Grid>
+        <WidePhoto photo="workbench" alt={tPhoto("workbench")} />
       </Section>
 
       <Section tone="dark" aria-labelledby="statement-heading">

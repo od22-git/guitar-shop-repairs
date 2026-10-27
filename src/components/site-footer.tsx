@@ -12,9 +12,8 @@ import { Container, Grid } from "./ui/layout";
 import { Label } from "./ui/text";
 import { Wordmark } from "./wordmark";
 
-// The black band that closes every page: three columns on the thirds of the grid, like the
-// pages above (shop; help and the policies; where we work), then the wordmark across the
-// full width.
+// The black band that closes every page: four even columns (shop, help, policies, where we
+// work), two by two on phones, then the wordmark across the full width.
 
 const linkClass =
   "inline-flex min-h-11 items-center underline-offset-4 decoration-2 hover:underline";
@@ -30,18 +29,10 @@ const helpLinks = [
   ["/contact", "contact"],
 ] as const;
 
-function Column({
-  heading,
-  span = "col-span-2",
-  children,
-}: {
-  heading: string;
-  /** Columns on phones, out of 4. */
-  span?: "col-span-2" | "col-span-4";
-  children: ReactNode;
-}) {
+/** A quarter of the footer on wide screens, half on phones. */
+function Column({ heading, children }: { heading: string; children: ReactNode }) {
   return (
-    <div className={`${span} md:col-span-4`}>
+    <div className="col-span-2 md:col-span-3">
       <Label as="h2" className="text-grey-400">
         {heading}
       </Label>
@@ -93,10 +84,9 @@ export async function SiteFooter() {
                 </a>
               </li>
             </ul>
-            <Label as="h2" className="mt-10 text-grey-400">
-              {t("policiesHeading")}
-            </Label>
-            <ul className="mt-4">
+          </Column>
+          <Column heading={t("policiesHeading")}>
+            <ul>
               {policies.map((policy) => (
                 <li key={policy}>
                   <Link href={`/policies/${policy}`} className={linkClass}>
@@ -106,7 +96,7 @@ export async function SiteFooter() {
               ))}
             </ul>
           </Column>
-          <Column heading={t("whereHeading")} span="col-span-4">
+          <Column heading={t("whereHeading")}>
             <p className="max-w-[34ch] pt-2.5">
               {t("serviceArea", { location: brand.location[locale] })}
             </p>
