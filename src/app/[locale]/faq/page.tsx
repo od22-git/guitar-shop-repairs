@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { getLocale, getTranslations } from "next-intl/server";
 
-import { Container, Grid } from "@/components/ui/layout";
+import { Container } from "@/components/ui/layout";
 import { Heading, Label, Lead } from "@/components/ui/text";
 import { brand } from "@/config/brand";
 import { policies, policyNumbers } from "@/config/policies";
@@ -18,7 +18,7 @@ import { pageMetadata } from "@/lib/seo";
 const linkClass =
   "inline-flex min-h-11 items-center font-medium underline decoration-blue decoration-2 underline-offset-4 hover:decoration-black";
 
-/** A topic: its heading at the inline start on wide screens, the content beside it. */
+/** A topic: its heading, then the content across the width. */
 function Topic({ id, heading, children }: { id: string; heading: string; children: ReactNode }) {
   return (
     <section
@@ -26,17 +26,10 @@ function Topic({ id, heading, children }: { id: string; heading: string; childre
       aria-labelledby={`${id}-heading`}
       className="scroll-mt-6 border-t border-black py-12 md:py-16"
     >
-      <Grid className="gap-y-6">
-        <Heading
-          level="title"
-          as="h2"
-          id={`${id}-heading`}
-          className="col-span-4 md:sticky md:top-6 md:col-span-4 md:self-start"
-        >
-          {heading}
-        </Heading>
-        <div className="col-span-4 md:col-span-8 md:col-start-5">{children}</div>
-      </Grid>
+      <Heading level="title" as="h2" id={`${id}-heading`}>
+        {heading}
+      </Heading>
+      <div className="mt-6">{children}</div>
     </section>
   );
 }
@@ -83,9 +76,10 @@ export default async function FaqPage() {
 
       {text.keys("groups").map((group) => (
         <Topic key={group} id={group} heading={text(`groups.${group}.heading`)}>
-          <div className="border-t border-grey-300 md:border-t-0">
+          {/* Two columns of questions on wide screens. */}
+          <div className="grid border-t border-grey-300 md:grid-cols-2 md:gap-x-6">
             {text.keys(`groups.${group}.questions`).map((key) => (
-              <div key={key} className="border-b border-grey-300 py-6 md:first:pt-0">
+              <div key={key} className="border-b border-grey-300 py-6">
                 <h3 className="text-lg font-bold">{text(`groups.${group}.questions.${key}.q`)}</h3>
                 <p className="mt-2 max-w-[60ch] text-grey-600">
                   {text(`groups.${group}.questions.${key}.a`, values)}

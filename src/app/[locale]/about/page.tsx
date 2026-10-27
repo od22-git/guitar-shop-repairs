@@ -5,7 +5,7 @@ import { PageHero } from "@/components/page-hero";
 import { PhotoCredits } from "@/components/photo-credits";
 import { Prose } from "@/components/prose";
 import { Arrow, buttonClass } from "@/components/ui/button";
-import { Container, Grid, Section } from "@/components/ui/layout";
+import { Container, Section } from "@/components/ui/layout";
 import { Heading } from "@/components/ui/text";
 import { brand } from "@/config/brand";
 import { policyNumbers } from "@/config/policies";
@@ -43,20 +43,12 @@ export default async function AboutPage() {
       <Section className="pt-0 md:pt-0">
         {sections.map((key) => (
           <section key={key} aria-labelledby={`${key}-heading`} className="border-t border-black">
-            <Grid className="gap-y-6 py-12 md:py-16">
-              <Heading
-                level="title"
-                as="h2"
-                id={`${key}-heading`}
-                className="col-span-4 md:col-span-4"
-              >
+            <div className="py-12 md:py-16">
+              <Heading level="title" as="h2" id={`${key}-heading`}>
                 {t(`sections.${key}.heading`)}
               </Heading>
-              <Prose
-                text={t(`sections.${key}.body`, values)}
-                className="col-span-4 text-lg md:col-span-8 md:col-start-5"
-              />
-            </Grid>
+              <Prose text={t(`sections.${key}.body`, values)} columns className="mt-6 text-lg" />
+            </div>
           </section>
         ))}
 

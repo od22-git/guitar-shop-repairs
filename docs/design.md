@@ -100,12 +100,12 @@ Rules:
 - **Page margins**: 48px (`--spacing-gutter`), 20px on phones, up to a 1600px-wide page (`Container`).
 - **Sections**: 120px apart (`--spacing-section`), 80px on phones (`Section`). Inside a section: label to heading 16–24px, heading to content 48–64px.
 - **Rhythm**: everything on a 4px grid; components use Tailwind's spacing scale.
-- **Column lines** (M9b, after owner feedback that text and photos didn't line up): on wide screens every block starts on the 1st, 5th or 9th column, the thirds the home page's index columns sit on. A photo and its text split 8 + 4 (hero, NANOCORE, page heroes, product page, contact) or 4 + 8 (care prices); four items go two by two on columns 5 and 9 beside their heading (why us, how it works); a page's topics put the heading on columns 1–4 and the content on 5–12 (about, FAQ, policies, forms); the footer has three columns on the same thirds. Text beside a photo lines up with the photo's top edge, or its bottom edge in a hero.
+- **No empty columns** (owner decision, M9b): a photo goes under its text across the full width (21:9 on wide screens, 3:2 on phones), never beside it; the text above it is one row, the lead at the start and the buttons at the end (`IntroRow`, `WidePhoto`, `PageHero` in `src/components/page-hero.tsx`). A section's heading goes above its content (`SectionIntro`, with an optional note beside the heading), and the content spreads across the width: steps four in a row (`Steps`), price lists and FAQ questions in two columns, long text in two columns on large screens (`Prose columns`), form fields side by side. The product page keeps its gallery and buying panel side by side, as shops do. Options compared before the change: stacked, half and half, text on the photo (stacked chosen).
 - **Layouts** used by the mockups:
-  - *Hero*: the display heading across the full width, then a 4-column intro (lead + two buttons) next to an 8-column photo starting on column 5 (the mockups had 7; M9b moved it onto the column lines).
+  - *Hero*: the display heading, then the lead and two buttons in one row, then the photo across the full width.
   - *Index*: three 4-column `RuledColumn`s, each "01 / Name", a title, a line, a link.
-  - *Feature*: an 8-column product photo on `grey-100` next to a 4-column column of name, line and `PriceList` starting on column 9.
-  - *Split*: a 4-column photo next to an 8-column heading and `PriceList` starting on column 5.
+  - *Feature*: name and line in one half, the `PriceList` and button in the other, then the product photo on `grey-100` across the full width.
+  - *Split*: the heading in one half and the `PriceList` in the other, then the photo across the full width.
   - *Statement*: a black `Section` with a mono label, a display heading of at most 15 characters a line, and a full-width photo.
   - On phones every layout is one column; the hero photo comes before the intro.
 
@@ -128,7 +128,8 @@ M9a components, in `src/components/ui/` unless noted. All are server components,
 | `Container`, `Grid`, `Section`, `RuledColumn` | `layout.tsx` | Page margins, the column grid, a section's spacing (`tone="dark"` for the black band), a column opening with a black rule |
 | `PriceList`, `PriceRow` | `layout.tsx` | Name … price rows with a dotted leader: bundles, service prices, specs |
 | `SocialLinks` | `src/components/social-links.tsx` | Instagram and TikTok from `brand.social`; each shows only once its handle is set (footer and Contact) |
-| `PageHero` | `src/components/page-hero.tsx` | M9b. The opening of an inner page (repairs, sell, about): the display heading across the width, then the lead and buttons next to a black-and-white photo (landscape over 7 columns, portrait over 5); on phones the photo comes first |
+| `PageHero`, `IntroRow`, `WidePhoto`, `SectionIntro` | `src/components/page-hero.tsx` | M9b. The opening of an inner page (repairs, sell, about): the display heading, the lead and buttons in one row, then a black-and-white photo across the full width. `SectionIntro` is a section's heading with an optional note beside it |
+| `Steps` | `src/components/steps.tsx` | M9b. A numbered process, four in a row on wide screens |
 | `SiteHeader`, `SiteNav` | `src/components/site-header.tsx`, `site-nav.tsx` | M9b. Wordmark, page links, Contact at the inline end, the language switch; a white bar closed by a black rule. The current section is underlined in blue. Phones show the wordmark, the language switch and a Menu button that opens the links as a list under the bar (Escape or following a link closes it) |
 | `SiteFooter` | `src/components/site-footer.tsx` | M9b. The black band: Shop, Help, Policies and Where columns under mono labels, the social links, then the wordmark across the full width (sized in container units, 8.7cqi, so it always fits) |
 
@@ -150,12 +151,12 @@ Product photos are always the owners' own. Until they exist, product pages use U
 
 Every public page is built from the components above, with copy rewritten in the new voice (`messages/*.json`):
 
-- **Home** follows the approved mockup: the tagline as the display heading (`brand.taglineHighlight` in blue), the index (gear, tones, care), the NANOCORE feature, "Why Midtown Gears, not Amazon", the care prices and the black "Who it’s for" statement. Until M10 makes the NANOCORE a product, its bundles and launch prices come from `src/config/nanocore.ts` and the photo is a grey frame ("photos coming soon"); its button asks on WhatsApp. "Our pick" replaces the mockup's "Most picked", which isn't true before launch.
+- **Home** follows the approved mockup, with photos under their text (see "No empty columns"): the tagline as the display heading (`brand.taglineHighlight` in blue), the index (gear, tones, care), the NANOCORE feature, "Why Midtown Gears, not Amazon", the care prices and the black "Who it’s for" statement. Until M10 makes the NANOCORE a product, its bundles and launch prices come from `src/config/nanocore.ts` and the photo is a grey frame ("photos coming soon"); its button asks on WhatsApp. "Our pick" replaces the mockup's "Most picked", which isn't true before launch.
 - **Shop**: a headline, the category tabs (the current one underlined in blue), the filters as a column of tick boxes under mono labels, and `ProductCard`s with a badge for On hold, Sold and price drops.
 - **Product**: the mockup's layout for the products there are today: gallery, title, price, condition and availability rows, the WhatsApp button, then three promises (checked, delivered, returns) and the details as a spec sheet. The bundle picker, what's in the box and the five checks come with M10.
-- **Repairs** and **Sell** open with `PageHero`, then the price list or the steps (numbered, as they are a sequence), and the form beside its heading. Forms sit straight on the page with black rules between their groups; no cards.
+- **Repairs** and **Sell** open with `PageHero`, then the price list or the steps (numbered, as they are a sequence), and the form under its heading. Forms sit straight on the page with black rules between their groups; no cards.
 - **Ticket tracking**: the ticket number as a headline, progress as black bars, the quote as a spec-sheet table, approval in a grey panel, the amount due on black.
-- **About, FAQ, contact, policies**: a heading at the inline start and the content beside it, topics separated by black rules. The FAQ gained a "Custom tones" group (`/faq#tones`, linked from the home page).
+- **About, FAQ, contact, policies**: each topic's heading above its content, topics separated by black rules; text in two columns on large screens. The FAQ gained a "Custom tones" group (`/faq#tones`, linked from the home page).
 - **404 and error pages**: a heading, a line and two buttons. The global error page (outside the layouts) uses the new fonts too.
 - **Admin**: same layout, new tokens (black header with the wordmark, `grey-100` page, white panels, black buttons, red errors, blue badges).
 

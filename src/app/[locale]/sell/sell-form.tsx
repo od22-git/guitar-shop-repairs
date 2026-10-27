@@ -205,25 +205,28 @@ export function SellForm({ labels, conditions, maxPhotos, locale, turnstileSiteK
         </label>
       </div>
 
-      <Field label={labels.name} name="name" error={error("name")}>
-        <input
-          {...fieldProps("name", error("name"))}
-          autoComplete="name"
-          maxLength={120}
-          className={inputClass}
-        />
-      </Field>
-      <Field label={labels.phone} name="phone" error={error("phone")} hint={labels.phoneHint}>
-        <input
-          {...fieldProps("phone", error("phone"), true)}
-          type="tel"
-          inputMode="tel"
-          autoComplete="tel"
-          dir="ltr"
-          maxLength={40}
-          className={`${inputClass} text-start rtl:text-end`}
-        />
-      </Field>
+      {/* Side by side on wide screens, so the form fills the width. */}
+      <div className="grid items-start gap-6 sm:grid-cols-2">
+        <Field label={labels.name} name="name" error={error("name")}>
+          <input
+            {...fieldProps("name", error("name"))}
+            autoComplete="name"
+            maxLength={120}
+            className={inputClass}
+          />
+        </Field>
+        <Field label={labels.phone} name="phone" error={error("phone")} hint={labels.phoneHint}>
+          <input
+            {...fieldProps("phone", error("phone"), true)}
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            dir="ltr"
+            maxLength={40}
+            className={`${inputClass} text-start rtl:text-end`}
+          />
+        </Field>
+      </div>
 
       <fieldset className="flex flex-col gap-6 border-t border-black pt-6">
         <legend className="float-start mb-2 w-full text-title font-extrabold font-stretch-semi-expanded rtl:leading-[1.4]">
