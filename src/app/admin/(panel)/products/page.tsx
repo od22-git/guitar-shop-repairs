@@ -110,7 +110,11 @@ export default async function ProductsPage({ searchParams }: PageProps<"/admin/p
                     <p className="truncate font-semibold">{product.titleEn}</p>
                     <p className="text-sm text-grey-600">
                       <span dir="ltr">{product.sku}</span>
-                      {product.kind === "gear" && ` · ${product.quantity} in stock`}
+                      {product.kind !== "guitar" &&
+                        product.kind !== "service_addon" &&
+                        ` · ${product.quantity} in stock`}
+                      {product.kind === "service_addon" && " · add-on"}
+                      {product.placeholderPhotos && " · stand-in photos"}
                     </p>
                   </div>
                   <div className="text-end">

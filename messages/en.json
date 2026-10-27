@@ -14,7 +14,9 @@
     "hold": "Hello {brand}, I see {title} (SKU {sku}) is on hold. Please let me know if it comes free.\n{url}",
     "similar": "Hello {brand}, I see {title} (SKU {sku}) has sold. Do you have anything similar?\n{url}",
     "stock": "Hello {brand}, what’s coming into the shop soon?",
-    "nanocore": "Hello {brand}, I’d like to ask about the NANOCORE and its bundles."
+    "nanocore": "Hello {brand}, I’d like to ask about the NANOCORE and its bundles.",
+    "orderVariant": "Hello {brand}, I’d like to order {title}, {variant} (SKU {sku}).\n{url}",
+    "orderVariantAddon": "Hello {brand}, I’d like to order {title}, {variant}, with {addon} (SKU {sku}).\n{url}"
   },
   "Footer": {
     "serviceArea": "Online, delivering across the {location}. Drop-off and collection by appointment, or a courier pickup from anywhere.",
@@ -56,16 +58,12 @@
     },
     "nanocore": {
       "label": "The one we lead with",
-      "body": "A pocket amp-and-effects unit for practice, recording and the stage. One device, three ways to buy it.",
-      "variants": {
-        "device": "Device only",
-        "starter": "Starter Bundle",
-        "custom": "Custom Tone Bundle"
-      },
+      "body": "A pocket amp-and-effects unit for practice, recording and the stage. One device, {count} ways to buy it.",
       "pick": "Our pick",
-      "extraTone": "Extra custom tone, on either bundle",
-      "note": "Launch prices. Order on WhatsApp for now.",
-      "cta": "Ask about NANOCORE",
+      "extraTone": "{addon}, on either bundle",
+      "note": "Launch prices.",
+      "cta": "Choose your bundle",
+      "ask": "Ask about NANOCORE",
       "photo": "NANOCORE photos coming soon"
     },
     "why": {
@@ -222,6 +220,35 @@
       "returns": {
         "title": "{returnDays} days to send it back",
         "body": "Not what you expected? Tell us within {returnDays} days of delivery. <link>Returns policy</link>"
+      }
+    },
+    "from": "From",
+    "waysToBuy": "{count, plural, one {{n} way to buy} other {{n} ways to buy}}",
+    "standIn": "Stand-in photo",
+    "standInNote": "Stand-in photos: they show the idea, not this item. Our own photos are coming soon.",
+    "bundle": {
+      "legend": "Choose a bundle",
+      "pick": "Our pick",
+      "alone": "On its own.",
+      "pack": "With a ready-made Signature Pack of {tones} tones.",
+      "custom": "Up to {slots, plural, one {{n} tone} other {{n} tones}} built for you, approved before it ships.",
+      "addonLegend": "Add to it",
+      "addonOnlyWithTones": "With a bundle that has tones."
+    },
+    "inTheBox": "In the box",
+    "warranty": {
+      "title": "{warrantyMonths}-month local warranty",
+      "body": "If it develops a fault within {warrantyMonths} months of delivery, we repair or replace it here in the {location}. <link>Warranty policy</link>"
+    },
+    "tested": {
+      "title": "Tested by us",
+      "intro": "Every unit goes through five checks at our bench before it ships.",
+      "checks": {
+        "power": "Powers on and charges",
+        "sockets": "Every socket works, with a cable in each",
+        "controls": "Every knob, button and the screen respond",
+        "firmware": "Updated to the latest firmware",
+        "sound": "Played through headphones and an amp, listening for noise and dropouts"
       }
     }
   },
@@ -951,6 +978,37 @@
           "body": "If a courier carries your instrument, pack it in a hard case or a well-padded box. We arrange an insured courier and tell you the fee first."
         }
       }
+    },
+    "warranty": {
+      "title": "Warranty",
+      "description": "The local warranty on the NANOCORE and other new gear: what it covers and how to claim.",
+      "intro": "Every new device and accessory we sell, such as the NANOCORE and its footswitch, comes with a {warrantyMonths}-month warranty from {brand}, handled here in the {location}. It comes on top of your rights under UAE consumer protection law, not instead of them.",
+      "sections": {
+        "covered": {
+          "heading": "What it covers",
+          "body": "Faults in materials or workmanship that show up in normal use: a device that stops powering on or charging, a socket, knob, button or screen that stops working, or a fault that won’t clear with a reset."
+        },
+        "length": {
+          "heading": "{warrantyMonths} months from delivery",
+          "body": "The warranty starts the day you receive the item and lasts {warrantyMonths} months. A repaired or replacement item is covered for the rest of that time."
+        },
+        "remedy": {
+          "heading": "What we do",
+          "body": "We check the item at our bench. If it’s covered, we repair it, or replace it if it can’t be repaired. If we can do neither, we refund what you paid for it. You don’t pay for parts, labour or the courier both ways."
+        },
+        "excluded": {
+          "heading": "What it doesn’t cover",
+          "body": "- damage from drops, liquid, heat or the wrong power supply\n- items opened, modified or repaired by anyone else\n- normal wear, such as scuffs and worn knobs\n- consumables, such as strings and cables once used\n- used guitars and used gear: they have the returns window and are described with every flaw"
+        },
+        "tones": {
+          "heading": "Your tones",
+          "body": "Tones we built for you stay as you approved them; changes after delivery are a new order, as our questions and answers explain. If we repair or replace a device, we load your tones back onto it."
+        },
+        "claim": {
+          "heading": "How to claim",
+          "body": "Message us on WhatsApp with your order number and a short video or description of the fault. We reply within a working day and arrange collection by courier or a drop-off."
+        }
+      }
     }
   },
   "DesignSystem": {
@@ -1006,13 +1064,13 @@
         "title": "Fender Stratocaster, sunburst",
         "detail": "Excellent condition"
       },
-      "pedal": {
-        "title": "Distortion pedal",
-        "detail": "Very good condition"
+      "knobs": {
+        "title": "Bell knobs, set of 3",
+        "detail": "New"
       },
-      "amp": {
-        "title": "Micro amp",
-        "detail": "Good condition"
+      "cable": {
+        "title": "Instrument cable, 3 m",
+        "detail": "New"
       },
       "picks": {
         "title": "Strings and picks bundle",

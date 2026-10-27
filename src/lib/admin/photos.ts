@@ -5,7 +5,7 @@ import { and, asc, eq, max } from "drizzle-orm";
 import type { Database } from "../db/connect";
 import { productImages, products, type ProductImage } from "../db/schema";
 import { photoFileKeys, processPhoto } from "../images";
-import { isSamplePhoto } from "../product-images";
+import { isBundledPhoto } from "../product-images";
 import type { Storage } from "../storage/types";
 
 import { ProductError } from "./products";
@@ -96,7 +96,7 @@ export async function deleteProductPhoto(
     if (siblings.length <= 1) throw new PhotoError("last_photo");
   }
   await db.delete(productImages).where(eq(productImages.id, imageId));
-  if (!isSamplePhoto(image.key)) await storage.delete("public", photoFileKeys(image.key));
+  if (!isBundledPhoto(image.key)) await storage.delete("public", photoFileKeys(image.key));
   return image.productId;
 }
 

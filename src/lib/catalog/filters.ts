@@ -108,6 +108,20 @@ export function catalogSearchParams(query: CatalogQuery): URLSearchParams {
   return params;
 }
 
+/**
+ * Brand, condition, pickup and body filters are for guitars: they're offered only where
+ * every item listed is a guitar (the Used guitars category), not on the whole shop or
+ * the gear categories.
+ */
+export function offersGuitarFilters(products: readonly PublicProduct[]): boolean {
+  return products.length > 0 && products.every((product) => product.kind === "guitar");
+}
+
+/** The query without the guitar filters, for lists that don't offer them. */
+export function withoutGuitarFilters(query: CatalogQuery): CatalogQuery {
+  return { ...query, brands: [], conditions: [], pickupLayouts: [], bodyStyles: [] };
+}
+
 /** True when any filter narrows the list (sorting alone doesn't). */
 export function isFiltered(query: CatalogQuery): boolean {
   return (

@@ -16,3 +16,26 @@ export function productAsk(status: PublicStatus): ProductAsk {
 export function productMessageValues(product: { title: string; sku: string; url: string }) {
   return { title: isolate(product.title), sku: isolateLtr(product.sku), url: product.url };
 }
+
+/**
+ * Message values for ordering one variant, optionally with an add-on: the product values
+ * plus the variant's and add-on's names as shown on the page, isolated the same way.
+ */
+export function variantMessageValues(product: {
+  title: string;
+  sku: string;
+  url: string;
+  variant: string;
+  addon?: string;
+}) {
+  return {
+    ...productMessageValues(product),
+    variant: isolate(product.variant),
+    ...(product.addon !== undefined && { addon: isolate(product.addon) }),
+  };
+}
+
+/** Whether a variant comes with tones, so a tone add-on can go with it. */
+export function variantHasTones(variant: { customToneSlots: number; includesPack: boolean }) {
+  return variant.customToneSlots > 0 || variant.includesPack;
+}

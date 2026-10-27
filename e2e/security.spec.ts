@@ -8,7 +8,8 @@ import { cspViolations, watchCsp } from "./csp";
 const pages = [
   "",
   "/shop",
-  "/shop/electric-guitars",
+  "/shop/used-guitars",
+  "/product/nanocore",
   "/product/fender-stratocaster-sunburst",
   "/repairs",
   "/sell",
@@ -19,6 +20,7 @@ const pages = [
   "/policies/privacy",
   "/policies/returns",
   "/policies/delivery",
+  "/policies/warranty",
   "/policies/repair-terms",
 ];
 

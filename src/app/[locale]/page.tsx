@@ -13,10 +13,13 @@ import { Container, Grid, PriceList, PriceRow, RuledColumn, Section } from "@/co
 import { Price } from "@/components/ui/price";
 import { Eyebrow, Heading, Highlight, Label, Lead, withHighlight } from "@/components/ui/text";
 import { brand } from "@/config/brand";
-import { extraToneFils, nanocoreVariants } from "@/config/nanocore";
+import { FillPhoto } from "@/components/fill-photo";
+import { NANOCORE_SLUG } from "@/config/nanocore";
 import { policyNumbers } from "@/config/policies";
 import { repairServices } from "@/config/repair-services";
 import { Link } from "@/i18n/navigation";
+import { getCatalog } from "@/lib/catalog";
+import { localized, localizedAttrs } from "@/lib/localized";
 import { formatMoney } from "@/lib/money";
 import { pageAlternates } from "@/lib/seo";
 import { shopWhatsAppUrl } from "@/lib/whatsapp/shop-link";
@@ -45,12 +48,19 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function HomePage() {
   const locale = await getLocale();
-  const [t, tRepairs, tPhoto, nanocoreUrl] = await Promise.all([
+  const [t, tRepairs, tPhoto, nanocoreUrl, { products, addons }] = await Promise.all([
     getTranslations("Home"),
     getTranslations("Repairs"),
     getTranslations("Photos"),
     shopWhatsAppUrl(locale, "nanocore"),
+    getCatalog(),
   ]);
+  // The NANOCORE's bundles, as listed in the shop. If it isn't listed (archived, or not
+  // seeded yet), the section just asks on WhatsApp.
+  const nanocore = products.find((p) => p.slug === NANOCORE_SLUG && p.variants.length > 0) ?? null;
+  const [extraTone] = addons;
+  // Its own photo once the owners have shot it; stand-ins stay on the product page.
+  const nanocorePhoto = nanocore && !nanocore.placeholderPhotos ? nanocore.images[0] : undefined;
   const hl = (chunks: ReactNode) => <Highlight>{chunks}</Highlight>;
   const services = careServices.map((key) => repairServices.find((s) => s.key === key)!);
 
@@ -105,50 +115,81 @@ export default async function HomePage() {
               <span translate="no">NANOCORE</span>
             </Heading>
             <Lead wide className="mt-6 text-grey-600">
-              {t("nanocore.body")}
+              {t("nanocore.body", { count: nanocore?.variants.length ?? 3 })}
             </Lead>
           </div>
           <div className="col-span-4 md:col-span-6">
-            <PriceList>
-              {nanocoreVariants.map((variant) => (
-                <PriceRow
-                  key={variant.key}
-                  name={
-                    <>
-                      {t(`nanocore.variants.${variant.key}`)}
-                      {"pick" in variant && <Badge className="ms-2">{t("nanocore.pick")}</Badge>}
-                    </>
-                  }
-                  price={<Price fils={variant.fils} />}
-                />
-              ))}
-              <PriceRow
-                name={<span className="text-grey-600">{t("nanocore.extraTone")}</span>}
-                price={<Price fils={extraToneFils} prefix="+" />}
-              />
-            </PriceList>
+            {nanocore && (
+              <PriceList>
+                {nanocore.variants.map((variant) => {
+                  const name = localized(locale, variant.nameEn, variant.nameAr);
+                  return (
+                    <PriceRow
+                      key={variant.id}
+                      name={
+                        <>
+                          <span {...localizedAttrs(name, locale)}>{name.text}</span>
+                          {variant.featured && <Badge className="ms-2">{t("nanocore.pick")}</Badge>}
+                        </>
+                      }
+                      price={<Price fils={variant.priceFils} />}
+                    />
+                  );
+                })}
+                {extraTone && (
+                  <PriceRow
+                    name={
+                      <span className="text-grey-600">
+                        {t("nanocore.extraTone", {
+                          addon: localized(locale, extraTone.titleEn, extraTone.titleAr).text,
+                        })}
+                      </span>
+                    }
+                    price={<Price fils={extraTone.priceFils} prefix="+" />}
+                  />
+                )}
+              </PriceList>
+            )}
             <div className="mt-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
-              <Label as="p" className="text-grey-600">
-                {t("nanocore.note")}
-              </Label>
-              <a
-                href={nanocoreUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={buttonClass("primary")}
-              >
-                {t("nanocore.cta")}
-                <Arrow />
-              </a>
+              {nanocore && (
+                <Label as="p" className="text-grey-600">
+                  {t("nanocore.note")}
+                </Label>
+              )}
+              {nanocore ? (
+                <Link href={`/product/${nanocore.slug}`} className={buttonClass("primary")}>
+                  {t("nanocore.cta")}
+                  <Arrow />
+                </Link>
+              ) : (
+                <a
+                  href={nanocoreUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={buttonClass("primary")}
+                >
+                  {t("nanocore.ask")}
+                  <Arrow />
+                </a>
+              )}
             </div>
           </div>
         </Grid>
-        {/* The owners' NANOCORE photo goes here (M10). */}
-        <div className="mt-10 flex aspect-[4/3] items-center justify-center bg-grey-100 p-6 md:mt-12 md:aspect-[3/1]">
-          <Label as="p" className="text-center text-grey-600">
-            {t("nanocore.photo")}
-          </Label>
-        </div>
+        {nanocorePhoto ? (
+          <div className="relative mt-10 aspect-[4/3] bg-grey-100 md:mt-12 md:aspect-[3/1]">
+            <FillPhoto
+              src={nanocorePhoto.src}
+              alt={localized(locale, nanocorePhoto.altEn ?? "NANOCORE", nanocorePhoto.altAr).text}
+              sizes="(min-width: 1600px) 1504px, 100vw"
+            />
+          </div>
+        ) : (
+          <div className="mt-10 flex aspect-[4/3] items-center justify-center bg-grey-100 p-6 md:mt-12 md:aspect-[3/1]">
+            <Label as="p" className="text-center text-grey-600">
+              {t("nanocore.photo")}
+            </Label>
+          </div>
+        )}
       </Section>
 
       <Section aria-labelledby="why-heading" className="pt-0 md:pt-0">

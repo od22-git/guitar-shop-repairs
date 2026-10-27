@@ -5,10 +5,12 @@ import { notFound } from "next/navigation";
 import { asc, eq } from "drizzle-orm";
 
 import { getProductRow, ProductError, publishProblems } from "@/lib/admin/products";
+import { kindHasVariants, listVariants } from "@/lib/admin/variants";
 import { requireAdmin } from "@/lib/auth";
 import { dubaiDateInputValueInDays, formatDate } from "@/lib/datetime";
 import { db } from "@/lib/db/client";
 import { productImages } from "@/lib/db/schema";
+import { filsToDecimalString } from "@/lib/money";
 import { productImageSrc } from "@/lib/product-images";
 
 import { updateProductAction } from "../actions";
@@ -18,6 +20,7 @@ import { statusLabels } from "../status";
 
 import { PhotosPanel } from "./photos-panel";
 import { StatusPanel } from "./status-panel";
+import { VariantsPanel } from "./variants-panel";
 
 export const metadata: Metadata = { title: "Edit product" };
 
@@ -39,12 +42,13 @@ export default async function EditProductPage({
   await requireAdmin();
   const [{ id }, { created }] = await Promise.all([params, searchParams]);
   const product = await load(id);
-  const [photos, options] = await Promise.all([
+  const [photos, variants, options] = await Promise.all([
     db
       .select()
       .from(productImages)
       .where(eq(productImages.productId, product.id))
       .orderBy(asc(productImages.sort), asc(productImages.id)),
+    listVariants(db, product.id),
     productFormOptions(),
   ]);
   const listed = ["available", "reserved", "sold"].includes(product.status);
@@ -97,6 +101,27 @@ export default async function EditProductPage({
         publishProblems={publishProblems(product, photos.length)}
       />
 
+      {kindHasVariants(product.kind) && (
+        <VariantsPanel
+          productId={product.id}
+          variants={variants.map((variant) => ({
+            id: variant.id,
+            nameEn: variant.nameEn,
+            nameAr: variant.nameAr ?? "",
+            priceFils: filsToDecimalString(variant.priceFils).replace(/\.00$/, ""),
+            compareAtFils:
+              variant.compareAtFils === null
+                ? ""
+                : filsToDecimalString(variant.compareAtFils).replace(/\.00$/, ""),
+            customToneSlots: String(variant.customToneSlots),
+            includesPack: variant.includesPack,
+            featured: variant.featured,
+            active: variant.active,
+            sort: String(variant.sort),
+          }))}
+        />
+      )}
+
       <PhotosPanel
         productId={product.id}
         photos={photos.map((photo) => ({
@@ -116,6 +141,7 @@ export default async function EditProductPage({
         values={productFormValues(product)}
         creating={false}
         slugLocked={product.publishedAt !== null}
+        priceFromVariants={variants.some((variant) => variant.active)}
       />
     </>
   );

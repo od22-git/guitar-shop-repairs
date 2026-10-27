@@ -14,10 +14,14 @@ const absolute = (path: string) => new URL(path, env.SITE_URL).toString();
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { categories, products } = await getCatalog();
+  // Empty categories (footswitches before launch) stay out, as they do from the menu.
+  const listed = new Set(products.map((product) => product.category.slug));
   const pages: { href: string; lastModified?: Date; image?: string }[] = [
     { href: "/" },
     { href: "/shop" },
-    ...categories.map((category) => ({ href: `/shop/${category.slug}` })),
+    ...categories
+      .filter((category) => listed.has(category.slug))
+      .map((category) => ({ href: `/shop/${category.slug}` })),
     ...products.map((product) => ({
       href: `/product/${product.slug}`,
       lastModified: product.updatedAt,

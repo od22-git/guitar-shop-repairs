@@ -5,11 +5,12 @@ import type { Database } from "../db/connect";
 import { productCondition, productImages, productKind, products, type Product } from "../db/schema";
 import { photoFileKeys } from "../images";
 import { MAX_FILS, parseAedToFils } from "../money";
-import { isSamplePhoto } from "../product-images";
+import { isBundledPhoto } from "../product-images";
 import { bodyStyles, pickupLayouts, productSpecsSchema, type ProductSpecs } from "../product-specs";
 import type { Storage } from "../storage/types";
 
 import { uniqueViolation } from "./db-errors";
+import { syncVariantPrice } from "./variants";
 
 // Creating and editing products in the admin. Stock changes (hold, sell, restock) go
 // through src/lib/inventory.ts; these only change what a product is and whether it is
@@ -22,6 +23,7 @@ export type ProductProblem =
   | "sku_taken"
   | "listed_needs_price_and_category"
   | "guitar_single"
+  | "addon_kind"
   | "not_draft"
   | "cannot_archive"
   | "not_archived"
@@ -112,6 +114,10 @@ const formSchema = z
     compareAtFils: money,
     costFils: money,
     quantity: optionalInt(0, 999),
+    inTheBoxEn: optionalText(1000),
+    inTheBoxAr: optionalText(1000),
+    // A tick box: "on" when ticked, absent otherwise.
+    placeholderPhotos: z.preprocess((value) => value === "on" || value === "true", z.boolean()),
   })
   .superRefine((value, ctx) => {
     if (value.compareAtFils !== undefined) {
@@ -206,6 +212,9 @@ function columns(input: ProductInput) {
     descriptionAr: input.descriptionAr ?? null,
     techNotesEn: input.techNotesEn ?? null,
     techNotesAr: input.techNotesAr ?? null,
+    inTheBoxEn: input.inTheBoxEn ?? null,
+    inTheBoxAr: input.inTheBoxAr ?? null,
+    placeholderPhotos: input.placeholderPhotos,
     condition: input.condition ?? null,
     priceFils: input.priceFils ?? null,
     compareAtFils: input.compareAtFils ?? null,
@@ -221,9 +230,10 @@ function rethrowUnique(error: unknown): never {
   throw error;
 }
 
-/** Adds a draft. A guitar is always one item. */
+/** Adds a draft. A guitar is always one item; a service add-on has no stock. */
 export async function createProduct(db: Database, input: ProductInput): Promise<number> {
-  const quantity = input.kind === "guitar" ? 1 : (input.quantity ?? 1);
+  const quantity =
+    input.kind === "guitar" ? 1 : input.kind === "service_addon" ? 0 : (input.quantity ?? 1);
   try {
     const [row] = await db
       .insert(products)
@@ -255,9 +265,20 @@ export async function updateProduct(db: Database, id: number, input: ProductInpu
     throw new ProductError("listed_needs_price_and_category");
   }
   if (input.kind === "guitar" && current.quantity > 1) throw new ProductError("guitar_single");
+  // An add-on has no stock, so a product becomes one only with none, and stops being one
+  // only as a draft (a listed product needs stock).
+  const toAddon = input.kind === "service_addon" && current.kind !== "service_addon";
+  const fromAddon = current.kind === "service_addon" && input.kind !== "service_addon";
+  if ((toAddon && current.quantity > 0) || (fromAddon && current.status !== "draft")) {
+    throw new ProductError("addon_kind");
+  }
 
   try {
-    await db.update(products).set(columns(input)).where(eq(products.id, id));
+    await db.transaction(async (tx) => {
+      await tx.update(products).set(columns(input)).where(eq(products.id, id));
+      // With variants, the price comes from them.
+      await syncVariantPrice(tx, id);
+    });
   } catch (error) {
     rethrowUnique(error);
   }
@@ -271,14 +292,18 @@ export async function photoCount(db: Database, productId: number): Promise<numbe
   return row.n;
 }
 
-/** What stops a product from being published; empty when it's ready. */
+/**
+ * What stops a product from being published; empty when it's ready. A service add-on
+ * has no page, photos or stock, only a title, price and category.
+ */
 export function publishProblems(product: Product, photos: number): string[] {
+  const addon = product.kind === "service_addon";
   const problems: string[] = [];
   if (!product.titleEn.trim()) problems.push("Add an English title.");
   if (product.priceFils === null) problems.push("Add a price.");
   if (product.categoryId === null) problems.push("Choose a category.");
-  if (photos < 1) problems.push("Add at least one photo.");
-  if (product.quantity < 1) problems.push("Add stock: the quantity is 0.");
+  if (!addon && photos < 1) problems.push("Add at least one photo.");
+  if (!addon && product.quantity < 1) problems.push("Add stock: the quantity is 0.");
   return problems;
 }
 
@@ -342,7 +367,7 @@ export async function deleteDraft(db: Database, storage: Storage, id: number): P
   });
   if (!deleted) throw new ProductError("already_published");
   const keys = deleted
-    .filter((image) => !isSamplePhoto(image.key))
+    .filter((image) => !isBundledPhoto(image.key))
     .flatMap((i) => photoFileKeys(i.key));
   await storage.delete("public", keys);
 }

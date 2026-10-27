@@ -21,6 +21,14 @@ import {
   updateProduct,
   type ProductProblem,
 } from "@/lib/admin/products";
+import {
+  createVariant,
+  deleteVariant,
+  parseVariantForm,
+  updateVariant,
+  VariantError,
+  type VariantProblem,
+} from "@/lib/admin/variants";
 import { requireAdmin } from "@/lib/auth";
 import { CATALOG_TAG } from "@/lib/catalog";
 import { endOfDubaiDay } from "@/lib/datetime";
@@ -49,6 +57,8 @@ const productMessages: Record<ProductProblem, string> = {
   sku_taken: "Another product already has this SKU.",
   listed_needs_price_and_category: "A listed product needs a price and a category.",
   guitar_single: "There's more than one in stock, so it can't be a guitar.",
+  addon_kind:
+    "A product becomes a service add-on only with no stock, and stops being one only as a draft.",
   not_draft: "Only drafts can be published.",
   cannot_archive: "Release the hold before archiving.",
   not_archived: "Only archived products can be restored.",
@@ -59,6 +69,12 @@ const inventoryMessages: Record<InventoryProblem, string> = {
   not_available: "It isn't available, or there aren't that many in stock.",
   not_reserved: "It isn't on hold.",
   cannot_restock: "Can't restock: a guitar is one item, and a held item needs releasing first.",
+};
+
+const variantMessages: Record<VariantProblem, string> = {
+  not_found: "This variant no longer exists.",
+  product_not_found: "This product no longer exists.",
+  kind: "Guitars and service add-ons are sold one way only, so they have no variants.",
 };
 
 const fieldOf: Partial<Record<ProductProblem, string>> = {
@@ -77,6 +93,7 @@ function failure(error: unknown): ActionState {
   if (error instanceof PublishError) {
     return { ok: false, message: `Not published yet. ${error.problems.join(" ")}` };
   }
+  if (error instanceof VariantError) return { ok: false, message: variantMessages[error.problem] };
   if (error instanceof InventoryError)
     return { ok: false, message: inventoryMessages[error.problem] };
   if (error instanceof PhotoError) {
@@ -279,4 +296,46 @@ export async function updatePhotoAltAction(
     return failure(error);
   }
   return done("Description saved.");
+}
+
+export async function createVariantAction(
+  productId: number,
+  _: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+  const parsed = parseVariantForm(form);
+  if (!parsed.ok) return { ...invalid, errors: parsed.errors };
+  try {
+    await createVariant(db, toId(productId), parsed.data);
+  } catch (error) {
+    return failure(error);
+  }
+  return done("Variant added.");
+}
+
+export async function updateVariantAction(
+  variantId: number,
+  _: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+  const parsed = parseVariantForm(form);
+  if (!parsed.ok) return { ...invalid, errors: parsed.errors };
+  try {
+    await updateVariant(db, toId(variantId), parsed.data);
+  } catch (error) {
+    return failure(error);
+  }
+  return done("Variant saved.");
+}
+
+export async function deleteVariantAction(variantId: number): Promise<ActionState> {
+  await requireAdmin();
+  try {
+    await deleteVariant(db, toId(variantId));
+  } catch (error) {
+    return failure(error);
+  }
+  return done("Variant deleted.");
 }

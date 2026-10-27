@@ -49,8 +49,8 @@ const levels = ["display", "headline", "title", "lead", "body", "label"] as cons
 
 const cards = [
   { key: "strat", photo: "/images/samples/strat-sunburst", fils: 420_000, compareAt: 465_000 },
-  { key: "pedal", photo: "/images/samples/distortion-pedal", fils: 38_000, badge: "outline" },
-  { key: "amp", photo: "/images/samples/micro-amp", fils: 15_000, sold: true },
+  { key: "knobs", photo: "/images/samples/knobs", fils: 3_500, badge: "outline" },
+  { key: "cable", photo: "/images/samples/cable", fils: 6_000, sold: true },
   { key: "picks", photo: "/images/samples/picks", fils: 6_000, badge: "highlight" },
 ] as const;
 

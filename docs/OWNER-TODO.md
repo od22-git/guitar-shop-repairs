@@ -14,10 +14,11 @@ Everything the site needs from you (the partners) before or around launch. Each 
 
 ## Photos and audio
 
-- [ ] **NANOCORE photos (your own).** Default: Unsplash stand-ins flagged `placeholder_photos`; the launch check refuses them. Shot list: [`photo-shot-list.md`](photo-shot-list.md). Needed by M18.
-- [ ] **Footswitch and parts/knobs photos (your own).** Default: Unsplash stand-ins, flagged the same way. Needed by M18.
+- [ ] **NANOCORE photos (your own).** Default since M10: one Unsplash stand-in (a guitarist practising with headphones, not the device), flagged `placeholder_photos` and labelled "Stand-in photo" in the shop; the launch check refuses it, and the home page keeps its grey "photos coming soon" frame until your own are in. Upload yours in the admin, delete the stand-in and untick "The photos are stand-ins". Shot list: [`photo-shot-list.md`](photo-shot-list.md). Needed by M18.
+- [ ] **Footswitch and parts/knobs photos (your own).** Default: none. The footswitch is a draft (it can't be published without a photo and a price); the knobs in the shop are a development sample. Needed when they launch.
 - [x] **Approve the redesign mockups** (home + product page, bold editorial) **and the atmosphere photos** (Unsplash contact sheet). Done in M9a: mockups approved, Arabic font changed to Alexandria at your request, photos left to Claude.
 - [ ] **Approve the redesigned pages.** Screenshots of every page, en and ar, desktop and mobile, are in [`design/m9b/`](design/m9b/). The site already runs on them (M9b); send changes and they go into the next milestone.
+- [ ] **Check the NANOCORE pages** (M10): the bundle picker, "In the box", the warranty and the five checks, the stand-in photo labels and the warranty policy. Screenshots, en and ar, desktop and mobile, are in [`design/m10/`](design/m10/). Send changes and they go into the next milestone.
 - [ ] **Tone demo recordings** for Signature Packs and product pages. Default: placeholder audio. Needed by M16.
 
 ## Services and delivery
@@ -52,9 +53,12 @@ Everything the site needs from you (the partners) before or around launch. Each 
   | Custom Tone Bundle | 349 |
   | Extra custom tone | +50 |
 
-  The home page already shows these launch prices, from `src/config/nanocore.ts` (M9b), until M10 moves them to the product's variants. Needed by M10.
-- [ ] **Warranty length on devices.** Default: 6 months, from `src/config/policies.ts`; the home page, About and product pages quote it. Needed by M10 (warranty policy).
-- [ ] **Footswitch price and landed cost.** Default: a draft product with no price, so it can't be published. Needed when footswitches launch.
+  Since M10 they are the NANOCORE product's variants (Admin → Products → NANOCORE → Variants) and the "Extra custom tone" add-on product; the home page and the product page read them from there. "Our pick" is the Starter Bundle. Confirm by M18.
+- [ ] **NANOCORE stock.** Default: 10 units (the launch batch in the business plan). Change it with Restock or Mark sold in the admin. Needed by M18.
+- [ ] **What's in the NANOCORE box.** Default: "The NANOCORE" and "A cable" (as the design system's bundle card said). Edit "In the box" on the product. Needed by M18.
+- [ ] **The five checks** every device goes through ("Tested by us" on the product page). Default: powers on and charges; every socket works; knobs, buttons and screen respond; latest firmware; played through headphones and an amp. Text in `messages/*.json` (`Product.tested`). Needed by M18.
+- [ ] **Warranty length on devices.** Default: 6 months, from `src/config/policies.ts`; the home page, About, product pages and the warranty policy (`/policies/warranty`, M10) quote it. Needed by M18.
+- [ ] **Footswitch price and landed cost.** Default: the draft "NANOCORE footswitch" (M10) with no price, stock or photo, so it can't be published, and the empty Footswitches category stays out of the shop menu. Needed when footswitches launch.
 - [ ] **Signature Pack names and their tones.** Default: Thrash, Prog Metal, Blues, marked placeholder. Needed by M16.
 - [ ] **Extra tweak-round fee.** Default: AED 25, editable. Needed by M15.
 - [ ] **Included tweak rounds.** Default: 3 (`toneRounds` in `src/config/policies.ts`; the FAQ quotes it from M9b). Needed by M15.
@@ -62,5 +66,5 @@ Everything the site needs from you (the partners) before or around launch. Each 
 
 ## Reviews
 
-- [ ] **Policies:** terms, privacy, returns, delivery, repair terms, and the new 6-month warranty. They are drafts; you (and ideally a lawyer) should review them. Needed by M18.
+- [ ] **Policies:** terms, privacy, returns, delivery, repair terms, and the warranty (drafted in M10: covers faults in new devices and accessories for 6 months from delivery, repair or replace or refund, courier both ways paid by us, excludes drops, liquid, opened or modified items, wear, consumables and used gear). They are drafts; you (and ideally a lawyer) should review them. Needed by M18.
 - [ ] **Arabic copy review** across the site, including the copy rewritten in M9b. Needed by M18.

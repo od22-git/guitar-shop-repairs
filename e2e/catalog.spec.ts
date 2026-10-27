@@ -31,7 +31,7 @@ const productLinks = (page: Page) =>
 const journeys = {
   en: {
     shop: "Shop",
-    category: "Electric guitars",
+    category: "Used guitars",
     filters: "Filters",
     twoItems: "2 items",
     order: "Order on WhatsApp",
@@ -40,7 +40,7 @@ const journeys = {
   },
   ar: {
     shop: "المتجر",
-    category: "جيتارات كهربائية",
+    category: "جيتارات مستعملة",
     filters: "الفلاتر",
     twoItems: "منتجان",
     order: "اطلب عبر واتساب",
@@ -62,12 +62,12 @@ for (const [locale, j] of Object.entries(journeys)) {
     await expect(page).toHaveURL(`/${locale}/shop`);
 
     await page.getByRole("link", { name: j.category, exact: true }).first().click();
-    await expect(page).toHaveURL(`/${locale}/shop/electric-guitars`);
+    await expect(page).toHaveURL(`/${locale}/shop/used-guitars`);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(j.category);
 
     await openFilters(page, j.filters);
     await page.getByRole("checkbox", { name: "Fender" }).check();
-    await expect(page).toHaveURL(`/${locale}/shop/electric-guitars?brand=Fender`);
+    await expect(page).toHaveURL(`/${locale}/shop/used-guitars?brand=Fender`);
     await expect(page.getByText(j.twoItems, { exact: true })).toBeVisible();
     const cards = productLinks(page);
     await expect(cards).toHaveCount(2);
@@ -92,27 +92,40 @@ for (const [locale, j] of Object.entries(journeys)) {
 
 test.describe("filters", () => {
   test("combine, survive a reload, and can be cleared from an empty result", async ({ page }) => {
-    await page.goto("/en/shop?brand=Fender&condition=fair");
+    await page.goto("/en/shop/used-guitars?brand=Fender&condition=fair");
     await expect(page.getByText("Nothing matches these filters.")).toBeVisible();
     await openFilters(page, "Filters");
     await expect(page.getByRole("checkbox", { name: "Fender" })).toBeChecked();
 
     await page.getByRole("link", { name: "Clear filters" }).click();
-    await expect(page).toHaveURL("/en/shop");
-    await expect(page.getByText("9 items", { exact: true })).toBeVisible();
+    await expect(page).toHaveURL("/en/shop/used-guitars");
+    await expect(page.getByText("5 items", { exact: true })).toBeVisible();
     await openFilters(page, "Filters");
     await expect(page.getByRole("checkbox", { name: "Fender" })).not.toBeChecked();
   });
 
   test("filter by pickups, body style, price and availability", async ({ page }) => {
-    await page.goto("/en/shop?pickups=HH");
+    await page.goto("/en/shop/used-guitars?pickups=HH");
     await expect(productLinks(page)).toHaveCount(3);
-    await page.goto("/en/shop?body=t_style");
+    await page.goto("/en/shop/used-guitars?body=t_style");
     await expect(productLinks(page)).toHaveCount(1);
     await page.goto("/en/shop?min=1000&max=3000");
     await expect(productLinks(page)).toHaveCount(3);
     await page.goto("/en/shop?available=1");
     await expect(page.getByText("6 items", { exact: true })).toBeVisible();
+  });
+
+  test("offer guitar filters only on the guitars, and ignore them elsewhere", async ({ page }) => {
+    await page.goto("/en/shop?pickups=HH&brand=Fender");
+    await expect(page.getByText("9 items", { exact: true })).toBeVisible();
+    await openFilters(page, "Filters");
+    await expect(page.getByRole("group", { name: "Brand" })).toHaveCount(0);
+    await expect(page.getByRole("group", { name: "Condition" })).toHaveCount(0);
+    await expect(page.getByRole("checkbox", { name: "Available now only" })).toBeVisible();
+
+    await page.goto("/en/shop/used-guitars");
+    await openFilters(page, "Filters");
+    await expect(page.getByRole("checkbox", { name: "Fender" })).toBeVisible();
   });
 
   test("sorts by price, with sold items last", async ({ page }) => {
@@ -124,7 +137,7 @@ test.describe("filters", () => {
     const hrefs = await page
       .locator("main ul a[href*='/product/']")
       .evaluateAll((links) => links.map((a) => a.getAttribute("href")));
-    expect(hrefs[0]).toBe("/en/product/strings-and-picks-bundle");
+    expect(hrefs[0]).toBe("/en/product/bell-knobs-white-set-of-3");
     expect(hrefs.at(-1)).toBe("/en/product/epiphone-les-paul-standard-cherry");
   });
 
@@ -196,14 +209,14 @@ test.describe("missing pages", () => {
 });
 
 test("an item without Arabic text falls back to English, marked as English", async ({ page }) => {
-  await page.goto("/ar/product/marshall-ms-2-micro-amp");
+  await page.goto("/ar/product/bell-knobs-white-set-of-3");
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
   const title = page.getByRole("heading", { level: 1 });
-  await expect(title).toHaveText("Marshall MS-2 micro amp");
+  await expect(title).toHaveText("Bell knobs, white, set of 3");
   await expect(title).toHaveAttribute("lang", "en");
   await expect(title).toHaveAttribute("dir", "auto");
   await expect(page.getByText("هذا الإعلان متوفر بالإنجليزية فقط حالياً.")).toBeVisible();
-  await expect(page.getByText("Battery-powered 1 W practice amp")).toHaveAttribute("lang", "en");
+  await expect(page.getByText("One volume and two tone knobs")).toHaveAttribute("lang", "en");
   // The page around it stays Arabic.
   await expect(page.getByRole("link", { name: "اطلب عبر واتساب" })).toBeVisible();
 });
@@ -305,8 +318,13 @@ test.describe("SEO", () => {
       expect(xml).toContain(
         `<loc>${siteUrl}/${locale}/product/epiphone-les-paul-standard-cherry</loc>`,
       );
-      expect(xml).toContain(`<loc>${siteUrl}/${locale}/shop/pedals</loc>`);
+      expect(xml).toContain(`<loc>${siteUrl}/${locale}/shop/parts-knobs</loc>`);
+      expect(xml).toContain(`<loc>${siteUrl}/${locale}/product/nanocore</loc>`);
+      expect(xml).toContain(`<loc>${siteUrl}/${locale}/policies/warranty</loc>`);
     }
+    // Footswitches have only a draft so far, and add-ons have no page.
+    expect(xml).not.toContain("/shop/footswitches");
+    expect(xml).not.toContain("extra-custom-tone");
     expect(xml).not.toContain("ibanez-rg550-draft");
   });
 

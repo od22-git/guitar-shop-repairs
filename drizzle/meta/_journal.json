@@ -36,6 +36,13 @@
       "when": 1792997463445,
       "tag": "0004_orders_payments",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793063443075,
+      "tag": "0005_catalog_pivot",
+      "breakpoints": true
     }
   ]
 }

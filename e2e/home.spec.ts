@@ -67,7 +67,9 @@ test("the custom tones link opens the tones questions", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 2, name: "Custom tones" })).toBeVisible();
 });
 
-test("the NANOCORE section lists its bundles and asks on WhatsApp", async ({ page }) => {
+test("the NANOCORE section lists its bundles from the shop and links to its page", async ({
+  page,
+}) => {
   await page.goto("/en");
   const section = page.getByRole("region", { name: "NANOCORE" });
   for (const [name, price] of [
@@ -77,8 +79,12 @@ test("the NANOCORE section lists its bundles and asks on WhatsApp", async ({ pag
   ]) {
     await expect(section.getByRole("listitem").filter({ hasText: name })).toContainText(price);
   }
-  await expect(section.getByRole("link", { name: "Ask about NANOCORE" })).toHaveAttribute(
-    "href",
-    /^https:\/\/wa\.me\/\d+\?text=Hello%20Midtown%20Gears%2C%20I%E2%80%99d%20like%20to%20ask%20about%20the%20NANOCORE/,
-  );
+  await expect(
+    section.getByRole("listitem").filter({ hasText: "Extra custom tone" }),
+  ).toContainText("+AED 50");
+  await expect(section.getByText("Our pick")).toBeVisible();
+  await section.getByRole("link", { name: "Choose your bundle" }).click();
+  await expect(page).toHaveURL("/en/product/nanocore");
+  // Stand-in photos stay off the home page: the frame waits for the owners' own.
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("NANOCORE");
 });

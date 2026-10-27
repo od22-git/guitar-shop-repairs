@@ -217,6 +217,21 @@ describe.each(targets)("inventory on $name", ({ create, concurrent }) => {
       expect(await stock(db, guitar)).toMatchObject({ quantity: 1 });
       expect(await stock(db, held)).toMatchObject({ status: "reserved", quantity: 1 });
     });
+
+    it("adds devices, accessories and parts by the unit, and never stocks a service add-on", async () => {
+      for (const kind of ["device", "accessory", "part"] as const) {
+        const id = await insertProduct(db, { kind, quantity: 2 });
+        await restock(db, id, 3);
+        expect(await stock(db, id), kind).toMatchObject({ quantity: 5 });
+      }
+      const addon = await insertProduct(db, { kind: "service_addon", quantity: 0 });
+      expect(await inventoryError(restock(db, addon))).toMatchObject({
+        problem: "cannot_restock",
+      });
+      expect(await inventoryError(reserve(db, addon))).toMatchObject({
+        problem: "not_available",
+      });
+    });
   });
 
   describe("two buyers, one guitar", () => {

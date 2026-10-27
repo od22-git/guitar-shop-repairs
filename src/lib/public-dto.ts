@@ -4,6 +4,7 @@ import type {
   Payment,
   Product,
   ProductImage,
+  ProductVariant,
   RepairCloseReason,
   RepairEvent,
   RepairEventKind,
@@ -60,6 +61,31 @@ const publicSpecKeys = [
 
 export type PublicSpecs = Pick<ProductSpecs, (typeof publicSpecKeys)[number]>;
 
+/** A way to buy a product (a NANOCORE bundle). Variants share the product's stock. */
+export type PublicVariant = {
+  id: number;
+  nameEn: string;
+  nameAr: string | null;
+  priceFils: number;
+  compareAtFils: number | null;
+  /** Tones built for the customer. */
+  customToneSlots: number;
+  includesPack: boolean;
+  /** "Our pick", chosen first. */
+  featured: boolean;
+};
+
+/** A service sold with a bundle, such as an extra custom tone. It has no page or stock. */
+export type PublicAddon = {
+  slug: string;
+  sku: string;
+  titleEn: string;
+  titleAr: string | null;
+  descriptionEn: string | null;
+  descriptionAr: string | null;
+  priceFils: number;
+};
+
 export type PublicProduct = {
   slug: string;
   sku: string;
@@ -76,12 +102,21 @@ export type PublicProduct = {
   techNotesAr: string | null;
   /** Null for new, ungraded gear. */
   condition: Product["condition"];
+  /** With variants, the lowest variant price ("from"). */
   priceFils: number;
+  /** Null when the product has variants: each variant has its own. */
   compareAtFils: number | null;
   status: PublicStatus;
   specs: PublicSpecs;
   /** In display order; the first is the main photo. */
   images: PublicImage[];
+  /** The photos are free-licence stand-ins, not the product itself: the shop says so. */
+  placeholderPhotos: boolean;
+  /** One item per line. */
+  inTheBoxEn: string | null;
+  inTheBoxAr: string | null;
+  /** Active variants in display order; empty for a product sold one way. */
+  variants: PublicVariant[];
   publishedAt: Date;
   soldAt: Date | null;
   updatedAt: Date;
@@ -112,6 +147,40 @@ export function toPublicImage(image: ProductImage): PublicImage {
   };
 }
 
+export function toPublicVariant(variant: ProductVariant): PublicVariant {
+  return {
+    id: variant.id,
+    nameEn: variant.nameEn,
+    nameAr: variant.nameAr,
+    priceFils: variant.priceFils,
+    compareAtFils: variant.compareAtFils,
+    customToneSlots: variant.customToneSlots,
+    includesPack: variant.includesPack,
+    featured: variant.featured,
+  };
+}
+
+/** A listed add-on, or null for anything else. */
+export function toPublicAddon(product: Product): PublicAddon | null {
+  if (
+    product.kind !== "service_addon" ||
+    product.status !== "available" ||
+    product.priceFils === null ||
+    !product.publishedAt
+  ) {
+    return null;
+  }
+  return {
+    slug: product.slug,
+    sku: product.sku,
+    titleEn: product.titleEn,
+    titleAr: product.titleAr,
+    descriptionEn: product.descriptionEn,
+    descriptionAr: product.descriptionAr,
+    priceFils: product.priceFils,
+  };
+}
+
 function toPublicSpecs(specs: ProductSpecs): PublicSpecs {
   const result: Record<string, unknown> = {};
   for (const key of publicSpecKeys) {
@@ -121,16 +190,24 @@ function toPublicSpecs(specs: ProductSpecs): PublicSpecs {
 }
 
 /**
- * The public view of a product, or null when it isn't listed (a draft, archived, or
- * missing what a listing needs). `images` must be the product's own, in display order.
+ * The public view of a product, or null when it isn't listed (a draft, archived, missing
+ * what a listing needs, or a service add-on, which has no page). `images` and `variants`
+ * must be the product's own, in display order; inactive variants are left out.
  */
 export function toPublicProduct(
   product: Product,
   category: Category | null,
   images: readonly ProductImage[],
+  variants: readonly ProductVariant[] = [],
 ): PublicProduct | null {
-  const { status, priceFils, publishedAt } = product;
-  if (!isPublicStatus(status) || priceFils === null || !publishedAt || !category) return null;
+  const { status, publishedAt } = product;
+  if (!isPublicStatus(status) || product.priceFils === null || !publishedAt || !category) {
+    return null;
+  }
+  if (product.kind === "service_addon") return null;
+  const offered = variants.filter((variant) => variant.active).map(toPublicVariant);
+  const priceFils =
+    offered.length > 0 ? Math.min(...offered.map((v) => v.priceFils)) : product.priceFils;
 
   return {
     slug: product.slug,
@@ -148,10 +225,14 @@ export function toPublicProduct(
     techNotesAr: product.techNotesAr,
     condition: product.condition,
     priceFils,
-    compareAtFils: product.compareAtFils,
+    compareAtFils: offered.length > 0 ? null : product.compareAtFils,
     status,
     specs: toPublicSpecs(product.specs),
     images: images.map(toPublicImage),
+    placeholderPhotos: product.placeholderPhotos,
+    inTheBoxEn: product.inTheBoxEn,
+    inTheBoxAr: product.inTheBoxAr,
+    variants: offered,
     publishedAt,
     soldAt: product.soldAt,
     updatedAt: product.updatedAt,

@@ -14,8 +14,10 @@ async function listProduct(
 ) {
   const sku = `e2e-o-${Date.now().toString(36)}${Math.floor(Math.random() * 1e4)}`;
   await page.goto("/admin/products/new");
-  if (gear) await page.getByLabel("Gear (pedals, amps, parts)").check();
-  await page.getByLabel("Category").selectOption({ label: gear ? "Pedals" : "Electric guitars" });
+  if (gear) await page.getByLabel("An accessory: footswitches, cables, strings").check();
+  await page
+    .getByLabel("Category")
+    .selectOption({ label: gear ? "Parts & knobs" : "Used guitars" });
   await page.getByLabel("Title in English").fill(title);
   await page.getByLabel("Price (AED)", { exact: true }).fill(price);
   await page.getByLabel("SKU").fill(sku);
@@ -53,7 +55,7 @@ async function archive(page: Page, adminUrl: string) {
 
 async function fillCustomer(page: Page, name: string, locale: "English" | "Arabic" = "English") {
   await page.getByLabel("Mobile number").fill(uniquePhone().typed);
-  await page.getByLabel("Name").fill(name);
+  await page.getByLabel("Name", { exact: true }).fill(name);
   await page.getByLabel(locale, { exact: true }).check();
 }
 
@@ -128,6 +130,7 @@ test("cancelling an order puts its stock back", async ({ page, baseURL }, testIn
   const product = await listProduct(page, baseURL ?? "", { title, price: "450", gear: 3 });
 
   await page.getByRole("link", { name: "Make an order" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "New order" })).toBeVisible();
   await fillCustomer(page, "Layla");
   await page.getByLabel("Product 1 quantity").fill("2");
   await page.getByLabel("Product 1 price each (AED)").fill("400");

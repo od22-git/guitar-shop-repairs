@@ -18,9 +18,27 @@ type Props = {
   values: Record<string, string>;
   creating: boolean;
   slugLocked: boolean;
+  /** The price is set from the product's active variants. */
+  priceFromVariants?: boolean;
 };
 
-export function ProductForm({ action, options, values, creating, slugLocked }: Props) {
+const kinds = [
+  ["guitar", "A used guitar"],
+  ["device", "A device, like the NANOCORE"],
+  ["accessory", "An accessory: footswitches, cables, strings"],
+  ["part", "A part: knobs and the like"],
+  ["gear", "Used gear: pedals, amps"],
+  ["service_addon", "A service add-on, like an extra custom tone (no stock, no page)"],
+] as const;
+
+export function ProductForm({
+  action,
+  options,
+  values,
+  creating,
+  slugLocked,
+  priceFromVariants = false,
+}: Props) {
   return (
     <ActionForm action={action} className="flex flex-col gap-6">
       {(pending, state) => {
@@ -67,13 +85,14 @@ export function ProductForm({ action, options, values, creating, slugLocked }: P
             </select>
           </Field>
         );
-        const money = (name: string, label: string, hint?: string) => (
+        const money = (name: string, label: string, hint?: string, readOnly = false) => (
           <Field label={`${label} (AED)`} name={name} error={e[name]} hint={hint}>
             <input
               {...describedBy(name, e[name], !!hint)}
               defaultValue={values[name]}
               inputMode="decimal"
-              className={`${inputClass} tabular-nums`}
+              readOnly={readOnly}
+              className={`${inputClass} tabular-nums read-only:bg-grey-100`}
             />
           </Field>
         );
@@ -82,8 +101,8 @@ export function ProductForm({ action, options, values, creating, slugLocked }: P
           <>
             <fieldset className="flex flex-col gap-4 rounded-lg bg-white p-4 sm:p-6">
               <legend className="float-start mb-2 text-lg font-bold">What it is</legend>
-              <div className="flex gap-6">
-                {(["guitar", "gear"] as const).map((kind) => (
+              <div className="flex flex-col">
+                {kinds.map(([kind, label]) => (
                   <label key={kind} className="flex min-h-11 items-center gap-2">
                     <input
                       type="radio"
@@ -92,7 +111,7 @@ export function ProductForm({ action, options, values, creating, slugLocked }: P
                       defaultChecked={(values.kind ?? "guitar") === kind}
                       className="size-5 accent-black"
                     />
-                    {kind === "guitar" ? "A guitar" : "Gear (pedals, amps, parts)"}
+                    {label}
                   </label>
                 ))}
               </div>
@@ -118,7 +137,14 @@ export function ProductForm({ action, options, values, creating, slugLocked }: P
             <fieldset className="flex flex-col gap-4 rounded-lg bg-white p-4 sm:p-6">
               <legend className="float-start mb-2 text-lg font-bold">Price and stock</legend>
               <div className="grid gap-4 sm:grid-cols-3">
-                {money("priceFils", "Price", "The final price.")}
+                {money(
+                  "priceFils",
+                  "Price",
+                  priceFromVariants
+                    ? "Set from the variants: the lowest one they're offered at."
+                    : "The final price.",
+                  priceFromVariants,
+                )}
                 {money(
                   "compareAtFils",
                   "Earlier price",
@@ -171,12 +197,34 @@ export function ProductForm({ action, options, values, creating, slugLocked }: P
               {area("descriptionAr", "Description in Arabic", true)}
               {area("techNotesEn", "Tech notes in English")}
               {area("techNotesAr", "Tech notes in Arabic", true)}
+              {area("inTheBoxEn", "In the box, in English (one item a line)")}
+              {area("inTheBoxAr", "In the box, in Arabic", true)}
             </fieldset>
 
             <fieldset className="flex flex-col gap-4 rounded-lg bg-white p-4 sm:p-6">
-              <legend className="float-start mb-2 text-lg font-bold">Specs</legend>
+              <legend className="float-start mb-2 text-lg font-bold">Photos</legend>
+              <label className="flex min-h-11 items-start gap-3">
+                <input
+                  type="checkbox"
+                  name="placeholderPhotos"
+                  defaultChecked={values.placeholderPhotos === "true"}
+                  aria-describedby="placeholderPhotos-hint"
+                  className="mt-0.5 size-5 shrink-0 accent-black"
+                />
+                <span>
+                  <span className="font-medium">The photos are stand-ins</span>
+                  <span id="placeholderPhotos-hint" className="block text-sm text-grey-600">
+                    Free-licence photos until you shoot your own, credited in IMAGE_CREDITS.md. The
+                    shop labels them as stand-ins, and the launch check refuses them.
+                  </span>
+                </span>
+              </label>
+            </fieldset>
+
+            <fieldset className="flex flex-col gap-4 rounded-lg bg-white p-4 sm:p-6">
+              <legend className="float-start mb-2 text-lg font-bold">Guitar specs</legend>
               <p className="text-grey-600">
-                Fill in what applies. Values are shown as you type them.
+                Shown on guitars only. Fill in what applies; values are shown as you type them.
               </p>
               <div className="grid gap-4 sm:grid-cols-2">
                 {select("spec.bodyStyle", "Body style", options.bodyStyles)}

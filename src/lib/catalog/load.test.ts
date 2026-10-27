@@ -1,8 +1,8 @@
 import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
-import { productImages, products } from "@/lib/db/schema";
-import { sampleProducts, seed } from "@/lib/db/seed";
+import { productImages, products, productVariants } from "@/lib/db/schema";
+import { sampleProducts, seed, shopProducts } from "@/lib/db/seed";
 import { createPgliteDatabase, type TestDatabase } from "@/test/db";
 import { insertProduct } from "@/test/products";
 
@@ -22,12 +22,15 @@ describe("loadCatalog", () => {
     const { categories, products: listed } = await loadCatalog(test.db);
 
     expect(categories.map((c) => c.slug)).toEqual([
-      "electric-guitars",
-      "pedals",
-      "amps",
-      "parts-accessories",
+      "devices-bundles",
+      "footswitches",
+      "parts-knobs",
+      "used-guitars",
     ]);
-    const expected = sampleProducts.filter((p) => p.status !== "draft");
+    // Drafts aren't listed, and an add-on is offered with bundles rather than listed.
+    const expected = [...shopProducts, ...sampleProducts].filter(
+      (p) => p.status !== "draft" && p.kind !== "service_addon",
+    );
     expect(listed.map((p) => p.slug).sort()).toEqual(expected.map((p) => p.slug).sort());
     expect(listed.some((p) => p.slug === "ibanez-rg550-draft")).toBe(false);
     const published = listed.map((p) => p.publishedAt.getTime());
@@ -44,10 +47,37 @@ describe("loadCatalog", () => {
     ]);
     expect(sg.images[0].ogSrc).toBe("/images/samples/sg-ebony-1-og.jpg");
     expect(sg.category).toEqual({
-      slug: "electric-guitars",
-      nameEn: "Electric guitars",
-      nameAr: "جيتارات كهربائية",
+      slug: "used-guitars",
+      nameEn: "Used guitars",
+      nameAr: "جيتارات مستعملة",
     });
+  });
+
+  it("gives the NANOCORE its active bundles in order, priced from the lowest, and lists the add-on apart", async () => {
+    await seed(test.db);
+    const { products: listed, addons } = await loadCatalog(test.db);
+    const nanocore = listed.find((p) => p.slug === "nanocore")!;
+    expect(nanocore.variants.map((v) => [v.nameEn, v.priceFils])).toEqual([
+      ["Device only", 20_000],
+      ["Starter Bundle", 29_900],
+      ["Custom Tone Bundle", 34_900],
+    ]);
+    expect(nanocore).toMatchObject({ priceFils: 20_000, compareAtFils: null });
+    expect(nanocore.placeholderPhotos).toBe(true);
+    expect(nanocore.images[0].src).toBe("/images/stand-ins/nanocore-player");
+    expect(listed.some((p) => p.kind === "service_addon")).toBe(false);
+    expect(addons).toEqual([
+      expect.objectContaining({ slug: "extra-custom-tone", priceFils: 5_000 }),
+    ]);
+
+    // A switched-off bundle isn't offered, and the "from" price follows what is.
+    await test.db
+      .update(productVariants)
+      .set({ active: false })
+      .where(eq(productVariants.nameEn, "Device only"));
+    const after = (await loadCatalog(test.db)).products.find((p) => p.slug === "nanocore")!;
+    expect(after.variants.map((v) => v.nameEn)).toEqual(["Starter Bundle", "Custom Tone Bundle"]);
+    expect(after.priceFils).toBe(29_900);
   });
 
   it("never includes archived products", async () => {

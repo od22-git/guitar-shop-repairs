@@ -5,6 +5,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Bdi, Ltr } from "@/components/bdi";
+import { BundlePicker } from "@/components/bundle-picker";
 import { ProductGallery } from "@/components/product-gallery";
 import { Badge } from "@/components/ui/badge";
 import { Arrow, buttonClass } from "@/components/ui/button";
@@ -22,10 +23,10 @@ import { env } from "@/lib/env";
 import { localized, localizedAttrs, localizedOptional } from "@/lib/localized";
 import { OG_IMAGE_SIZE } from "@/lib/product-images";
 import { statusKey } from "@/lib/product-status";
-import type { PublicProduct } from "@/lib/public-dto";
+import type { PublicAddon, PublicProduct } from "@/lib/public-dto";
 import { pageMetadata } from "@/lib/seo";
 import { formatWeightKg } from "@/lib/units";
-import { productUrl, productWhatsAppLink } from "@/lib/whatsapp/product-link";
+import { productUrl, productWhatsAppLink, variantWhatsAppLinks } from "@/lib/whatsapp/product-link";
 
 import { productJsonLd } from "./json-ld";
 
@@ -93,13 +94,14 @@ function Spec({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
+/** Brand, model and SKU for everything; the guitar specs only on guitars. */
 async function Specs({ product, locale }: { product: PublicProduct; locale: Locale }) {
   const [t, tBody, tPickups] = await Promise.all([
     getTranslations("Product.specs"),
     getTranslations("BodyStyle"),
     getTranslations("PickupLayout"),
   ]);
-  const { specs } = product;
+  const specs = product.kind === "guitar" ? product.specs : {};
   // Values the owner typed (woods, finishes, models) show as written, isolated so Latin
   // text sits correctly in Arabic lines.
   const typed = (value: string | undefined, key: Parameters<typeof t>[0]) =>
@@ -154,14 +156,27 @@ const linkClass =
 
 // What every listing promises, under the photos. Not a sequence, so not numbered.
 const promises = ["checked", "delivery", "returns"] as const;
+// The checks every device goes through before it ships ("tested by us").
+const deviceChecks = ["power", "sockets", "controls", "firmware", "sound"] as const;
+
+/** New devices and their accessories carry the local warranty; used gear has returns. */
+const hasWarranty = (product: PublicProduct) =>
+  product.kind === "device" || product.kind === "accessory";
 
 export default async function ProductPage({ params }: PageProps<"/[locale]/product/[slug]">) {
-  const [locale, product] = await Promise.all([getLocale(), productFor(params)]);
-  const [t, tNav, tCondition, whatsapp] = await Promise.all([
+  const [locale, product, { addons }] = await Promise.all([
+    getLocale(),
+    productFor(params),
+    getCatalog(),
+  ]);
+  // Bundles of a device can take a tone add-on (the extra custom tone).
+  const addon = product.kind === "device" ? (addons[0] ?? null) : null;
+  const [t, tNav, tCondition, whatsapp, variantLinks] = await Promise.all([
     getTranslations("Product"),
     getTranslations("Nav"),
     getTranslations("Condition"),
     productWhatsAppLink(locale, product),
+    variantWhatsAppLinks(locale, product, addon),
   ]);
 
   const title = localized(locale, product.titleEn, product.titleAr);
@@ -182,6 +197,37 @@ export default async function ProductPage({ params }: PageProps<"/[locale]/produ
     alt: localized(locale, image.altEn ?? title.text, image.altAr).text,
   }));
   const values = { location: brand.location[locale], ...policyNumbers };
+  const guitar = product.kind === "guitar";
+  // The bundle picker replaces the order button while it can be ordered; otherwise the
+  // one availability and the hold or "similar" question apply to every variant.
+  const picking = product.variants.length > 0 && whatsapp.ask === "order";
+  const inTheBox = localizedOptional(locale, product.inTheBoxEn, product.inTheBoxAr);
+  // What a bundle adds, from its flags: a Signature Pack, tones built for the customer.
+  const variantDetail = (variant: PublicProduct["variants"][number]) => {
+    const parts = [
+      variant.includesPack && t("bundle.pack", { tones: policyNumbers.packTones }),
+      variant.customToneSlots > 0 &&
+        t("bundle.custom", {
+          slots: variant.customToneSlots,
+          n: String(variant.customToneSlots),
+        }),
+    ].filter(Boolean);
+    return parts.length > 0 ? parts.join(" ") : t("bundle.alone");
+  };
+  const addonOption = (extra: PublicAddon) => {
+    const name = localized(locale, extra.titleEn, extra.titleAr);
+    const about = localizedOptional(locale, extra.descriptionEn, extra.descriptionAr);
+    return {
+      legend: t("bundle.addonLegend"),
+      label: <span {...localizedAttrs(name, locale)}>{name.text}</span>,
+      detail: about ? (
+        <span {...localizedAttrs(about, locale)}>{about.text}</span>
+      ) : (
+        t("bundle.addonOnlyWithTones")
+      ),
+      price: <Price fils={extra.priceFils} prefix="+" />,
+    };
+  };
 
   return (
     <article>
@@ -193,6 +239,9 @@ export default async function ProductPage({ params }: PageProps<"/[locale]/produ
             description: description?.text ?? null,
             url: productUrl(locale, product.slug),
             siteUrl: env.SITE_URL,
+            variantNames: new Map(
+              product.variants.map((v) => [v.id, localized(locale, v.nameEn, v.nameAr).text]),
+            ),
           }),
         }}
       />
@@ -236,6 +285,14 @@ export default async function ProductPage({ params }: PageProps<"/[locale]/produ
             ) : (
               <div className="aspect-[4/5] bg-grey-100 md:aspect-square" />
             )}
+            {product.placeholderPhotos && images.length > 0 && (
+              <p className="mt-3 flex items-baseline gap-3 text-sm text-grey-600">
+                <Badge variant="outline" className="shrink-0 whitespace-nowrap">
+                  {t("standIn")}
+                </Badge>
+                {t("standInNote")}
+              </p>
+            )}
           </div>
 
           <div className="col-span-4 md:sticky md:top-6 md:col-span-4 md:self-start">
@@ -258,23 +315,64 @@ export default async function ProductPage({ params }: PageProps<"/[locale]/produ
                   {t(`status.${status}`)}
                 </p>
               ) : (
-                <Price fils={product.priceFils} compareAtFils={product.compareAtFils} size="lg" />
+                <>
+                  {product.variants.length > 1 && (
+                    <Label as="p" className="mb-1 text-grey-600">
+                      {t("from")}
+                    </Label>
+                  )}
+                  <Price fils={product.priceFils} compareAtFils={product.compareAtFils} size="lg" />
+                </>
               )}
             </div>
 
-            <dl className="mt-8 border-t border-black">
-              <div className="flex flex-wrap items-baseline justify-between gap-x-6 border-b border-grey-300 py-3">
-                <dt className="text-grey-600">{t("condition")}</dt>
-                <dd className="text-end">
-                  <span className="font-bold">{tCondition(product.condition ?? "new")}</span>{" "}
-                  <Link
-                    href={{ pathname: "/faq", hash: "condition" }}
-                    className={`ms-2 text-sm ${linkClass}`}
-                  >
-                    {t("conditionGuide")}
-                  </Link>
-                </dd>
+            {picking && (
+              <div className="mt-8">
+                <BundlePicker
+                  legend={t("bundle.legend")}
+                  cta={cta}
+                  defaultId={(product.variants.find((v) => v.featured) ?? product.variants[0]).id}
+                  variants={product.variants.map((variant) => {
+                    const name = localized(locale, variant.nameEn, variant.nameAr);
+                    const links = variantLinks.find((link) => link.id === variant.id)!;
+                    return {
+                      id: variant.id,
+                      label: (
+                        <>
+                          <span {...localizedAttrs(name, locale)}>{name.text}</span>
+                          {variant.featured && <Badge className="ms-2">{t("bundle.pick")}</Badge>}
+                        </>
+                      ),
+                      detail: variantDetail(variant),
+                      price: (
+                        <Price fils={variant.priceFils} compareAtFils={variant.compareAtFils} />
+                      ),
+                      href: links.href,
+                      withAddon: links.withAddon,
+                    };
+                  })}
+                  addon={addon && addonOption(addon)}
+                />
               </div>
+            )}
+
+            <dl className="mt-8 border-t border-black">
+              {(guitar || product.condition !== null) && (
+                <div className="flex flex-wrap items-baseline justify-between gap-x-6 border-b border-grey-300 py-3">
+                  <dt className="text-grey-600">{t("condition")}</dt>
+                  <dd className="text-end">
+                    <span className="font-bold">{tCondition(product.condition ?? "new")}</span>{" "}
+                    {guitar && (
+                      <Link
+                        href={{ pathname: "/faq", hash: "condition" }}
+                        className={`ms-2 text-sm ${linkClass}`}
+                      >
+                        {t("conditionGuide")}
+                      </Link>
+                    )}
+                  </dd>
+                </div>
+              )}
               <div className="flex items-baseline justify-between gap-x-6 border-b border-grey-300 py-3">
                 <dt className="text-grey-600">{t("availability")}</dt>
                 <dd className="flex items-center gap-2 font-bold">
@@ -287,19 +385,21 @@ export default async function ProductPage({ params }: PageProps<"/[locale]/produ
               </div>
             </dl>
 
-            <a
-              href={whatsapp.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              data-ask={whatsapp.ask}
-              className={`mt-8 ${buttonClass(whatsapp.ask === "order" ? "primary" : "secondary", { block: true })}`}
-            >
-              <span className="inline-flex items-center gap-3">
-                <WhatsAppIcon className="size-5" />
-                {cta}
-              </span>
-              <Arrow />
-            </a>
+            {!picking && (
+              <a
+                href={whatsapp.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-ask={whatsapp.ask}
+                className={`mt-8 ${buttonClass(whatsapp.ask === "order" ? "primary" : "secondary", { block: true })}`}
+              >
+                <span className="inline-flex items-center gap-3">
+                  <WhatsAppIcon className="size-5" />
+                  {cta}
+                </span>
+                <Arrow />
+              </a>
+            )}
             <p className="mt-4 max-w-[48ch] text-sm text-grey-600">{note}</p>
           </div>
         </Grid>
@@ -323,6 +423,62 @@ export default async function ProductPage({ params }: PageProps<"/[locale]/produ
             </RuledColumn>
           ))}
         </Grid>
+
+        {(hasWarranty(product) || inTheBox) && (
+          <Grid className="mt-20 gap-y-10 md:mt-28">
+            {inTheBox && (
+              <RuledColumn className="col-span-4">
+                <h2 className="text-title font-extrabold tracking-[-0.01em] font-stretch-semi-expanded rtl:leading-[1.4] rtl:tracking-normal">
+                  {t("inTheBox")}
+                </h2>
+                <ul className="mt-3 max-w-[40ch]" {...localizedAttrs(inTheBox, locale)}>
+                  {inTheBox.text
+                    .split("\n")
+                    .map((line) => line.trim())
+                    .filter(Boolean)
+                    .map((line) => (
+                      <li key={line} className="border-b border-grey-300 py-2">
+                        {line}
+                      </li>
+                    ))}
+                </ul>
+              </RuledColumn>
+            )}
+            {hasWarranty(product) && (
+              <RuledColumn className="col-span-4">
+                <h2 className="text-title font-extrabold tracking-[-0.01em] font-stretch-semi-expanded rtl:leading-[1.4] rtl:tracking-normal">
+                  {t("warranty.title", values)}
+                </h2>
+                <p className="mt-3 max-w-[40ch] text-grey-600">
+                  {t.rich("warranty.body", {
+                    ...values,
+                    link: (chunks) => (
+                      <Link href="/policies/warranty" className={linkClass}>
+                        {chunks}
+                      </Link>
+                    ),
+                  })}
+                </p>
+              </RuledColumn>
+            )}
+            {product.kind === "device" && (
+              <RuledColumn className="col-span-4">
+                <h2 className="text-title font-extrabold tracking-[-0.01em] font-stretch-semi-expanded rtl:leading-[1.4] rtl:tracking-normal">
+                  {t("tested.title")}
+                </h2>
+                <p className="mt-3 max-w-[40ch] text-grey-600">{t("tested.intro")}</p>
+                <ol className="mt-4 max-w-[40ch]">
+                  {deviceChecks.map((check, i) => (
+                    <li key={check} className="flex gap-4 border-b border-grey-300 py-2">
+                      <Label className="pt-1 tabular-nums">{`0${i + 1}`}</Label>
+                      <span>{t(`tested.checks.${check}`)}</span>
+                    </li>
+                  ))}
+                </ol>
+              </RuledColumn>
+            )}
+          </Grid>
+        )}
 
         <Grid className="mt-20 gap-y-16 md:mt-28">
           <div className="col-span-4 flex flex-col gap-12 md:col-span-8">

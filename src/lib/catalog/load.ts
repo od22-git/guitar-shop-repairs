@@ -1,10 +1,19 @@
 import { asc, desc, inArray } from "drizzle-orm";
 
 import type { Database } from "../db/connect";
-import { categories, productImages, products, type ProductImage } from "../db/schema";
 import {
+  categories,
+  productImages,
+  products,
+  productVariants,
+  type ProductImage,
+  type ProductVariant,
+} from "../db/schema";
+import {
+  toPublicAddon,
   toPublicCategory,
   toPublicProduct,
+  type PublicAddon,
   type PublicCategory,
   type PublicProduct,
   type PublicStatus,
@@ -14,8 +23,10 @@ import {
 export type Catalog = {
   /** In menu order. */
   categories: PublicCategory[];
-  /** Listed products, newest first. */
+  /** Listed products, newest first. Service add-ons aren't products with a page. */
   products: PublicProduct[];
+  /** Listed service add-ons (an extra custom tone), offered with bundles. */
+  addons: PublicAddon[];
 };
 
 const listed: PublicStatus[] = ["available", "reserved", "sold"];
@@ -30,23 +41,28 @@ export async function loadCatalog(db: Database): Promise<Catalog> {
       .orderBy(desc(products.publishedAt), desc(products.id)),
   ]);
 
-  const imageRows =
-    productRows.length === 0
-      ? []
-      : await db
-          .select()
-          .from(productImages)
-          .where(
-            inArray(
-              productImages.productId,
-              productRows.map((p) => p.id),
-            ),
-          )
-          .orderBy(asc(productImages.sort), asc(productImages.id));
+  const ids = productRows.map((p) => p.id);
+  const [imageRows, variantRows] =
+    ids.length === 0
+      ? [[], []]
+      : await Promise.all([
+          db
+            .select()
+            .from(productImages)
+            .where(inArray(productImages.productId, ids))
+            .orderBy(asc(productImages.sort), asc(productImages.id)),
+          db
+            .select()
+            .from(productVariants)
+            .where(inArray(productVariants.productId, ids))
+            .orderBy(asc(productVariants.sort), asc(productVariants.id)),
+        ]);
 
   const categoryById = new Map(categoryRows.map((c) => [c.id, c]));
   const imagesByProduct = Map.groupBy(imageRows, (image) => image.productId);
+  const variantsByProduct = Map.groupBy(variantRows, (variant) => variant.productId);
   const noImages: ProductImage[] = [];
+  const noVariants: ProductVariant[] = [];
 
   return {
     categories: categoryRows.map(toPublicCategory),
@@ -56,8 +72,13 @@ export async function loadCatalog(db: Database): Promise<Catalog> {
         product,
         category ?? null,
         imagesByProduct.get(product.id) ?? noImages,
+        variantsByProduct.get(product.id) ?? noVariants,
       );
       return result ? [result] : [];
+    }),
+    addons: productRows.flatMap((product) => {
+      const addon = toPublicAddon(product);
+      return addon ? [addon] : [];
     }),
   };
 }
