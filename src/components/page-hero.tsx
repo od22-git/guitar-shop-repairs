@@ -9,13 +9,32 @@ import { Heading, Lead } from "./ui/text";
 // Photos sit under their text across the full width, never beside it (owner decision, M9b):
 // side by side, the short text left an empty column next to the photo.
 
-/** A lead paragraph with its buttons: one row on wide screens, lead at the start. */
+/**
+ * A lead paragraph with its buttons: one row on wide screens, lead at the start. Without
+ * buttons the lead is set larger across the full width, so it leaves no empty half.
+ */
 export function IntroRow({ lead, actions }: { lead: ReactNode; actions?: ReactNode }) {
+  if (!actions) return <IntroText className="mt-10 md:mt-14">{lead}</IntroText>;
   return (
     <div className="mt-10 flex flex-col gap-8 md:mt-14 md:flex-row md:items-end md:justify-between md:gap-12">
       <Lead wide>{lead}</Lead>
-      {actions && <div className="flex shrink-0 flex-col gap-3 sm:flex-row">{actions}</div>}
+      <div className="flex shrink-0 flex-col gap-3 sm:flex-row">{actions}</div>
     </div>
+  );
+}
+
+/** An intro paragraph under a page's heading, set large across the full width. */
+export function IntroText({
+  className = "",
+  children,
+}: {
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <p className={`text-[clamp(1.375rem,2.2vw,2rem)] leading-[1.3] text-balance ${className}`}>
+      {children}
+    </p>
   );
 }
 

@@ -4,8 +4,9 @@ import { notFound } from "next/navigation";
 
 import { Bdi } from "@/components/bdi";
 import { Prose } from "@/components/prose";
-import { Container } from "@/components/ui/layout";
-import { Heading, Label, Lead } from "@/components/ui/text";
+import { IntroText } from "@/components/page-hero";
+import { Container, RuledColumn } from "@/components/ui/layout";
+import { Heading, Label } from "@/components/ui/text";
 import { brand } from "@/config/brand";
 import { isPolicySlug, policies, policiesUpdated, policyNumbers } from "@/config/policies";
 import { Link } from "@/i18n/navigation";
@@ -68,25 +69,24 @@ export default async function PolicyPage({ params }: PageProps<"/[locale]/polici
       <Heading level="headline" as="h1" className="mt-4">
         {t("title")}
       </Heading>
-      <Lead wide className="mt-6 mb-12 text-grey-600 md:mb-20">
-        {t("intro", values)}
-      </Lead>
+      <IntroText className="mt-6 mb-12 md:mb-20">{t("intro", values)}</IntroText>
 
-      {sections.map((key) => (
-        <section
-          key={key}
-          aria-labelledby={`${key}-heading`}
-          className="border-t border-black py-10 md:py-14"
-        >
-          <Heading level="title" as="h2" id={`${key}-heading`}>
-            {t(`sections.${key}.heading`, values)}
-          </Heading>
-          <Prose text={t(`sections.${key}.body`, values)} columns className="mt-6 text-lg" />
-          {policy === "delivery" && key === "fees" && <DeliveryZones />}
-        </section>
-      ))}
+      {/* Two sections a row, each a column opening with a black rule. */}
+      <div className="grid gap-x-6 gap-y-12 md:grid-cols-2 md:gap-y-16">
+        {sections.map((key) => (
+          <RuledColumn key={key}>
+            <section aria-labelledby={`${key}-heading`}>
+              <Heading level="title" as="h2" id={`${key}-heading`}>
+                {t(`sections.${key}.heading`, values)}
+              </Heading>
+              <Prose text={t(`sections.${key}.body`, values)} className="mt-4 text-lg" />
+              {policy === "delivery" && key === "fees" && <DeliveryZones />}
+            </section>
+          </RuledColumn>
+        ))}
+      </div>
 
-      <nav aria-labelledby="other-policies" className="border-t border-black pt-8">
+      <nav aria-labelledby="other-policies" className="mt-16 border-t border-black pt-8 md:mt-20">
         <Label as="h2" id="other-policies" className="text-grey-600">
           {tPolicies("others")}
         </Label>

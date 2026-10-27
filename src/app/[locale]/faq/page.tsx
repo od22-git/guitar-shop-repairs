@@ -3,7 +3,8 @@ import type { ReactNode } from "react";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { Container } from "@/components/ui/layout";
-import { Heading, Label, Lead } from "@/components/ui/text";
+import { IntroText } from "@/components/page-hero";
+import { Heading, Label } from "@/components/ui/text";
 import { brand } from "@/config/brand";
 import { policies, policyNumbers } from "@/config/policies";
 import { Link } from "@/i18n/navigation";
@@ -55,9 +56,7 @@ export default async function FaqPage() {
       <Heading level="headline" as="h1">
         {t("title")}
       </Heading>
-      <Lead wide className="mt-6 mb-12 text-grey-600 md:mb-20">
-        {t("description")}
-      </Lead>
+      <IntroText className="mt-6 mb-12 md:mb-20">{t("description")}</IntroText>
 
       <Topic id="condition" heading={t("conditionHeading")}>
         <p className="max-w-[60ch] text-lg">{t("conditionIntro")}</p>

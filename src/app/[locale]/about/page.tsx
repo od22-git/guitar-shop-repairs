@@ -5,7 +5,7 @@ import { PageHero } from "@/components/page-hero";
 import { PhotoCredits } from "@/components/photo-credits";
 import { Prose } from "@/components/prose";
 import { Arrow, buttonClass } from "@/components/ui/button";
-import { Container, Section } from "@/components/ui/layout";
+import { Container, RuledColumn, Section } from "@/components/ui/layout";
 import { Heading } from "@/components/ui/text";
 import { brand } from "@/config/brand";
 import { policyNumbers } from "@/config/policies";
@@ -41,18 +41,21 @@ export default async function AboutPage() {
       />
 
       <Section className="pt-0 md:pt-0">
-        {sections.map((key) => (
-          <section key={key} aria-labelledby={`${key}-heading`} className="border-t border-black">
-            <div className="py-12 md:py-16">
-              <Heading level="title" as="h2" id={`${key}-heading`}>
-                {t(`sections.${key}.heading`)}
-              </Heading>
-              <Prose text={t(`sections.${key}.body`, values)} columns className="mt-6 text-lg" />
-            </div>
-          </section>
-        ))}
+        {/* Two by two: each topic a column opening with a black rule. */}
+        <div className="grid gap-x-6 gap-y-12 md:grid-cols-2 md:gap-y-16">
+          {sections.map((key) => (
+            <RuledColumn key={key}>
+              <section aria-labelledby={`${key}-heading`}>
+                <Heading level="title" as="h2" id={`${key}-heading`}>
+                  {t(`sections.${key}.heading`)}
+                </Heading>
+                <Prose text={t(`sections.${key}.body`, values)} className="mt-4 text-lg" />
+              </section>
+            </RuledColumn>
+          ))}
+        </div>
 
-        <div className="flex flex-col gap-3 border-t border-black pt-12 sm:flex-row">
+        <div className="mt-16 flex flex-col gap-3 border-t border-black pt-12 sm:flex-row">
           <Link href="/shop" className={buttonClass("primary")}>
             {t("shopCta")}
             <Arrow />

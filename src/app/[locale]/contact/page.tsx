@@ -5,7 +5,8 @@ import { Ltr } from "@/components/bdi";
 import { SocialLinks } from "@/components/social-links";
 import { Arrow, buttonClass } from "@/components/ui/button";
 import { Container, Grid, RuledColumn } from "@/components/ui/layout";
-import { Heading, Label, Lead } from "@/components/ui/text";
+import { IntroText } from "@/components/page-hero";
+import { Heading, Label } from "@/components/ui/text";
 import { WhatsAppIcon } from "@/components/whatsapp-icon";
 import { brand, socialLinks } from "@/config/brand";
 import { Link } from "@/i18n/navigation";
@@ -47,7 +48,7 @@ export default async function ContactPage() {
       <Heading level="display" as="h1">
         {t("title")}
       </Heading>
-      <Lead className="mt-8 text-grey-600">{t("intro")}</Lead>
+      <IntroText className="mt-8">{t("intro")}</IntroText>
 
       <Grid className="mt-16 gap-y-12 md:mt-24">
         <RuledColumn className="col-span-4 md:col-span-6">
